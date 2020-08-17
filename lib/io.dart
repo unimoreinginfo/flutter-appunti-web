@@ -29,7 +29,7 @@ abstract class TokenStorage {
 class LocalStorageTokenStorage implements TokenStorage {
   @override
   Future<String> readJson(String name) async {
-    String? val = window.localStorage[name];
+    String val = window.localStorage[name];
     if(val == null) {
       throw Exception("there's nothing");
     }

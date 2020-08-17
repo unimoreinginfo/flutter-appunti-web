@@ -1,5 +1,5 @@
-include: package:pedantic/analysis_options.1.8.0.yaml
+#include: package:pedantic/analysis_options.1.8.0.yaml
 
-analyzer:
-  enable-experiment:
-    - non-nullable
+#analyzer:
+ # enable-experiment:
+  #  - non-nullable F per la null safety

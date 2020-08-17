@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import 'edit.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage();
@@ -14,7 +15,6 @@ class LoginPage extends StatelessWidget {
         builder: (context, constraints) {
           return AnimatedContainer(
             duration: Duration(milliseconds: 500),
-            color: Colors.lightBlue,
             padding: constraints.maxWidth < 500 ? EdgeInsets.zero : const EdgeInsets.all(30.0),
             child: Center(
               child: Container(
@@ -41,17 +41,27 @@ class LoginControls extends StatelessWidget {
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  
+  void accedi(String username, String password) {
+    // TODO: implementa accedi
+    
+  }
+
+  void registra(String username, String password) {
+    // TODO: implementa registra
+    
+  }
 
   @override
   Widget build(context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Text("Welcome to the app, please log in"),
+        Text("Signore gentilissimo, prego acceda"),
         TextField(
           controller: _usernameController,
             decoration: InputDecoration(
-                labelText: "username"
+                labelText: "nome utente/email/numero di telefono"
             )
         ),
         TextField(
@@ -61,12 +71,52 @@ class LoginControls extends StatelessWidget {
                 labelText: "password"
             )
         ),
-        RaisedButton(
-            color: Colors.blue,
-            child: Text("Log in", style: TextStyle(color: Colors.white)),
-            onPressed: () {}
+        Column(
+          children: [
+            RaisedButton(
+              color: Theme.of(context).primaryColor,
+              child: Text("Accedi", style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                accedi(_usernameController.text, _usernameController.text);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditPage()
+                  )
+                );
+              }
+            ),
+            RaisedButton(
+              color: Theme.of(context).primaryColor,
+              child: Text("Registrati", style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                registra(_usernameController.text, _usernameController.text);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VerificationPage()
+                  )
+                );
+              }
+            ),
+          ],
         )
       ]
     );
   }
+}
+
+class VerificationPage extends StatelessWidget {
+  @override
+  Widget build(context) =>
+    Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Text("Dovresti aver ricevuto la mail di conferma, premi il link nella mail e poi accedi col tasto qua sotto"),
+            FlatButton(child: Text("Accedi"), onPressed:() => Navigator.popAndPushNamed(context, "/login"),)
+          ],
+        )
+      )
+    );
 }
