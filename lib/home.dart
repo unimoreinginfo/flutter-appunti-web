@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
               textColor: Colors.white,
               child: Text("Sgancia gli appunti bastardo"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/subjects");
+                Navigator.pushReplacementNamed(context, "/materie");
               },
             ),
             Divider(height: 45.0),
