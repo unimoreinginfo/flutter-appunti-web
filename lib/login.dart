@@ -112,6 +112,7 @@ class VerificationPage extends StatelessWidget {
     Scaffold(
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text("Dovresti aver ricevuto la mail di conferma, premi il link nella mail e poi accedi col tasto qua sotto"),
             FlatButton(child: Text("Accedi"), onPressed:() => Navigator.popAndPushNamed(context, "/login"),)
