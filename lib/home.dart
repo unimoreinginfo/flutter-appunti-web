@@ -13,7 +13,7 @@ class Illustration extends StatelessWidget {
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: FutureBuilder(
-        future: httpClient.read("/img/$name.png"),
+        future: httpClient.readBytes("/img/$name.png"),
         builder: (context, snapshot) {
           if(!snapshot.hasData)
             return Container(
