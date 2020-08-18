@@ -51,3 +51,29 @@ class SubjectPage extends StatelessWidget {
     );
   }
 }
+
+class Appunto extends StatelessWidget {
+  Appunto({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId});
+
+  final String name;
+  final String downloadUrl;
+  final String authorName;
+  final int authorId;
+
+  @override
+  Widget build(context) {
+    return ListTile(
+      title: Text(name),
+      subtitle: FlatButton(
+        child: Text(authorName, style: Theme.of(context).textTheme.subtitle1),
+        onPressed: () {
+          Navigator.pushNamed(context, "/profile", arguments: authorId);
+        },
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.file_download),
+        onPressed: () {Scaffold.of(context).showSnackBar(SnackBar(content: Text("fai finta di aver scaricato gli appunti")));},
+      ),
+    );
+  }
+}

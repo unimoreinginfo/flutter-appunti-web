@@ -5,7 +5,7 @@ const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mae
 Widget immagine(String name) =>
   Padding(
     padding: const EdgeInsets.symmetric(vertical: 20.0),
-    child: Image.network("https://www.carmine.dev/img/$name.png", height:200.0)
+    child: Image.network("/img/$name.png", height:200.0)
   );
 
 class HomePage extends StatelessWidget {
