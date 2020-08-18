@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const subjects = [
   {
@@ -72,7 +73,9 @@ class Appunto extends StatelessWidget {
       ),
       trailing: IconButton(
         icon: Icon(Icons.file_download),
-        onPressed: () {Scaffold.of(context).showSnackBar(SnackBar(content: Text("fai finta di aver scaricato gli appunti")));},
+        onPressed: () {
+          launch(downloadUrl);
+        },
       ),
     );
   }

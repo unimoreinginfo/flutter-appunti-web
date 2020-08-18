@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xff6246ea),
         textTheme: TextTheme(
           bodyText2: TextStyle(
-            letterSpacing: 0,
+             letterSpacing: 0,
             wordSpacing: -1,
             height: 1.3,
             fontSize: 17.0

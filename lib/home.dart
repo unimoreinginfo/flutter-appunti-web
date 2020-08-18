@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 
 const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas congue maximus nisl, quis auctor justo lacinia id. Cras a magna a tellus dapibus dictum. Nam sed odio quis metus dictum luctus eu vel nibh. Praesent ut ultrices quam. Nulla porttitor, purus at mattis sagittis, quam urna consequat nibh, sit amet aliquet tortor augue ut nibh. Fusce finibus interdum blandit. In ut sapien vitae sem tristique sollicitudin. In eleifend odio bibendum, posuere dolor quis, interdum risus.";
 
-Widget immagine(String name) =>
-  Padding(
-    padding: const EdgeInsets.symmetric(vertical: 20.0),
-    child: Image.network("/img/$name.png", height:200.0)
-  );
+class Illustration extends StatelessWidget {
+  Illustration(this.name);
+
+  String name;
+
+  @override
+  Widget build(context) =>
+    Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: Image.network("/img/$name.png", height:200.0)
+    );
+}
 
 class HomePage extends StatelessWidget {
 
@@ -36,8 +43,8 @@ class HomePage extends StatelessWidget {
           child: ListView(
           padding: EdgeInsets.all(15.0),
           children : [
-            immagine("lesson"),
-           Text("Appunti qua,\nlorem ipsum fanglerio", style: Theme.of(context).textTheme.headline3),
+            Illustration("lesson"),
+           Text("Appunti qua,\nlorem ipsum fanglerio", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline3),
             SizedBox(height: 30,),
             Text("La risorsa principale di fanglerico fanglerioso e robe fantastiche ez clap ciaooo"),
             SizedBox(height: 30,),
@@ -51,16 +58,16 @@ class HomePage extends StatelessWidget {
               },
             ),
             Divider(height: 45.0),
-            Text("Appunti per tutti", style: Theme.of(context).textTheme.headline4),
-            immagine("read"),
+            Text("Appunti per tutti", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+            Illustration("read"),
             Text(loremIpsum),
             SizedBox(height: 15,),
-            Text("Risorse affidabili e controllate", style: Theme.of(context).textTheme.headline4),
-            immagine("control"),
+            Text("Risorse affidabili e controllate", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+            Illustration("control"),
             Text(loremIpsum,),
             SizedBox(height: 15,),
-            Text("E ti laurei pure, bastardo", style: Theme.of(context).textTheme.headline4),
-            immagine("letsgo"),
+            Text("E ti laurei pure, bastardo", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+            Illustration("letsgo"),
             Text(loremIpsum),
           ]
         ),
