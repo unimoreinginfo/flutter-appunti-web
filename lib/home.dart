@@ -20,8 +20,8 @@ class HomePage extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(decoration: BoxDecoration(color: Theme.of(context).primaryColor), child: Stack(alignment: Alignment.bottomLeft,children: [Text("appunti-web", style: TextStyle(color: Colors.white),)])),
-          InkWell(child: ListTile(leading: Icon(Icons.computer), title: Text("Ingegneria poco informatica")), onTap: () {
-            Navigator.pushReplacementNamed(context, "/subjects");
+          InkWell(child: ListTile(leading: Icon(Icons.computer), title: Text("Ingegneria Informatica")), onTap: () {
+            Navigator.pushNamed(context, "/subjects");
           },)
         ],
       ),
@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
               textColor: Colors.white,
               child: Text("Sgancia gli appunti bastardo"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/materie");
+                Navigator.pushNamed(context, "/subjects");
               },
             ),
             Divider(height: 45.0),

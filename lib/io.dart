@@ -21,14 +21,14 @@ class LoginManager {
 }
 
 abstract class TokenStorage {
-  Future<String> readJson(String name);
-  Future<void> writeJson(String name, String value);
-  Future<void> delete(String name);
+  static Future<String> readJson(String name) {throw Error();}
+  static Future<void> writeJson(String name, String value) {throw Error();}
+  static Future<void> delete(String name) {throw Error();}
 }
 
 class LocalStorageTokenStorage implements TokenStorage {
   @override
-  Future<String> readJson(String name) async {
+  static Future<String> readJson(String name) async {
     String val = window.localStorage[name];
     if(val == null) {
       throw Exception("there's nothing");
@@ -39,11 +39,11 @@ class LocalStorageTokenStorage implements TokenStorage {
   }
   
   @override
-  Future<void> writeJson(String name, String value) async {
+  static Future<void> writeJson(String name, String value) async {
     window.localStorage[name] = value;
   }
 
-  Future<void> delete(String name) async {
+  static Future<void> delete(String name) async {
     window.localStorage.remove(name);
   }
   

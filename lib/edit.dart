@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'io.dart';
+import 'platform.dart' as platform;
 
 class EditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    /*if(!isLoggedIn(context.watch<TokenStorage>())) {
+    if(!isLoggedIn(platform.tokenStorage)) {
       Navigator.pushReplacementNamed(context, '/login');
-    }*/
-    // TODO: implement build
-    throw UnimplementedError();
+    }
+    return Scaffold(
+      appBar: AppBar(title: Text("Aggiungi o modera i contenuti"),),
+      body: Scaffold(
+        body: Text("non c'è ancora niente"),
+      ),
+    );
   }
 }

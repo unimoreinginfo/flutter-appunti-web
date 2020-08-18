@@ -1,7 +1,4 @@
-import 'package:appunti_web_frontend/io.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:http/browser_client.dart' as http;
 
 import 'home.dart';
 import 'login.dart';
@@ -11,13 +8,7 @@ import 'edit.dart';
 import 'profile.dart';
 
 void main() {
-  runApp(MultiProvider(
-    providers: [
-      Provider(create: (_) => http.BrowserClient()),
-      Provider(create: (_) => LocalStorageTokenStorage())  // per Web vanno bene così
-    ],
-    child: MyApp(),
-  ),);
+  runApp(MyApp());
 }
 
 
@@ -55,8 +46,17 @@ class MyApp extends StatelessWidget {
         "/login": (context) => LoginPage(),
         "/": (context) => HomePage(),
         "/admin": (context) => AdminPage(),
-        "/materie": (context) => SubjectsPage(),
-        "/profile": (context) => ProfilePage()
+        "/subjects": (context) => SubjectsPage(),
+        "/profile": (context)  {
+          int uid = ModalRoute.of(context).settings.arguments;
+          return ProfilePage(uid);
+        },
+        "/subject": (context) {
+          {
+          Map<String, Object> sub = ModalRoute.of(context).settings.arguments;
+          return SubjectPage(sub);
+        }
+        }
       },
       initialRoute: '/',
     );

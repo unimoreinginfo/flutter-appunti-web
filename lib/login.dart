@@ -42,13 +42,13 @@ class LoginControls extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   
-  void accedi(String username, String password) {
-    // TODO: implementa accedi
+  void logIn(String username, String password) {
+    // TODO: implement logIn
     
   }
 
-  void registra(String username, String password) {
-    // TODO: implementa registra
+  void signUp(String username, String password) {
+    // TODO: implement signUp
     
   }
 
@@ -77,7 +77,7 @@ class LoginControls extends StatelessWidget {
               color: Theme.of(context).primaryColor,
               child: Text("Accedi", style: TextStyle(color: Colors.white)),
               onPressed: () {
-                accedi(_usernameController.text, _usernameController.text);
+                logIn(_usernameController.text, _usernameController.text);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -90,8 +90,9 @@ class LoginControls extends StatelessWidget {
               color: Theme.of(context).primaryColor,
               child: Text("Registrati", style: TextStyle(color: Colors.white)),
               onPressed: () {
-                registra(_usernameController.text, _usernameController.text);
-                Navigator.pushReplacement(
+                // TODO: verify email
+                signUp(_usernameController.text, _usernameController.text);
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => VerificationPage()
@@ -115,7 +116,7 @@ class VerificationPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text("Dovresti aver ricevuto la mail di conferma, premi il link nella mail e poi accedi col tasto qua sotto"),
-            FlatButton(child: Text("Accedi"), onPressed:() => Navigator.popAndPushNamed(context, "/login"),)
+            FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Accedi"), onPressed:() => Navigator.pop(context),)
           ],
         )
       )
