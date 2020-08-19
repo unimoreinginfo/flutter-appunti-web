@@ -1,10 +1,12 @@
 #!/bin/bash
 
 git clone https://github.com/flutter/flutter.git
-cd flutter
-git checkout beta
-git pull
-cd ..
-flutter/bin/flutter config --enable-web
-flutter/bin/flutter doctor
-flutter/bin/flutter build web
+
+export FLUTTER_HOME=./flutter
+export PATH=$PATH:./flutter/bin
+flutter config --enable-web
+flutter channel beta
+flutter upgrade
+flutter pub version
+flutter doctor
+flutter build web
