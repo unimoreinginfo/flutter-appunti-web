@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import 'note.dart';
 
 const subjects = [
   {
@@ -48,34 +49,6 @@ class SubjectPage extends StatelessWidget {
       appBar: AppBar(title: Text(subject["name"]),),
       body: Center(
         child: Text("qui ci saranno gli appunti"),
-      ),
-    );
-  }
-}
-
-class Appunto extends StatelessWidget {
-  Appunto({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId});
-
-  final String name;
-  final String downloadUrl;
-  final String authorName;
-  final int authorId;
-
-  @override
-  Widget build(context) {
-    return ListTile(
-      title: Text(name),
-      subtitle: FlatButton(
-        child: Text(authorName, style: Theme.of(context).textTheme.subtitle1),
-        onPressed: () {
-          Navigator.pushNamed(context, "/profile", arguments: authorId);
-        },
-      ),
-      trailing: IconButton(
-        icon: Icon(Icons.file_download),
-        onPressed: () {
-          launch(downloadUrl);
-        },
       ),
     );
   }
