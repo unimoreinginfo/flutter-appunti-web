@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/edit": (context) => EditPage(), 
         "/login": (context) => LoginPage(),
+        "/signup": (context) => SignupPage(),
         "/": (context) => HomePage(),
         "/admin": (context) => AdminPage(),
         "/subjects": (context) => SubjectsPage(),
