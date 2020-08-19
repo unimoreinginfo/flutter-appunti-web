@@ -5,7 +5,6 @@ cd flutter
 git checkout beta
 git pull
 cd ..
-alias flbin="flutter/bin/flutter"
-flbin config --enable-web
-flbin doctor
-flbin build web
+flutter/bin/flutter config --enable-web
+flutter/bin/flutter doctor
+flutter/bin/flutter build web
