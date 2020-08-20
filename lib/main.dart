@@ -50,12 +50,6 @@ class MyApp extends StatelessWidget {
         "/profile": (context)  {
           int uid = ModalRoute.of(context).settings.arguments;
           return ProfilePage(uid);
-        },
-        "/subject": (context) {
-          {
-          Map<String, Object> sub = ModalRoute.of(context).settings.arguments;
-          return SubjectPage(sub);
-        }
         }
       },
       initialRoute: '/',

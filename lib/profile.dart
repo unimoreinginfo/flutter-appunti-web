@@ -6,27 +6,31 @@ import 'platform.dart' show httpClient;
 import 'note.dart';
 import 'consts.dart';
 
-final requestUrlUser = "$baseUrl/utente";
-final requestUrlNotes = "$baseUrl/appunti";
+final requestUrlUser = "$baseUrl/users";
 
 
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage(this.uid);
+  // TODO: implement conditional remote fetching, use `userData` if provided
+  // TODO: remember to check the suer fetching url
+  ProfilePage(this.uid, {this.userData});
 
-  static Future<Map<String, Object>> getUser(int uid) async {
+
+  static Future<Map<String, Object>> getUser(uid) async {
     return json.decode(
-      await httpClient.read("$requestUrlUser?uid=$uid")
+      await httpClient.read("$requestUrlUser?id=$uid")
     );
   }
 
-  static Future<List<Map<String, Object>>> getNotes(int uid) async {
+  static Future<List<Map<String, Object>>> getNotes(uid) async {
     return json.decode(
-      await httpClient.read("$requestUrlNotes?uid=$uid")
+      await httpClient.read("$baseUrl/notes?authorId=$uid}")
     );
   }
 
   final int uid;
+  final Map userData;
+
   @override
   Widget build(BuildContext context) {   
     final userFuture = getUser(uid);
@@ -84,10 +88,10 @@ class ProfilePage extends StatelessWidget {
                       itemBuilder: (context, i) {
                         return Note(
                           authorId: uid,
-                          name: notes[i]["name"],
+                          name: notes[i]["title"],
                           authorName: "${user["name"]} ${user["surname"]}",
-                          downloadUrl: "$basePathNotes/${notes[i]["path"]}",
-                          uploadedAt: DateTime.fromMillisecondsSinceEpoch(notes[i]["uploaded_at"]*1000),
+                          downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
+                          uploadedAt: DateTime.parse(notes[i]["uploaded_at"]*1000),
                         );
                       }
                     );
