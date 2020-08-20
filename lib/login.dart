@@ -1,6 +1,10 @@
+import 'package:appunti_web_frontend/consts.dart';
+import 'package:appunti_web_frontend/platform.dart';
 import 'package:flutter/material.dart';
 
+import 'dart:convert' show json;
 import 'edit.dart';
+import 'errors.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage();
@@ -39,9 +43,22 @@ class LoginControls extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   
-  void _logIn(String username, String password) {
-    // TODO: implement logIn
-    
+  Future _logIn(String email, String password) async {
+    var res = await httpClient.post(
+      "$baseUrl/auth/login",
+      body: {
+        "email": email,
+        "password": password
+      }
+    );
+
+    if(res.statusCode == INVALID_CREDENTIALS) throw InvalidCredentialsError();
+    if(res.statusCode == SERVER_DOWN) throw ServerError();
+
+
+    Map resBody = json.decode(res.body);
+
+    tokenStorage.writeJson("token", resBody["auth_token"]);
   }
 
   @override
@@ -74,13 +91,34 @@ class LoginControls extends StatelessWidget {
           color: Theme.of(context).primaryColor,
           child: Text("Accedi", style: TextStyle(color: Colors.white)),
           onPressed: () {
-            _logIn(_emailController.text, _emailController.text);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditPage()
-              )
-            );
+            String errorString = null;
+            try {
+              _logIn(_emailController.text, _emailController.text);
+            } on InvalidCredentialsError {
+              errorString = "Le credenziali inserite sono sbagliate";
+            } on NetworkError {
+              errorString = "Si è verificato un errore durante la connessione al server";
+            } catch (e) {
+              errorString = "Si è verificato un errore sconosciuto";
+            } finally {
+              if(errorString != null) {
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text(errorString),
+                  )
+                );
+              }
+              else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditPage()
+                  )
+                );
+              }
+            }
+            
           }
         ),
       ]
