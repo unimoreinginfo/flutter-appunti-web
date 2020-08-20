@@ -66,7 +66,10 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, i) =>
               InkWell(
-                child: Card(child: Center(child: Text(widget.subjects[i]["name"],))),
+                child: Card(child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(child: Text(widget.subjects[i]["name"],)),
+                )),
                 onTap:() => setState(() {
                   selectedSubject = i;
                 }),
@@ -108,11 +111,11 @@ class SubjectNotes extends StatelessWidget {
             final List<Map> notes = snapshot.data;
             return ListView.builder(
               itemCount: notes.length,
-              itemBuilder: (context, i) =>
-                FutureBuilder(
+              itemBuilder: (context, i) {
+               /* FutureBuilder(
                   future: getUser(notes[i]["author_id"]),
                   builder: (context, snapshot) {
-                    if(!snapshot.hasData) return CircularProgressIndicator();
+                    if(!snapshot.hasData) return CircularProgressIndicator();*/
                     return Note(
                       authorName: "non funziona la cosa degli autori", //TODO: replace this stuff with actual author name
                       authorId: notes[i]["author_id"],
@@ -120,8 +123,9 @@ class SubjectNotes extends StatelessWidget {
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
                       downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                     );
-                  }
-                )
+                  /*}
+                )*/
+              }
             );
           }
         )

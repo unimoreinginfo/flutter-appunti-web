@@ -8,11 +8,29 @@ class EditPage extends StatelessWidget {
     if(!isLoggedIn(platform.tokenStorage)) {
       Navigator.pushReplacementNamed(context, '/login');
     }
+    final mod = isMod(platform.tokenStorage);
+
     return Scaffold(
-      appBar: AppBar(title: Text("Aggiungi o modera i contenuti"),),
+      appBar: AppBar(title: Text(mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),),
       body: Scaffold(
-        body: Text("non c'è ancora niente"),
+        body: mod ? ModPage() : PlebPage(),
       ),
     );
+  }
+}
+
+class PlebPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
+
+class ModPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }

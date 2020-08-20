@@ -4,6 +4,8 @@ import 'package:http/http.dart';
 
 bool isLoggedIn(TokenStorage storage) => false;
 
+bool isMod(TokenStorage storage) => false;
+
 class LoginManager {
   LoginManager(this.client);
 

@@ -6,7 +6,7 @@ const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mae
 class Illustration extends StatelessWidget {
   Illustration(this.name);
 
-  String name;
+  final String name;
 
   @override
   Widget build(context) =>
