@@ -1,44 +1,60 @@
 import 'dart:convert' show json, base64, ascii;
 import 'dart:html';
 
+import 'consts.dart' show baseUrl;
+import 'errors.dart';
 import 'package:http/http.dart';
 
+
+/// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
   ascii.decode(
     base64.decode(base64.normalize(token.split(".")[1]))
   )
 );
 
+/// Get the token, however we're supposed to do that
+Future<String> getToken(TokenStorage storage) async =>
+  await storage.readJson("token");
 
-
-Future<bool> isLoggedIn(TokenStorage storage) async {
-  try {
-    await storage.readJson("token");
-    return true;
-  } catch(e) {
-    return false;
-  }
-}
-
-Future<bool> isMod(TokenStorage storage) async {
+Future<bool> isMod(String token) async {
   // we suppose the user is logged in
-  if(getPayload(await storage.readJson("token"))["isAdmin"] == true) return true;
+  if(getPayload(token)["isAdmin"] == true) return true;
   else return false;
 
 }
 
+
+/// We call this class for login purposes so that we are at least
+/// a tiny little bit testable.
 class LoginManager {
-  LoginManager(this.client);
+  LoginManager(this.client, this.tokenStorage);
 
   BaseClient client;
+  TokenStorage tokenStorage;
 
-  Future<String> logIn(String username, String password) {
-    // TODO: implement logIn
-    throw UnimplementedError();
+  Future<String> logIn(String email, String password) async {
+    var res = await client.post(
+      "$baseUrl/auth/login",
+      body: {
+        "email": email,
+        "password": password
+      }
+    );
+
+    if(res.statusCode == INVALID_CREDENTIALS) throw InvalidCredentialsError();
+    if(res.statusCode == SERVER_DOWN) throw ServerError();
+
+
+    Map resBody = json.decode(res.body);
+
+    tokenStorage.writeJson("token", resBody["auth_token"]);
+
+    return resBody["auth_token"];
   }
 
-  Future<String> signUp(String username, String password) {
-    // TODO: implement signUp
+  Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) {
+    // TODO: implement signUp, waiting for backend progress
     throw UnimplementedError();
   }
 }

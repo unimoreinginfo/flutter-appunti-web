@@ -1,8 +1,7 @@
-import 'package:appunti_web_frontend/consts.dart';
+import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
 import 'package:flutter/material.dart';
 
-import 'dart:convert' show json;
 import 'edit.dart';
 import 'errors.dart';
 
@@ -43,23 +42,8 @@ class LoginControls extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   
-  Future _logIn(String email, String password) async {
-    var res = await httpClient.post(
-      "$baseUrl/auth/login",
-      body: {
-        "email": email,
-        "password": password
-      }
-    );
-
-    if(res.statusCode == INVALID_CREDENTIALS) throw InvalidCredentialsError();
-    if(res.statusCode == SERVER_DOWN) throw ServerError();
-
-
-    Map resBody = json.decode(res.body);
-
-    tokenStorage.writeJson("token", resBody["auth_token"]);
-  }
+  Future<String> _logIn(String email, String password) async =>
+    await LoginManager(httpClient, tokenStorage).logIn(email, password);
 
   @override
   Widget build(context) {
@@ -90,10 +74,10 @@ class LoginControls extends StatelessWidget {
         RaisedButton(
           color: Theme.of(context).primaryColor,
           child: Text("Accedi", style: TextStyle(color: Colors.white)),
-          onPressed: () {
+          onPressed: () async {
             String errorString = null;
             try {
-              _logIn(_emailController.text, _emailController.text);
+              await _logIn(_emailController.text, _emailController.text);
             } on InvalidCredentialsError {
               errorString = "Le credenziali inserite sono sbagliate";
             } on NetworkError {
@@ -168,10 +152,8 @@ class SignupControls extends StatelessWidget {
   final TextEditingController _surnameController = TextEditingController();
 
   
-  void _signUp() {
-    // TODO: implement logIn
-    
-  }
+  Future<bool> _signUp({String email, String password, String unimoreId, String name, String surname}) async =>
+    await LoginManager(httpClient, tokenStorage).signUp(email, password, unimoreId, name, surname);
 
   @override
   Widget build(context) {
