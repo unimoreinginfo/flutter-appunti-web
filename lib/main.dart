@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'login.dart';
 import 'subjects.dart';
-import 'admin.dart';
 import 'edit.dart';
 import 'profile.dart';
 
@@ -45,7 +44,6 @@ class MyApp extends StatelessWidget {
         "/login": (context) => LoginPage(),
         "/signup": (context) => SignupPage(),
         "/": (context) => HomePage(),
-        "/admin": (context) => AdminPage(),
         "/subjects": (context) => SubjectsPage(),
         "/profile": (context)  {
           int uid = ModalRoute.of(context).settings.arguments;

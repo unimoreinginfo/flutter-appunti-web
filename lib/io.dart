@@ -17,6 +17,9 @@ Map getPayload(String token) => json.decode(
 Future<String> getToken(TokenStorage storage) async =>
   await storage.readJson("token");
 
+// TODO: implement refreshTokenStillValid
+Future<bool> refreshTokenStillValid(BaseClient client) => Future.value(true);
+
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in
   if(getPayload(token)["isAdmin"] == true) return true;

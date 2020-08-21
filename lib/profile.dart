@@ -6,8 +6,6 @@ import 'platform.dart' show httpClient;
 import 'note.dart';
 import 'consts.dart';
 
-final requestUrlUser = "$baseUrl/users";
-
 
 
 class ProfilePage extends StatelessWidget {
@@ -17,7 +15,7 @@ class ProfilePage extends StatelessWidget {
 
   static Future<Map<String, Object>> getUser(uid) async {
     return json.decode(
-      await httpClient.read("$requestUrlUser?id=$uid")
+      await httpClient.read("$baseUrl/users/$uid")
     );
   }
 
@@ -72,6 +70,7 @@ class PaginaUtente extends StatelessWidget {
       children: [
         Text("Utente ${user["name"]} ${user["surname"]}", style: Theme.of(context).textTheme.headline4,),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text("Email: "),
             FlatButton(

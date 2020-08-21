@@ -195,7 +195,7 @@ class SignupControls extends StatelessWidget {
           color: Theme.of(context).primaryColor,
           child: Text("Registrati", style: TextStyle(color: Colors.white)),
           onPressed: () {
-            // TODO: verify email
+            // TODO: signup onpressed
             _signUp();
             Navigator.push(
               context,

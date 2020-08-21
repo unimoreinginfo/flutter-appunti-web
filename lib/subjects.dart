@@ -87,8 +87,8 @@ class SubjectNotes extends StatelessWidget {
   SubjectNotes(this.subject);
 
   final Map<String, Object> subject;
-  Future<Map> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=${subject["id"]}"));
-  Future<Map> getUser(id) async => json.decode(await httpClient.read("$baseUrl/users?id=$id")); // TODO: who knows if this will be the endpoint
+  Future<List> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=${subject["id"]}"));
+  Future<Map> getUser(id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
 
   @override
   Widget build(BuildContext context) {
@@ -112,19 +112,20 @@ class SubjectNotes extends StatelessWidget {
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
-               /* FutureBuilder(
+                FutureBuilder(
                   future: getUser(notes[i]["author_id"]),
                   builder: (context, snapshot) {
-                    if(!snapshot.hasData) return CircularProgressIndicator();*/
+                    if(!snapshot.hasData) return CircularProgressIndicator();
+                    final user = snapshot.data;
                     return Note(
-                      authorName: "non funziona la cosa degli autori", //TODO: replace this stuff with actual author name
+                      authorName: "${user["name"]} ${user["id"]}",
                       authorId: notes[i]["author_id"],
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
                       downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                     );
-                  /*}
-                )*/
+                  }
+                );
               }
             );
           }
