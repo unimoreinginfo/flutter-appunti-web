@@ -112,13 +112,13 @@ class SubjectNotes extends StatelessWidget {
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
-                FutureBuilder(
+                return FutureBuilder(
                   future: getUser(notes[i]["author_id"]),
                   builder: (context, snapshot) {
                     if(!snapshot.hasData) return CircularProgressIndicator();
                     final user = snapshot.data;
                     return Note(
-                      authorName: "${user["name"]} ${user["id"]}",
+                      authorName: "${user["name"]} ${user["surname"]}",
                       authorId: notes[i]["author_id"],
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),

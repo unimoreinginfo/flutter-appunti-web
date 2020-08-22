@@ -13,12 +13,16 @@ Map getPayload(String token) => json.decode(
   )
 );
 
-/// Get the token, however we're supposed to do that
-Future<String> getToken(TokenStorage storage) async =>
-  await storage.readJson("token");
+void updateToken(TokenStorage storage, String newTok) {
+  storage.writeJson("token", newTok);
+}
 
-// TODO: implement refreshTokenStillValid
-Future<bool> refreshTokenStillValid(BaseClient client) => Future.value(true);
+String getToken(TokenStorage storage) =>
+  storage.readJson("token");
+
+bool refreshTokenStillValid(TokenStorage storage) =>
+  DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
+
 
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in
@@ -52,8 +56,14 @@ class LoginManager {
     Map resBody = json.decode(res.body);
 
     tokenStorage.writeJson("token", resBody["auth_token"]);
+    tokenStorage.writeJson("ref_token_exp", resBody["refresh_token_expiry"]);
 
     return resBody["auth_token"];
+  }
+
+  static void logOut(TokenStorage storage) {
+    storage.delete("token");
+    storage.delete("expiry");
   }
 
   Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) {
@@ -63,18 +73,19 @@ class LoginManager {
 }
 
 abstract class TokenStorage {
-  /// throws `Exception` if it can't read the thing
-  Future<String> readJson(String name);
-  Future<void> writeJson(String name, String value);
-  Future<void> delete(String name);
+  /// throws `NotFoundError` if it can't read the thing
+
+  String readJson(String name);
+  void writeJson(String name, String value);
+  void delete(String name);
 }
 
 class LocalStorageTokenStorage implements TokenStorage {
   @override
-  Future<String> readJson(String name) async {
+  String readJson(String name) {
     String val = window.localStorage[name];
     if(val == null) {
-      throw Exception("there's nothing");
+      throw NotFoundError();
     }
     else {
       return val;
@@ -82,12 +93,12 @@ class LocalStorageTokenStorage implements TokenStorage {
   }
 
   @override
-  Future<void> writeJson(String name, String value) async {
+  void writeJson(String name, String value) {
     window.localStorage[name] = value;
   }
 
   @override
-  Future<void> delete(String name) async {
+  void delete(String name) {
     window.localStorage.remove(name);
   }
   

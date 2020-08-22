@@ -2,7 +2,6 @@ import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
 import 'package:flutter/material.dart';
 
-import 'edit.dart';
 import 'errors.dart';
 
 class LoginPage extends StatelessWidget {
@@ -54,7 +53,7 @@ class LoginControls extends StatelessWidget {
           color: Theme.of(context).primaryColor,
           child: Text("Registrati", style: TextStyle(color: Colors.white)),
           onPressed: () {
-            Navigator.pushNamed(context, "/signup");
+            Navigator.pushReplacementNamed(context, "/signup");
           }
         ),
         Text("oppure"),
@@ -94,12 +93,7 @@ class LoginControls extends StatelessWidget {
                 );
               }
               else {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditPage()
-                  )
-                );
+                Navigator.pushReplacementNamed(context, "/edit");
               }
             }
             
