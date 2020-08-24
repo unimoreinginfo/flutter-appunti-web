@@ -58,7 +58,7 @@ class LoginManager {
     Map resBody = json.decode(res.body);
 
     tokenStorage.writeJson("token", resBody["auth_token"]);
-    tokenStorage.writeJson("ref_token_exp", resBody["refresh_token_expiry"]);
+    tokenStorage.writeJson("ref_token_exp", DateTime.fromMillisecondsSinceEpoch(resBody["refresh_token_expiry"]*1000).toIso8601String());
 
     return resBody["auth_token"];
   }
