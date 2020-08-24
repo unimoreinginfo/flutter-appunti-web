@@ -12,7 +12,7 @@ class Note extends StatelessWidget {
   final String name;
   final String downloadUrl;
   final String authorName;
-  final int authorId;
+  final String authorId;
   final DateTime uploadedAt;
   final Map userData;
 

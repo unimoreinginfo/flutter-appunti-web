@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         "/profile": (context)  {
           List args = ModalRoute.of(context).settings.arguments;
           if(args[0] == ProvidedArg.id) {
-            int uid = args[1];
+            String uid = args[1];
             return ProfilePage(uid);
           } else return ProfilePage(args[1]["id"], userData: args[1]);
         }

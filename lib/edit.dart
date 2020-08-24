@@ -20,20 +20,24 @@ class EditPage extends StatelessWidget {
     }
     on NotFoundError {
       Navigator.pushReplacementNamed(context, '/login');
-    }        
-
-    return FutureBuilder<bool>(
-      future: isMod(token),
-      builder: (context, snapshot) {
-        final bool mod = snapshot.data;
-        if(!snapshot.hasData) return CircularProgressIndicator();
-        return Scaffold(
-          appBar: AppBar(title: Text(mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),),
-          body: Scaffold(
-            body: mod ? ModPage(token) : PlebPage(token),
-          ),
-        );
-      }
+    } 
+    bool mod;
+    try {
+      mod = isMod(token);
+    }
+    catch(e) {
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("$e")
+        )
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(title: Text(mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),),
+      body: Scaffold(
+        body: mod ? ModPage(token) : PlebPage(token),
+      ),
     );
   }
 }

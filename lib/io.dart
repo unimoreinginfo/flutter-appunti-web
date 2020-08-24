@@ -24,9 +24,11 @@ bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
 
-Future<bool> isMod(String token) async {
+bool isMod(String token) {
   // we suppose the user is logged in
-  if(int.parse(getPayload(token)["isAdmin"]) == 1) return true;
+  Map decodedToken = getPayload(token);
+  print("payload: $decodedToken");
+  if(decodedToken["isAdmin"] == 1) return true;
   else return false;
 
 }

@@ -24,7 +24,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  final int uid;
+  final String uid;
   final Map userData;
 
   @override
