@@ -9,7 +9,6 @@ import 'consts.dart';
 
 
 class ProfilePage extends StatelessWidget {
-  // TODO: remember to check the user fetching url
   ProfilePage(this.uid, {this.userData = null});
 
 

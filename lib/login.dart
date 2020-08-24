@@ -77,7 +77,7 @@ class LoginControls extends StatelessWidget {
             String errorString = null;
             try {
               await _logIn(_emailController.text, _emailController.text);
-            } on InvalidCredentialsError {
+            } on BackendError {
               errorString = "Le credenziali inserite sono sbagliate";
             } on NetworkError {
               errorString = "Si è verificato un errore durante la connessione al server";
@@ -137,13 +137,30 @@ class SignupPage extends StatelessWidget {
    );
 }
 
-class SignupControls extends StatelessWidget {
+class SignupControls extends StatefulWidget {
+  @override
+  _SignupControlsState createState() => _SignupControlsState();
+}
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _surnameController = TextEditingController();
+class _SignupControlsState extends State<SignupControls>  {
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+  TextEditingController _idController;
+  TextEditingController _nameController;
+  TextEditingController _surnameController;
+  bool _signingUp;
+
+  @override
+  initState() {
+    super.initState();
+
+    _signingUp = false;
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _idController = TextEditingController();
+    _nameController = TextEditingController();
+    _surnameController = TextEditingController();
+  }
 
   
   Future<bool> _signUp({String email, String password, String unimoreId, String name, String surname}) async =>
@@ -185,18 +202,52 @@ class SignupControls extends StatelessWidget {
                 labelText: "password"
             )
         ),
-        RaisedButton(
+        _signingUp ? CircularProgressIndicator()
+        : RaisedButton(
           color: Theme.of(context).primaryColor,
           child: Text("Registrati", style: TextStyle(color: Colors.white)),
-          onPressed: () {
-            // TODO: signup onpressed
-            _signUp();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VerificationPage()
-              )
-            );
+          onPressed: () async {
+            setState(() {
+              _signingUp = true;
+            });
+            String errorString = null;
+            try {
+              bool success = await _signUp(
+                name: _nameController.text,
+                surname: _surnameController.text,
+                email: _emailController.text,
+                unimoreId: _idController.text,
+                password: _passwordController.text
+              );
+
+              if(success)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VerificationPage()
+                  )
+                );
+              else errorString = "Si è verificato un errore sconosciuto";
+            } on BackendError catch(e) {
+              if(e.code == GENERIC_ERROR) errorString = "Si è veriricato un errore sconosciuto";
+              if(e.code == USER_EXISTS) errorString = "Esiste già un utente registrato con quell'indirizzo email";
+            } on NetworkError {
+              errorString = "Si è verificato un errore durante la connessione al server";
+            } catch(e) {
+              errorString = "Si è verificato un errore sconosciuto";
+            } finally {
+              setState(() {
+                _signingUp = false;
+              }); 
+            }
+            if(errorString != null) {
+              showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Text(errorString),
+                )
+              );
+            }
           }
         ),
       ]
@@ -211,7 +262,7 @@ class VerificationPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text("Dovresti aver ricevuto la mail di conferma, premi il link nella mail e poi accedi col tasto qua sotto"),
+            Text("La registrazione è stata effettuata con successo, premi il tasto qui sotto per andare alla pagina di accesso"),
             FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Accedi"), onPressed:() => Navigator.popAndPushNamed(context, "/login"),)
           ],
         )

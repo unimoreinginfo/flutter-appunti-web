@@ -49,7 +49,9 @@ class LoginManager {
       }
     );
 
-    if(res.statusCode == INVALID_CREDENTIALS) throw InvalidCredentialsError();
+
+    if(res.statusCode == INVALID_CREDENTIALS) throw BackendError(INVALID_CREDENTIALS);
+    if(res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if(res.statusCode == SERVER_DOWN) throw ServerError();
 
 
@@ -66,9 +68,23 @@ class LoginManager {
     storage.delete("expiry");
   }
 
-  Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) {
-    // TODO: implement signUp, waiting for backend progress
-    throw UnimplementedError();
+  Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) async {
+    var res = await client.post(
+      "$baseUrl/register",
+      body: {
+        "email": email,
+        "password": password,
+        "name": name,
+        "surname": surname,
+        "unimore_id": unimoreId
+      }
+    );
+
+    if(res.statusCode == USER_EXISTS) throw BackendError(USER_EXISTS);
+    if(res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
+    if(res.statusCode == SERVER_DOWN) throw ServerError();
+
+    return json.decode(res.body)["success"];
   }
 }
 
