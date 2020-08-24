@@ -40,7 +40,7 @@ class LoginManager {
   BaseClient client;
   TokenStorage tokenStorage;
 
-  Future<String> logIn(String email, String password) async {
+  Future<bool> logIn(String email, String password) async {
     var res = await client.post(
       "$baseUrl/auth/login",
       body: {
@@ -60,7 +60,7 @@ class LoginManager {
     tokenStorage.writeJson("token", resBody["auth_token"]);
     tokenStorage.writeJson("ref_token_exp", DateTime.fromMillisecondsSinceEpoch(resBody["refresh_token_expiry"]*1000).toIso8601String());
 
-    return resBody["auth_token"];
+    return resBody["success"];
   }
 
   static void logOut(TokenStorage storage) {

@@ -36,12 +36,28 @@ class LoginPage extends StatelessWidget {
    );
 }
 
-class LoginControls extends StatelessWidget {
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LoginControls extends StatefulWidget {
+  @override
+  _LoginControlsState createState() => _LoginControlsState();
+}
+
+class _LoginControlsState extends State<SignupControls>  {
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+  bool _loggingIn;
+
+  @override
+  initState() {
+    super.initState();
+
+    _loggingIn = false;
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
   
-  Future<String> _logIn(String email, String password) async =>
+  Future<bool> _logIn(String email, String password) async =>
     await LoginManager(httpClient, tokenStorage).logIn(email, password);
 
   @override
@@ -70,33 +86,44 @@ class LoginControls extends StatelessWidget {
                 labelText: "password"
             )
         ),
-        RaisedButton(
+        _loggingIn ? CircularProgressIndicator()
+        : RaisedButton(
           color: Theme.of(context).primaryColor,
           child: Text("Accedi", style: TextStyle(color: Colors.white)),
           onPressed: () async {
+            setState(() {
+              _loggingIn = true;
+            });
             String errorString = null;
             try {
-              await _logIn(_emailController.text, _passwordController.text);
-            } on BackendError {
-              errorString = "Le credenziali inserite sono sbagliate";
+              bool success = await _logIn(
+                _emailController.text,
+                _passwordController.text
+              );
+
+              if(success)
+                Navigator.pushReplacementNamed(context, "/edit");
+              else errorString = "Si è verificato un errore sconosciuto";
+            } on BackendError catch(e) {
+              if(e.code == GENERIC_ERROR) errorString = "Si è verificato un errore sconosciuto";
+              else if(e.code == INVALID_CREDENTIALS) errorString = "Credenziali sbagliate";
             } on NetworkError {
               errorString = "Si è verificato un errore durante la connessione al server";
-            } catch (e) {
+            } catch(e) {
               errorString = "Si è verificato un errore sconosciuto";
             } finally {
-              if(errorString != null) {
-                showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Text(errorString),
-                  )
-                );
-              }
-              else {
-                Navigator.pushReplacementNamed(context, "/edit");
-              }
+              setState(() {
+                _loggingIn = false;
+              }); 
             }
-            
+            if(errorString != null) {
+              showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Text(errorString),
+                )
+              );
+            }
           }
         ),
       ]
@@ -168,7 +195,7 @@ class _SignupControlsState extends State<SignupControls>  {
 
   @override
   Widget build(context) {
-    return ListView(
+    return Column(
       children: [
         Text("Registrazione"),
         TextField(
@@ -229,8 +256,8 @@ class _SignupControlsState extends State<SignupControls>  {
                 );
               else errorString = "Si è verificato un errore sconosciuto";
             } on BackendError catch(e) {
-              if(e.code == GENERIC_ERROR) errorString = "Si è veriricato un errore sconosciuto";
-              if(e.code == USER_EXISTS) errorString = "Esiste già un utente registrato con quell'indirizzo email";
+              if(e.code == GENERIC_ERROR) errorString = "Si è verificato un errore sconosciuto";
+              else if(e.code == USER_EXISTS) errorString = "Esiste già un utente registrato con quell'indirizzo email";
             } on NetworkError {
               errorString = "Si è verificato un errore durante la connessione al server";
             } catch(e) {
@@ -254,6 +281,7 @@ class _SignupControlsState extends State<SignupControls>  {
     );
   }
 }
+
 class VerificationPage extends StatelessWidget {
   @override
   Widget build(context) =>
