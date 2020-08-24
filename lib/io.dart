@@ -70,7 +70,7 @@ class LoginManager {
 
   Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) async {
     var res = await client.post(
-      "$baseUrl/register",
+      "$baseUrl/auth/register",
       body: {
         "email": email,
         "password": password,
