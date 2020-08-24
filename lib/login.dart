@@ -76,7 +76,7 @@ class LoginControls extends StatelessWidget {
           onPressed: () async {
             String errorString = null;
             try {
-              await _logIn(_emailController.text, _emailController.text);
+              await _logIn(_emailController.text, _passwordController.text);
             } on BackendError {
               errorString = "Le credenziali inserite sono sbagliate";
             } on NetworkError {
