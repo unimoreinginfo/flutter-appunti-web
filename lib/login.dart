@@ -123,6 +123,7 @@ class _LoginControlsState extends State<SignupControls>  {
                   title: Text(errorString),
                 )
               );
+              Navigator.pushReplacementNamed(context, "/edit");
             }
           }
         ),
