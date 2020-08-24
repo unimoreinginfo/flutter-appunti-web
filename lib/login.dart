@@ -110,7 +110,7 @@ class _LoginControlsState extends State<SignupControls>  {
             } on NetworkError {
               errorString = "Si è verificato un errore durante la connessione al server";
             } catch(e) {
-              errorString = "Si è verificato un errore sconosciuto";
+              errorString = "Si è verificato un errore sconosciuto $e";
             } finally {
               setState(() {
                 _loggingIn = false;

@@ -1,4 +1,3 @@
-import 'package:appunti_web_frontend/platform.dart';
 import 'package:flutter/material.dart';
 
 const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas congue maximus nisl, quis auctor justo lacinia id. Cras a magna a tellus dapibus dictum. Nam sed odio quis metus dictum luctus eu vel nibh. Praesent ut ultrices quam. Nulla porttitor, purus at mattis sagittis, quam urna consequat nibh, sit amet aliquet tortor augue ut nibh. Fusce finibus interdum blandit. In ut sapien vitae sem tristique sollicitudin. In eleifend odio bibendum, posuere dolor quis, interdum risus.";
@@ -12,18 +11,7 @@ class Illustration extends StatelessWidget {
   Widget build(context) =>
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: FutureBuilder(
-        future: httpClient.readBytes("/img/$name.png"),
-        builder: (context, snapshot) {
-          if(!snapshot.hasData)
-            return Container(
-              width: 100.0,
-              height: 100.0,
-              child: CircularProgressIndicator(),
-            );
-          return Image.memory(snapshot.data, height:200.0);
-        }
-      )
+      child: Image.network("/img/$name.png", height: 200.0)
     );
 }
 
