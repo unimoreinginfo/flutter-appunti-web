@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum ProvidedArg {
+  id,
+  data
+}
+
 class Note extends StatelessWidget {
-  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt});
+  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData});
 
   final String name;
   final String downloadUrl;
   final String authorName;
   final int authorId;
   final DateTime uploadedAt;
+  final Map userData;
 
   @override
   Widget build(context) {
@@ -21,7 +27,7 @@ class Note extends StatelessWidget {
       subtitle: FlatButton(
         child: Text(authorName, style: Theme.of(context).textTheme.subtitle1),
         onPressed: () {
-          Navigator.pushNamed(context, "/profile", arguments: authorId);
+          Navigator.pushNamed(context, "/profile", arguments: userData == null ? [ProvidedArg.id, authorId] : [ProvidedArg.data, userData]);
         },
       ),
       trailing: IconButton(

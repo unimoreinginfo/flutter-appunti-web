@@ -26,7 +26,7 @@ bool refreshTokenStillValid(TokenStorage storage) =>
 
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in
-  if(getPayload(token)["isAdmin"] == true) return true;
+  if(int.parse(getPayload(token)["isAdmin"]) == 1) return true;
   else return false;
 
 }

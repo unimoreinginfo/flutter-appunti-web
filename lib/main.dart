@@ -1,3 +1,4 @@
+import 'package:appunti_web_frontend/note.dart' show ProvidedArg;
 import 'package:flutter/material.dart';
 
 import 'home.dart';
@@ -46,8 +47,11 @@ class MyApp extends StatelessWidget {
         "/": (context) => HomePage(),
         "/subjects": (context) => SubjectsPage(),
         "/profile": (context)  {
-          int uid = ModalRoute.of(context).settings.arguments;
-          return ProfilePage(uid);
+          List args = ModalRoute.of(context).settings.arguments;
+          if(args[0] == ProvidedArg.id) {
+            int uid = args[1];
+            return ProfilePage(uid);
+          } else return ProfilePage(args[1]["id"], userData: args[1]);
         }
       },
       initialRoute: '/',
