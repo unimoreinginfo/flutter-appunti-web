@@ -58,8 +58,7 @@ class LoginManager {
     Map resBody = json.decode(res.body);
 
     tokenStorage.writeJson("token", resBody["auth_token"]);
-    print("Roba = ${DateTime.fromMillisecondsSinceEpoch(resBody["refresh_token_expiry"]*1000).toIso8601String()}");
-    tokenStorage.writeJson("expiry", DateTime.fromMillisecondsSinceEpoch(resBody["refresh_token_expiry"]*1000).toIso8601String());
+    tokenStorage.writeJson("expiry", DateTime.fromMillisecondsSinceEpoch(int.parse(resBody["refresh_token_expiry"])*1000).toIso8601String());
 
     return resBody["success"];
   }
