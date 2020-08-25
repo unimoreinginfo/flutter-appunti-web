@@ -173,7 +173,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         FlatButton(
           onPressed: () {setState(_setFieldsToDefault);},

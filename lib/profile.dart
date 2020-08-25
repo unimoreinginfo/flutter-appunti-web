@@ -94,7 +94,7 @@ class ProfilePageBody extends StatelessWidget {
         ),
         if(canEdit)
           FlatButton(child: Text("Modifica profilo",), onPressed: () {
-            goToRouteAsap(context, "editProfile", arguments: user);
+            goToRouteAsap(context, "/editProfile", arguments: user);
           },),
         Expanded(
           child: FutureBuilder(

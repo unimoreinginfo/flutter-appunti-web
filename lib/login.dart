@@ -197,6 +197,7 @@ class _SignupControlsState extends State<SignupControls>  {
   @override
   Widget build(context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Text("Registrazione"),
         TextField(
