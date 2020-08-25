@@ -3,10 +3,10 @@ import 'package:flutter/scheduler.dart' show SchedulerBinding;
 
 typedef ContextCallback = void Function(BuildContext);
 
-void goToRouteAsap(BuildContext context, String routeName) {
+void goToRouteAsap(BuildContext context, String routeName, {Object arguments}) {
   // waits for stuff to settle down before pushing
   SchedulerBinding.instance.addPostFrameCallback(
-    (_) => Navigator.pushReplacementNamed(context, routeName)
+    (_) => Navigator.pushReplacementNamed(context, routeName, arguments: arguments)
   );
 } 
 

@@ -85,6 +85,10 @@ class MyApp extends StatelessWidget {
             String uid = args[1];
             return ProfilePage(uid);
           } else return ProfilePage(args[1]["id"], userData: args[1]);
+        },
+        "/editProfile": (context) {
+          Map args = ModalRoute.of(context).settings.arguments;
+          return EditProfile(args);
         }
       },
       initialRoute: '/',

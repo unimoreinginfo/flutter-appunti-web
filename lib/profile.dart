@@ -1,12 +1,12 @@
+import 'package:appunti_web_frontend/io.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
 import 'dart:convert' show json;
 
-import 'platform.dart' show httpClient;
+import 'platform.dart' show httpClient, tokenStorage;
 import 'note.dart';
 import 'consts.dart';
 import 'utils.dart';
-
 
 
 class ProfilePage extends StatelessWidget {
@@ -51,21 +51,30 @@ class ProfilePage extends StatelessWidget {
             return Text("Si è verificato un errore");
           }
           if(!snapshot.hasData) return CircularProgressIndicator();
-          return PaginaUtente(user, notesFuture);
+          return ProfilePageBody(user, notesFuture);
         }
-      ) : PaginaUtente(userData, notesFuture),
+      ) : ProfilePageBody(userData, notesFuture),
     );
   }
 }
 
-class PaginaUtente extends StatelessWidget {
-  PaginaUtente(this.user, this.notesFuture);
+class ProfilePageBody extends StatelessWidget {
+  ProfilePageBody(this.user, this.notesFuture);
 
   final Map user;
   final Future<List<Map>> notesFuture;
 
   @override
   Widget build(BuildContext context) {
+    bool canEdit;
+    String token;
+    try {
+      token = getToken(tokenStorage);
+      if(isMod(token) || getPayload(token)["id"] == user["id"]) canEdit = true;
+      else canEdit = false;
+    } catch(_) {
+      canEdit = false;
+    }
     return Column(
       children: [
         Text("Utente ${user["name"]} ${user["surname"]}", style: Theme.of(context).textTheme.headline4,),
@@ -83,6 +92,10 @@ class PaginaUtente extends StatelessWidget {
             )
           ],
         ),
+        if(canEdit)
+          FlatButton(child: Text("Modifica profilo",), onPressed: () {
+            goToRouteAsap(context, "editProfile", arguments: user);
+          },),
         Expanded(
           child: FutureBuilder(
             future: notesFuture,
@@ -117,5 +130,17 @@ class PaginaUtente extends StatelessWidget {
         )
       ],
     );
+  }
+}
+
+class EditProfile extends StatelessWidget {
+  EditProfile(this.userData);
+
+  final Map userData;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }
