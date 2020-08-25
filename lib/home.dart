@@ -69,7 +69,7 @@ class HomePage extends StatelessWidget {
             Text("E ti laurei pure, bastardo", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
             Illustration("letsgo"),
             Text(loremIpsum),
-            FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Mandaci i tuoi appunti"), onPressed: () => Navigator.pushReplacementNamed(context, "/edit"))
+            FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Mandaci i tuoi appunti"), onPressed: () => Navigator.pushNamed(context, "/edit"))
           ]
         ),
         )

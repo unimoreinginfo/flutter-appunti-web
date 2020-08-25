@@ -42,7 +42,7 @@ class LoginControls extends StatefulWidget {
   _LoginControlsState createState() => _LoginControlsState();
 }
 
-class _LoginControlsState extends State<SignupControls>  {
+class _LoginControlsState extends State<LoginControls> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   bool _loggingIn;
@@ -69,7 +69,7 @@ class _LoginControlsState extends State<SignupControls>  {
           color: Theme.of(context).primaryColor,
           child: Text("Registrati", style: TextStyle(color: Colors.white)),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, "/signup");
+            Navigator.pushNamed(context, "/signup");
           }
         ),
         Text("oppure"),

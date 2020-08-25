@@ -1,6 +1,10 @@
 import 'package:appunti_web_frontend/note.dart' show ProvidedArg;
 import 'package:flutter/material.dart';
 
+import 'utils.dart';
+import 'platform.dart';
+import 'io.dart';
+import 'errors.dart';
 import 'home.dart';
 import 'login.dart';
 import 'subjects.dart';
@@ -12,7 +16,9 @@ void main() {
 }
 
 
+
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,7 +47,34 @@ class MyApp extends StatelessWidget {
         )
       ),
       routes: {
-        "/edit": (context) => EditPage(), 
+        "/edit": (context) {
+          String token;
+          bool mod;
+          try {
+            token = getToken(tokenStorage);
+            if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
+            else {
+              try {
+                mod = isMod(token);
+              }
+              catch(e) {
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text("$e")
+                  )
+                );
+              }
+            }
+          }
+          on NotFoundError {
+            goToRouteAsap(context, '/login');
+          } 
+          
+          if(mod != null && token != null)
+            return EditPage(mod, token);
+          else return CircularProgressIndicator();
+        }, 
         "/login": (context) => LoginPage(),
         "/signup": (context) => SignupPage(),
         "/": (context) => HomePage(),

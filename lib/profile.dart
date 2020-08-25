@@ -5,6 +5,7 @@ import 'dart:convert' show json;
 import 'platform.dart' show httpClient;
 import 'note.dart';
 import 'consts.dart';
+import 'utils.dart';
 
 
 
@@ -88,10 +89,12 @@ class PaginaUtente extends StatelessWidget {
             builder: (context, snapshot) {
               final List<Map> notes = snapshot.data;
               if(snapshot.hasError) {
-                showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
+                doItAsap(context, (context) =>
+                  showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
+                    )
                   )
                 );
                 return Text("Si è verificato un errore");

@@ -5,7 +5,7 @@ import 'dart:convert' show json;
 import 'note.dart';
 import 'platform.dart';
 import 'consts.dart';
-
+import 'utils.dart';
 
 
 
@@ -23,10 +23,12 @@ class SubjectsPage extends StatelessWidget {
         future: subjectsFuture,
         builder: (context, snapshot) {
           if(snapshot.hasError) {
-            showDialog(
-              context: context,
-              child: AlertDialog(
-                title: Text("Si è verificato un errore durante l'accesso alle materie")
+            doItAsap(context, (context) =>
+              showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Text("Si è verificato un errore durante l'accesso alle materie")
+                )
               )
             );
             return Text("si è verificato un errore");
@@ -51,8 +53,18 @@ class SubjectsPageContents extends StatefulWidget {
 
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
-  int selectedSubject = -1;
 
+  Future<List> getNotesFuture(id) async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=$id"));
+  int selectedSubject = -1;
+  List<Future<List>> notesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    notesFuture = widget.subjects.map(
+      (subject) => getNotesFuture(subject["id"])
+    );
+  }
 
   @override
   Widget build(context) {
@@ -77,17 +89,17 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
           ),
         ),
         if(selectedSubject >= 0)
-          SubjectNotes(widget.subjects[selectedSubject])
+          SubjectNotes(widget.subjects[selectedSubject], notesFuture[selectedSubject])
       ],
     );
   }
 }
 
 class SubjectNotes extends StatelessWidget {
-  SubjectNotes(this.subject);
+  SubjectNotes(this.subject, this.notesFuture);
 
   final Map<String, Object> subject;
-  Future<List> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=${subject["id"]}"));
+  final Future<List> notesFuture;
   Future<Map> getUser(id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
 
   @override
@@ -99,10 +111,12 @@ class SubjectNotes extends StatelessWidget {
           future: notesFuture,
           builder: (context, snapshot) {
             if(snapshot.hasError) {
-              showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Text("Si è verificato un errore durante l'accesso agli appunti di ${subject["name"]}")
+              doItAsap(context, (context) =>
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text("Si è verificato un errore durante l'accesso agli appunti di ${subject["name"]}")
+                  )
                 )
               );
               return Text("Si è verificato un errore");
@@ -123,6 +137,7 @@ class SubjectNotes extends StatelessWidget {
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
                       downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
+                      userData: user
                     );
                   }
                 );

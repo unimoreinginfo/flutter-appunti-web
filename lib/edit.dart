@@ -1,4 +1,3 @@
-import 'package:appunti_web_frontend/errors.dart';
 import 'package:flutter/material.dart';
 
 import 'consts.dart';
@@ -11,28 +10,13 @@ import 'dart:convert' show json;
 
 
 class EditPage extends StatelessWidget {
+  EditPage(this.mod, this.token);
+
+  final String token;
+  final bool mod;
+
   @override
   Widget build(BuildContext context) {
-    String token;
-    try {
-      token = getToken(tokenStorage);
-      if(!refreshTokenStillValid(tokenStorage)) Navigator.pushReplacementNamed(context, '/login');
-    }
-    on NotFoundError {
-      Navigator.pushReplacementNamed(context, '/login');
-    } 
-    bool mod;
-    try {
-      mod = isMod(token);
-    }
-    catch(e) {
-      showDialog(
-        context: context,
-        child: AlertDialog(
-          title: Text("$e")
-        )
-      );
-    }
     return Scaffold(
       appBar: AppBar(title: Text(mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),),
       body: Scaffold(
