@@ -7,6 +7,7 @@ import 'platform.dart' show httpClient, tokenStorage;
 import 'note.dart';
 import 'consts.dart';
 import 'utils.dart';
+import 'errors.dart' as errors;
 
 
 class ProfilePage extends StatelessWidget {
@@ -144,14 +145,136 @@ class ProfilePageBody extends StatelessWidget {
   }
 }
 
-class EditProfile extends StatelessWidget {
+class EditProfile extends StatefulWidget {
   EditProfile(this.userData);
 
   final Map userData;
 
+
+  @override
+  _EditProfileState createState() => _EditProfileState();
+
+
+}
+
+class _EditProfileState extends State<EditProfile> {
+
+  bool _deletionInProgress;
+  TextEditingController _userName;
+  TextEditingController _userSurname;
+  TextEditingController _userUnimoreId;
+  String _jwt;
+  
+
+  @override
+  initState() {
+    super.initState();
+    _setFieldsToDefault();
+    _jwt = getToken(tokenStorage);
+  }
+
+
+  void _setFieldsToDefault() {
+    _userName = TextEditingController(text: widget.userData["name"]);
+    _userSurname = widget.userData["surname"];
+    _userUnimoreId = widget.userData["unimore_id"];
+    _deletionInProgress = false;
+  }
+
+  Future<void> editProfile(int id, String jwt, {@required Map data}) async {
+    var res = await httpClient.post(
+      "$baseUrl/users/$id",
+      body: data,
+      headers: {
+        "Authorization": "Bearer $jwt"
+      }
+    );
+
+    if(res.statusCode == errors.INVALID_CREDENTIALS) {
+      LoginManager.logOut(tokenStorage);
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("La sessione potrebbe essere scaduta o corrotta"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+      Navigator.pushReplacementNamed(context, "/login");
+      return;
+    }
+    getAndUpdateToken(res, tokenStorage);
+  }
+
+  Future<void> deleteUser(int id, String jwt) async {
+    setState(() {_deletionInProgress = true;});
+
+    var res = await httpClient.delete("$baseUrl/users/$id");
+
+    setState(() {_deletionInProgress = false;});
+
+    if(res.statusCode == errors.INVALID_CREDENTIALS) {
+      LoginManager.logOut(tokenStorage);
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("La sessione potrebbe essere scaduta o corrotta"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+      Navigator.pushReplacementNamed(context, "/login");
+    } else {
+      getAndUpdateToken(res, tokenStorage);
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        FlatButton(
+          onPressed: () {setState(_setFieldsToDefault);},
+          child: Text("Resetta campi")
+        ),
+        TextField(
+          controller: _userName,
+          decoration: InputDecoration(
+            labelText: "Nome"
+          ),
+        ),
+        TextField(
+          controller: _userSurname,
+          decoration: InputDecoration(
+            labelText: "Cognome"
+          ),
+        ),
+        TextField(
+          controller: _userUnimoreId,
+          decoration: InputDecoration(
+            labelText: "ID Unimore"
+          ),
+        ),
+        FlatButton(
+          onPressed: () {
+            editProfile(widget.userData["id"], _jwt, data: {
+              "unimore_id": _userUnimoreId.text,
+              "name": _userName.text,
+              "surname": _userSurname.text
+            });
+          },
+          child: Text("Modifica profilo")
+        ),
+        Divider(),
+        FlatButton(
+          color: Colors.redAccent,
+          textColor: Colors.white,
+          onPressed: () {deleteUser(widget.userData["id"], _jwt);},
+          child: _deletionInProgress ? CircularProgressIndicator() : Text("ELIMINA UTENTE")
+        )
+      ],
+    );
   }
 }
+
+

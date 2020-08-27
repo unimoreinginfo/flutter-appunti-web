@@ -150,8 +150,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       Navigator.pushReplacementNamed(context, "/login");
       return;
     }
-    var newTok = res.headers["Authorization"].split(" ")[1];
-    updateToken(tokenStorage, newTok);
+    getAndUpdateToken(res, tokenStorage);
   }
 
   Future<void> deleteNote(int id, String jwt) async {
@@ -168,6 +167,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
         )
       );
       Navigator.pushReplacementNamed(context, "/login");
+    } else {
+      getAndUpdateToken(res, tokenStorage);
+      Navigator.pop(context);
     }
   }
 

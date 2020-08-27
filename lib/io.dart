@@ -35,6 +35,10 @@ Future<bool> isMod(String token) async {
 
 }
 
+void getAndUpdateToken(Response res, TokenStorage storage) {
+  var newTok = res.headers["Authorization"].split(" ")[1];
+  updateToken(storage, newTok);
+}
 
 /// We call this class for login purposes so that we are at least
 /// a tiny little bit testable.
