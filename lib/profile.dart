@@ -66,14 +66,14 @@ class ProfilePageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool canEdit;
+    bool isUser;
     String token;
     try {
       token = getToken(tokenStorage);
-      if(isMod(token) || getPayload(token)["id"] == user["id"]) canEdit = true;
-      else canEdit = false;
+      if(getPayload(token)["id"] == user["id"]) isUser = true;
+      else isUser = false;
     } catch(_) {
-      canEdit = false;
+      isUser = false;
     }
     return Column(
       children: [
@@ -92,10 +92,20 @@ class ProfilePageBody extends StatelessWidget {
             )
           ],
         ),
-        if(canEdit)
+        if(isUser)
           FlatButton(child: Text("Modifica profilo",), onPressed: () {
             goToRouteAsap(context, "/editProfile", arguments: user);
-          },),
+          },)
+        else
+          FutureBuilder(
+            future: isMod(token),
+            builder: (context, snapshot) {
+              if(!snapshot.hasData || snapshot.data == false) return Divider();
+              return FlatButton(child: Text("Modifica profilo",), onPressed: () {
+                goToRouteAsap(context, "/editProfile", arguments: user);
+              },);
+            }
+          ),
         Expanded(
           child: FutureBuilder(
             future: notesFuture,
@@ -122,6 +132,7 @@ class ProfilePageBody extends StatelessWidget {
                     authorName: "${user["name"]} ${user["surname"]}",
                     downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                     uploadedAt: DateTime.parse(notes[i]["uploaded_at"]*1000),
+                    notesData: notes[i],
                   );
                 }
               );

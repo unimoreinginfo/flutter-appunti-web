@@ -5,6 +5,8 @@ import 'consts.dart' show baseUrl;
 import 'errors.dart';
 import 'package:http/http.dart';
 
+import 'platform.dart';
+
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
@@ -24,11 +26,11 @@ bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
 
-bool isMod(String token) {
+Future<bool> isMod(String token) async {
   // we suppose the user is logged in
   Map decodedToken = getPayload(token);
-  print("payload: $decodedToken");
-  if(decodedToken["isAdmin"] == 1) return true;
+  Map user = json.decode(await httpClient.read("$baseUrl/users/${decodedToken["user_id"]}"));
+  if(user["isAdmin"] == 1) return true;
   else return false;
 
 }

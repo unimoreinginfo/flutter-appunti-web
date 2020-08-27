@@ -137,7 +137,8 @@ class SubjectNotes extends StatelessWidget {
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
                       downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
-                      userData: user
+                      userData: user,
+                      notesData: notes[i]
                     );
                   }
                 );

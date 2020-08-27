@@ -49,31 +49,36 @@ class MyApp extends StatelessWidget {
       routes: {
         "/edit": (context) {
           String token;
-          bool mod;
           try {
             token = getToken(tokenStorage);
             if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
             else {
-              try {
-                mod = isMod(token);
-              }
-              catch(e) {
-                showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Text("$e")
-                  )
-                );
-              }
+              return FutureBuilder(
+                future: isMod(token),
+                builder: (context, snapshot) {
+                  if(snapshot.hasError) {
+                    showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text("${snapshot.error}")
+                      )
+                    );
+                    goToRouteAsap(context, '/login');
+                  }
+                  if(!snapshot.hasData) return CircularProgressIndicator();
+                  bool mod = snapshot.data;
+                  if(mod != null && token != null)
+                    return EditPage(mod, token);
+                  else return CircularProgressIndicator();
+                }
+              );
             }
           }
-          on NotFoundError {
+          catch(e) {
             goToRouteAsap(context, '/login');
           } 
+          return CircularProgressIndicator();
           
-          if(mod != null && token != null)
-            return EditPage(mod, token);
-          else return CircularProgressIndicator();
         }, 
         "/login": (context) => LoginPage(),
         "/signup": (context) => SignupPage(),

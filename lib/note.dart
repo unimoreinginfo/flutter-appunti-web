@@ -7,7 +7,7 @@ enum ProvidedArg {
 }
 
 class Note extends StatelessWidget {
-  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData});
+  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.notesData});
 
   final String name;
   final String downloadUrl;
@@ -15,6 +15,7 @@ class Note extends StatelessWidget {
   final String authorId;
   final DateTime uploadedAt;
   final Map userData;
+  final Map notesData;
 
   @override
   Widget build(context) {
