@@ -208,7 +208,7 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> deleteUser(int id, String jwt) async {
     setState(() {_deletionInProgress = true;});
 
-    var res = await httpClient.delete("$baseUrl/users/$id");
+    var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
 
     setState(() {_deletionInProgress = false;});
 

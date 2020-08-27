@@ -155,7 +155,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   Future<void> deleteNote(int id, String jwt) async {
     setState(() {_deletionInProgress = true;});
-    var res = await httpClient.delete("$baseUrl/notes/$id");
+    var res = await httpClient.delete("$baseUrl/notes/$id", headers: {"Authorization": "Bearer $jwt"});
     setState(() {_deletionInProgress = false;});
     if(res.statusCode == errors.INVALID_CREDENTIALS) {
       LoginManager.logOut(tokenStorage);
