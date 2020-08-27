@@ -9,10 +9,9 @@ enum ProvidedArg {
 }
 
 class Note extends StatelessWidget {
-  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.noteData});
+  Note({@required this.name, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.noteData});
 
   final String name;
-  final String downloadUrl;
   final String authorName;
   final String authorId;
   final DateTime uploadedAt;

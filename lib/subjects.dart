@@ -13,7 +13,7 @@ class SubjectsPage extends StatelessWidget {
 
   final String name = "Ingegneria informatica";
 
-  Future<Map> get subjectsFuture async => json.decode(await httpClient.read("$baseUrl/subjects"));
+  Future<List<Map>> get subjectsFuture async => json.decode(await httpClient.read("$baseUrl/subjects"));
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +100,7 @@ class SubjectNotes extends StatelessWidget {
 
   final Map<String, Object> subject;
   final Future<List> notesFuture;
-  Future<Map> getUser(id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
+  Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
 
   @override
   Widget build(BuildContext context) {
@@ -122,8 +122,9 @@ class SubjectNotes extends StatelessWidget {
               );
               return Text("Si è verificato un errore");
             }
-            if(!snapshot.hasData) return CircularProgressIndicator();
+            if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
             final List<Map> notes = snapshot.data;
+            if(notes == []) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline4,);
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
@@ -137,7 +138,6 @@ class SubjectNotes extends StatelessWidget {
                       authorId: user["id"],
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
-                      downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                       userData: user,
                       noteData: notes[i]
                     );
@@ -148,7 +148,6 @@ class SubjectNotes extends StatelessWidget {
           }
         )
       ]
-    );
-    
+    ); 
   }
 }

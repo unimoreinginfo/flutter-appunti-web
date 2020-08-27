@@ -131,8 +131,8 @@ class ProfilePageBody extends StatelessWidget {
                     authorId: user["id"],
                     name: notes[i]["title"],
                     authorName: "${user["name"]} ${user["surname"]}",
-                    downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                     uploadedAt: DateTime.parse(notes[i]["uploaded_at"]*1000),
+                    userData: user,
                     noteData: notes[i],
                   );
                 }
