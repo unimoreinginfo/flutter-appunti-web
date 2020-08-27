@@ -107,6 +107,7 @@ class SubjectNotes extends StatelessWidget {
     return Column(
       children: [
         Text(subject["name"], style: Theme.of(context).textTheme.headline4),
+        Text("Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
         FutureBuilder(
           future: notesFuture,
           builder: (context, snapshot) {
@@ -133,12 +134,12 @@ class SubjectNotes extends StatelessWidget {
                     final user = snapshot.data;
                     return Note(
                       authorName: "${user["name"]} ${user["surname"]}",
-                      authorId: notes[i]["author_id"],
+                      authorId: user["id"],
                       name: notes[i]["title"],
                       uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
                       downloadUrl: "$baseUrl/${notes[i]["storage_url"]}",
                       userData: user,
-                      notesData: notes[i]
+                      noteData: notes[i]
                     );
                   }
                 );

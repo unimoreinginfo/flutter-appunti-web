@@ -25,6 +25,9 @@ String getToken(TokenStorage storage) =>
 bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
+Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
+  await httpClient.read("$baseUrl/notes/$id")
+);
 
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in

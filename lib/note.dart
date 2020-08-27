@@ -1,3 +1,5 @@
+import 'package:appunti_web_frontend/platform.dart';
+import 'io.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -7,7 +9,7 @@ enum ProvidedArg {
 }
 
 class Note extends StatelessWidget {
-  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.notesData});
+  Note({@required this.name, @required this.downloadUrl, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.noteData});
 
   final String name;
   final String downloadUrl;
@@ -15,7 +17,7 @@ class Note extends StatelessWidget {
   final String authorId;
   final DateTime uploadedAt;
   final Map userData;
-  final Map notesData;
+  final Map noteData;
 
   @override
   Widget build(context) {
@@ -31,12 +33,43 @@ class Note extends StatelessWidget {
           Navigator.pushNamed(context, "/profile", arguments: userData == null ? [ProvidedArg.id, authorId] : [ProvidedArg.data, userData]);
         },
       ),
-      trailing: IconButton(
-        icon: Icon(Icons.file_download),
-        onPressed: () {
-          launch(downloadUrl);
-        },
-      ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NotePage(getNote(noteData["id"], httpClient)))
+      )
+    );
+  }
+}
+
+class NotePage extends StatelessWidget {
+  NotePage(this.noteDataFuture);
+
+  final Future<Map> noteDataFuture;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Scarica file appunti")),
+      body: FutureBuilder(
+        future: noteDataFuture,
+        builder: (context, snapshot) {
+          if(!snapshot.data) return CircularProgressIndicator();
+          Map noteData = snapshot.data;
+          List files = noteData["files"];
+          return Column(
+            children: [
+              Text(noteData["title"], style: Theme.of(context).textTheme.headline4),
+              ListView.builder(
+                itemCount: files.length,
+                itemBuilder: (context, i) => ListTile(
+                  title: Text(files[i]),
+                  onTap:() => launch("${noteData['storage_url']}/${files[i]}"),
+                )
+              ),
+            ],
+          );
+        }
+      )
     );
   }
 }
