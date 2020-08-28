@@ -127,7 +127,8 @@ class SubjectNotes extends StatelessWidget {
             }
             if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
             final List<Map> notes = snapshot.data;
-            if(notes == []) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline4,);
+            print("notes: $notes");
+            if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline4,);
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
@@ -135,6 +136,7 @@ class SubjectNotes extends StatelessWidget {
                   future: getUser(notes[i]["author_id"]),
                   builder: (context, snapshot) {
                     print("user: ${snapshot.data}");
+                    print("note: ${notes[i]}");
                     if(!snapshot.hasData) return CircularProgressIndicator();
                     final user = snapshot.data;
                     return ListTile(
