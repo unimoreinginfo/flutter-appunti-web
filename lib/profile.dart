@@ -15,12 +15,19 @@ class ProfilePage extends StatelessWidget {
 
 
   static Future<Map<String, Object>> getUser(uid) async {
+  // TODO: what if this fails?
+  // TODO:move out of here
+
     return json.decode(
       await httpClient.read("$baseUrl/users/$uid")
     );
   }
 
+
   static Future<List<Map<String, Object>>> getNotes(uid) async {
+  // TODO: what if this fails?
+  // TODO:move out of here
+
     return json.decode(
       await httpClient.read("$baseUrl/notes?authorId=$uid}")
     );
@@ -182,6 +189,9 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> editProfile(int id, String jwt, {@required Map data}) async {
+  // TODO: what if this fails?
+  // TODO:move out of here
+
     var res = await httpClient.post(
       "$baseUrl/users/$id",
       body: data,
@@ -206,6 +216,9 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> deleteUser(int id, String jwt) async {
+  // TODO: what if this fails?
+  // TODO:move out of here
+
     setState(() {_deletionInProgress = true;});
 
     var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});

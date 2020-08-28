@@ -44,8 +44,11 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  Future<List> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes"));
-  Future<Map> getUser(uid) async => ProfilePage.getUser(uid);
+  // TODO: what if this fails?
+  // TODO:move out of here
+  Future<List> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes")); 
+
+  Future<Map> getUser(uid) async => ProfilePage.getUser(uid); // TODO: THAT SHOULD BE IN io.dart AND NOT IN PROFILE PAGE
   
   @override
   Widget build(BuildContext context) {
@@ -121,6 +124,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   Future<List> getSubjects() async =>
+  // TODO: what if this fails?
+  // TODO: move out of here
     json.decode(await httpClient.read("$baseUrl/subjects"));
 
   void _setFieldsToDefault() {
@@ -130,6 +135,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   Future<void> editNote(int id, String jwt, {@required Map data}) async {
+    // TODO: what if this fails?
+    // TODO: move out of here
+
     var res = await httpClient.post(
       "$baseUrl/notes/$id",
       body: data,
@@ -154,6 +162,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   Future<void> deleteNote(int id, String jwt) async {
+    // TODO: what if this fails?
+    // TODO: move out of here
     setState(() {_deletionInProgress = true;});
     var res = await httpClient.delete("$baseUrl/notes/$id", headers: {"Authorization": "Bearer $jwt"});
     setState(() {_deletionInProgress = false;});
@@ -223,7 +233,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         FlatButton(
           onPressed: () {
             editNote(widget.note["id"], widget.jwt, data: {
-              "subjectId": _subjectId,
+              "subject_id": _subjectId,
               "title": _noteTitle.text
             });
           },

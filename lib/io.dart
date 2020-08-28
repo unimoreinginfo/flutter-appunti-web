@@ -26,16 +26,17 @@ bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
 Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
+  // TODO: what if this fails?
   await httpClient.read("$baseUrl/notes/$id")
 )["result"];
 
-Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"))["result"];
+Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"))["result"]; // TODO: what if this fails?
 
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in
   Map decodedToken = getPayload(token);
   Map user = json.decode(await httpClient.read("$baseUrl/users/${decodedToken["user_id"]}"));
-  if(user["isAdmin"] == 1) return true;
+  if(user["is_admin"] == 1) return true;
   else return false;
 
 }

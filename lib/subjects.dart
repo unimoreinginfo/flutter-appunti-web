@@ -54,8 +54,9 @@ class SubjectsPageContents extends StatefulWidget {
 
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
-
-  Future<List> getNotesFuture(String id) async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=$id"));
+  // TODO: what if this fails?
+  // TODO:move out of here
+  Future<List> getNotesFuture(String id) async => json.decode(await httpClient.read("$baseUrl/notes?subject_id=$id"));
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
 
