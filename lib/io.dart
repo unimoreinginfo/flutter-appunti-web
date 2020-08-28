@@ -27,7 +27,7 @@ bool refreshTokenStillValid(TokenStorage storage) =>
 
 Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
   await httpClient.read("$baseUrl/notes/$id")
-);
+)["result"];
 
 Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
 
