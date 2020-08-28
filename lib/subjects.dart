@@ -90,17 +90,17 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
           ),
         ),
         if(selectedSubject >= 0)
-          SubjectNotes(widget.subjects[selectedSubject], notesFuture[selectedSubject])
+          SubjectNotes(widget.subjects[selectedSubject], /*notesFuture[selectedSubject]*/)
       ],
     );
   }
 }
 
 class SubjectNotes extends StatelessWidget {
-  SubjectNotes(this.subject, this.notesFuture);
+  SubjectNotes(this.subject/*, this.notesFuture*/);
 
   final Map<String, Object> subject;
-  final Future<List> notesFuture;
+  /*final Future<List> notesFuture;*/
   
 
   @override
