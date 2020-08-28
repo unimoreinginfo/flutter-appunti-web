@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert' show json;
 
 import 'note.dart';
+import 'io.dart';
 import 'platform.dart';
 import 'consts.dart';
 import 'utils.dart';
@@ -100,10 +101,11 @@ class SubjectNotes extends StatelessWidget {
 
   final Map<String, Object> subject;
   final Future<List> notesFuture;
-  Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
+  
 
   @override
   Widget build(BuildContext context) {
+    print("Trying to build subjectnotes");
     return Column(
       children: [
         Text(subject["name"], style: Theme.of(context).textTheme.headline4),
@@ -112,6 +114,7 @@ class SubjectNotes extends StatelessWidget {
           future: notesFuture,
           builder: (context, snapshot) {
             if(snapshot.hasError) {
+              print("notes: ${snapshot.data}");
               doItAsap(context, (context) =>
                 showDialog(
                   context: context,
@@ -131,6 +134,7 @@ class SubjectNotes extends StatelessWidget {
                 return FutureBuilder(
                   future: getUser(notes[i]["author_id"]),
                   builder: (context, snapshot) {
+                    print("user: ${snapshot.data}");
                     if(!snapshot.hasData) return CircularProgressIndicator();
                     final user = snapshot.data;
                     return Note(
