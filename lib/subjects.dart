@@ -110,7 +110,7 @@ class SubjectNotes extends StatelessWidget {
       children: [
         Text(subject["name"], style: Theme.of(context).textTheme.headline4),
         Text("Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
-        FutureBuilder(
+       /* FutureBuilder(
           future: notesFuture,
           builder: (context, snapshot) {
             if(snapshot.hasError) {
@@ -150,7 +150,7 @@ class SubjectNotes extends StatelessWidget {
               }
             );
           }
-        )
+        )*/
       ]
     ); 
   }
