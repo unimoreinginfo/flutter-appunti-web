@@ -55,7 +55,7 @@ class SubjectsPageContents extends StatefulWidget {
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
 
-  Future<List> getNotesFuture(id) async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=$id"));
+  Future<List> getNotesFuture(String id) async => json.decode(await httpClient.read("$baseUrl/notes?subjectId=$id"));
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
 
@@ -64,7 +64,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     super.initState();
     notesFuture = widget.subjects.map(
       (subject) => getNotesFuture(subject["id"])
-    );
+    ).toList();
   }
 
   @override
@@ -90,17 +90,17 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
           ),
         ),
         if(selectedSubject >= 0)
-          SubjectNotes(widget.subjects[selectedSubject], /*notesFuture[selectedSubject]*/)
+          SubjectNotes(widget.subjects[selectedSubject], notesFuture[selectedSubject])
       ],
     );
   }
 }
 
 class SubjectNotes extends StatelessWidget {
-  SubjectNotes(this.subject/*, this.notesFuture*/);
+  SubjectNotes(this.subject, this.notesFuture);
 
   final Map<String, Object> subject;
-  /*final Future<List> notesFuture;*/
+  final Future<List> notesFuture;
   
 
   @override
@@ -110,7 +110,7 @@ class SubjectNotes extends StatelessWidget {
       children: [
         Text(subject["name"], style: Theme.of(context).textTheme.headline4),
         Text("Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
-       /* FutureBuilder(
+        FutureBuilder(
           future: notesFuture,
           builder: (context, snapshot) {
             if(snapshot.hasError) {
@@ -150,7 +150,7 @@ class SubjectNotes extends StatelessWidget {
               }
             );
           }
-        )*/
+        )
       ]
     ); 
   }
