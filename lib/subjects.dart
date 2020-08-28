@@ -137,13 +137,22 @@ class SubjectNotes extends StatelessWidget {
                     print("user: ${snapshot.data}");
                     if(!snapshot.hasData) return CircularProgressIndicator();
                     final user = snapshot.data;
-                    return Note(
-                      authorName: "${user["name"]} ${user["surname"]}",
-                      authorId: user["id"],
-                      name: notes[i]["title"],
-                      uploadedAt: DateTime.parse(notes[i]["uploaded_at"]),
-                      userData: user,
-                      noteData: notes[i]
+                    return ListTile(
+                      title: Text("${notes[i]["title"]}"),
+                      subtitle: FlatButton(
+                        child: Text("${user["name"]} ${user["surname"]}"),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            "/profile",
+                            arguments: [ProvidedArg.data, user]
+                          );
+                        },
+                      ),
+                      onTap:() => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NotePage(noteData: notes[i],))
+                      ),
                     );
                   }
                 );

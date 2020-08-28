@@ -1,5 +1,3 @@
-import 'package:appunti_web_frontend/platform.dart';
-import 'io.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,41 +32,53 @@ class Note extends StatelessWidget {
       ),
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => NotePage(getNote(noteData["id"], httpClient)))
+        MaterialPageRoute(builder: (context) => NotePage(noteData: noteData,))
       )
     );
   }
 }
 
 class NotePage extends StatelessWidget {
-  NotePage(this.noteDataFuture);
+  NotePage({this.noteDataFuture = null, this.noteData = null});
 
   final Future<Map> noteDataFuture;
+  final Map noteData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Scarica file appunti")),
-      body: FutureBuilder(
+      body: noteData == null ? FutureBuilder(
         future: noteDataFuture,
         builder: (context, snapshot) {
           if(!snapshot.data) return CircularProgressIndicator();
           Map noteData = snapshot.data;
-          List files = noteData["files"];
-          return Column(
-            children: [
-              Text(noteData["title"], style: Theme.of(context).textTheme.headline4),
-              ListView.builder(
-                itemCount: files.length,
-                itemBuilder: (context, i) => ListTile(
-                  title: Text(files[i]),
-                  onTap:() => launch("${noteData['storage_url']}/${files[i]}"),
-                )
-              ),
-            ],
-          );
+          return NotePageBody(noteData);
         }
-      )
+      ) : NotePageBody(noteData),
+    );
+  }
+}
+
+class NotePageBody extends StatelessWidget {
+  NotePageBody(this.noteData);
+
+  final Map noteData;
+  
+  @override
+  Widget build(BuildContext context) {
+    List files = noteData["files"];
+    return Column(
+      children: [
+        Text(noteData["title"], style: Theme.of(context).textTheme.headline4),
+        ListView.builder(
+          itemCount: files.length,
+          itemBuilder: (context, i) => ListTile(
+            title: Text(files[i]),
+            onTap:() => launch("${noteData['storage_url']}/${files[i]}"),
+          )
+        ),
+      ],
     );
   }
 }
