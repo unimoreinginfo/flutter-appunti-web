@@ -29,7 +29,7 @@ Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
   await httpClient.read("$baseUrl/notes/$id")
 )["result"];
 
-Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"));
+Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"))["result"];
 
 Future<bool> isMod(String token) async {
   // we suppose the user is logged in
