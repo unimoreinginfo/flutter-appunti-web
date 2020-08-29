@@ -49,10 +49,3 @@ Future<Map<String, Object>> getUser(uid, BaseClient httpClient) async {
   )["result"];
 }
 
-Future<bool> isMod(String token, BaseClient httpClient) async {
-  // we suppose the user is logged in
-  Map decodedToken = getPayload(token);
-  if(decodedToken["is_admin"] == 1) return true;
-  else return false;
-
-}

@@ -84,16 +84,20 @@ class ProfilePageBody extends StatelessWidget {
           FlatButton(child: Text("Modifica profilo",), onPressed: () {
             goToRouteAsap(context, "/editProfile", arguments: user);
           },)
-        else
-          FutureBuilder(
-            future: backend.isMod(token, httpClient),
-            builder: (context, snapshot) {
-              if(!snapshot.hasData || snapshot.data == false) return Divider();
-              return FlatButton(child: Text("Modifica profilo",), onPressed: () {
+        else Builder(
+          builder: (context) {
+            try {
+              bool mod = isMod(token, httpClient);
+              if(mod) return FlatButton(child: Text("Modifica profilo",), onPressed: () {
                 goToRouteAsap(context, "/editProfile", arguments: user);
               },);
+              return Divider();
+            } catch(e) {
+              print("$e");
+              return Divider();
             }
-          ),
+          }
+        ),
         Expanded(
           child: FutureBuilder(
             future: notesFuture,

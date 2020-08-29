@@ -11,6 +11,14 @@ Map getPayload(String token) => json.decode(
   )
 );
 
+bool isMod(String token, BaseClient httpClient) {
+  // we suppose the user is logged in
+  Map decodedToken = getPayload(token);
+  if(decodedToken["is_admin"] == 1) return true;
+  else return false;
+
+}
+
 void updateToken(TokenStorage storage, String newTok) {
   storage.writeJson("token", newTok);
 }

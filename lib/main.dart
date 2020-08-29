@@ -9,7 +9,6 @@ import 'login.dart';
 import 'subjects.dart';
 import 'edit.dart';
 import 'profile.dart';
-import 'backend.dart' as backend;
 
 void main() {
   runApp(MyApp());
@@ -53,25 +52,19 @@ class MyApp extends StatelessWidget {
             token = getToken(tokenStorage);
             if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
             else {
-              return FutureBuilder(
-                future: backend.isMod(token, httpClient),
-                builder: (context, snapshot) {
-                  if(snapshot.hasError) {
-                    showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text("${snapshot.error}")
-                      )
-                    );
-                    goToRouteAsap(context, '/login');
-                  }
-                  if(!snapshot.hasData) return CircularProgressIndicator();
-                  bool mod = snapshot.data;
-                  if(mod != null && token != null)
-                    return EditPage(mod, token);
-                  else return CircularProgressIndicator();
-                }
-              );
+              try {
+                bool mod = isMod(token, httpClient);
+                return EditPage(mod, token);
+              }
+              catch(e) {
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text("$e")
+                  )
+                );
+                goToRouteAsap(context, '/login');
+              }
             }
           }
           catch(e) {
