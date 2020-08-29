@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'consts.dart';
 import 'io.dart';
 import 'platform.dart' show httpClient, tokenStorage;
-import 'profile.dart' show ProfilePage;
 import 'errors.dart' as errors;
+import 'backend.dart' as backend;
 
 import 'dart:convert' show json;
 
@@ -44,11 +44,9 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  // TODO: what if this fails?
-  // TODO:move out of here
-  Future<List> get notesFuture async => json.decode(await httpClient.read("$baseUrl/notes")); 
+  Future<List> get notesFuture async => backend.getNotes(httpClient);
 
-  Future<Map> getUser(uid) async => ProfilePage.getUser(uid); // TODO: THAT SHOULD BE IN io.dart AND NOT IN PROFILE PAGE
+  Future<Map> getUser(uid) async => backend.getUser(uid, httpClient);
   
   @override
   Widget build(BuildContext context) {
@@ -120,13 +118,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
   initState() {
     super.initState();
     _setFieldsToDefault();
-    _subjectsFuture = getSubjects();
+    _subjectsFuture = backend.getSubjects(httpClient);
   }
-
-  Future<List> getSubjects() async =>
-  // TODO: what if this fails?
-  // TODO: move out of here
-    json.decode(await httpClient.read("$baseUrl/subjects"));
 
   void _setFieldsToDefault() {
     _noteTitle = TextEditingController(text: widget.note["title"]);

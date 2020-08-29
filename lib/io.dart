@@ -1,12 +1,8 @@
 import 'dart:convert' show json, base64, ascii;
-import 'dart:html';
 
 import 'consts.dart' show baseUrl;
 import 'errors.dart';
-import 'package:http/http.dart';
-
-import 'platform.dart';
-
+import 'package:http/http.dart' show Response, BaseClient;
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
@@ -25,21 +21,6 @@ String getToken(TokenStorage storage) =>
 bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
-Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
-  // TODO: what if this fails?
-  await httpClient.read("$baseUrl/notes/$id")
-)["result"];
-
-Future<Map> getUser(String id) async => json.decode(await httpClient.read("$baseUrl/users/$id"))["result"]; // TODO: what if this fails?
-
-Future<bool> isMod(String token) async {
-  // we suppose the user is logged in
-  Map decodedToken = getPayload(token);
-  Map user = json.decode(await httpClient.read("$baseUrl/users/${decodedToken["user_id"]}"));
-  if(user["is_admin"] == 1) return true;
-  else return false;
-
-}
 
 void getAndUpdateToken(Response res, TokenStorage storage) {
   var newTok = res.headers["Authorization"].split(" ")[1];
@@ -108,28 +89,4 @@ abstract class TokenStorage {
   String readJson(String name);
   void writeJson(String name, String value);
   void delete(String name);
-}
-
-class LocalStorageTokenStorage implements TokenStorage {
-  @override
-  String readJson(String name) {
-    String val = window.localStorage[name];
-    if(val == null) {
-      throw NotFoundError();
-    }
-    else {
-      return val;
-    }
-  }
-
-  @override
-  void writeJson(String name, String value) {
-    window.localStorage[name] = value;
-  }
-
-  @override
-  void delete(String name) {
-    window.localStorage.remove(name);
-  }
-  
 }

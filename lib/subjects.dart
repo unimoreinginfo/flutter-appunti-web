@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert' show json;
 
 import 'note.dart';
-import 'io.dart';
 import 'platform.dart';
 import 'consts.dart';
 import 'utils.dart';
-
+import 'backend.dart' as backend;
 
 
 class SubjectsPage extends StatelessWidget {
@@ -55,8 +54,7 @@ class SubjectsPageContents extends StatefulWidget {
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
   // TODO: what if this fails?
-  // TODO:move out of here
-  Future<List> getNotesFuture(String id) async => json.decode(await httpClient.read("$baseUrl/notes?subject_id=$id"));
+  Future<List> getNotesFuture(int id) async => backend.getNotes(httpClient, subjectId: id);
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
 
@@ -134,7 +132,7 @@ class SubjectNotes extends StatelessWidget {
               itemCount: notes.length,
               itemBuilder: (context, i) {
                 return FutureBuilder(
-                  future: getUser(notes[i]["author_id"]),
+                  future: backend.getUser(notes[i]["author_id"], httpClient),
                   builder: (context, snapshot) {
                     print("user: ${snapshot.data}");
                     print("note: ${notes[i]}");

@@ -9,6 +9,7 @@ import 'login.dart';
 import 'subjects.dart';
 import 'edit.dart';
 import 'profile.dart';
+import 'backend.dart' as backend;
 
 void main() {
   runApp(MyApp());
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
             if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
             else {
               return FutureBuilder(
-                future: isMod(token),
+                future: backend.isMod(token, httpClient),
                 builder: (context, snapshot) {
                   if(snapshot.hasError) {
                     showDialog(

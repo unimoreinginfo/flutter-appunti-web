@@ -1,37 +1,17 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
-import 'dart:convert' show json;
 
 import 'platform.dart' show httpClient, tokenStorage;
 import 'note.dart';
 import 'consts.dart';
 import 'utils.dart';
 import 'errors.dart' as errors;
+import 'backend.dart' as backend;
 
 
 class ProfilePage extends StatelessWidget {
   ProfilePage(this.uid, {this.userData = null});
-
-
-  static Future<Map<String, Object>> getUser(uid) async {
-  // TODO: what if this fails?
-  // TODO:move out of here
-
-    return json.decode(
-      await httpClient.read("$baseUrl/users/$uid")
-    );
-  }
-
-
-  static Future<List<Map<String, Object>>> getNotes(uid) async {
-  // TODO: what if this fails?
-  // TODO:move out of here
-
-    return json.decode(
-      await httpClient.read("$baseUrl/notes?authorId=$uid}")
-    );
-  }
 
   final String uid;
   final Map userData;
@@ -39,8 +19,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {  
     var userFuture; 
-    if(userData == null) userFuture  = getUser(uid);
-    final notesFuture = getNotes(uid);
+    if(userData == null) userFuture  = backend.getUser(uid, httpClient);
+    final notesFuture = backend.getNotes(httpClient, author: uid);
 
     return Scaffold(
       appBar: AppBar(title: Text("Pagina dell'autore")),
@@ -106,7 +86,7 @@ class ProfilePageBody extends StatelessWidget {
           },)
         else
           FutureBuilder(
-            future: isMod(token),
+            future: backend.isMod(token, httpClient),
             builder: (context, snapshot) {
               if(!snapshot.hasData || snapshot.data == false) return Divider();
               return FlatButton(child: Text("Modifica profilo",), onPressed: () {
