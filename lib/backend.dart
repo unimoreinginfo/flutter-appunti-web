@@ -41,7 +41,7 @@ Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author
 }
 
 
-Future<Map<String, Object>> getUser(uid, BaseClient httpClient) async {
+Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
   // TODO: what if this fails?
 
   return json.decode(

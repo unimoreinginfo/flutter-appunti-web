@@ -12,7 +12,7 @@ class SubjectsPage extends StatelessWidget {
   final String name = "Ingegneria informatica";
 
   // TODO: what if this fails?
-  Future<List<Map>> get subjectsFuture async => backend.getSubjects(httpClient);
+  Future<List<Map>> get subjectsFuture async .getSubjects(httpClient);
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class SubjectsPageContents extends StatefulWidget {
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
   // TODO: what if this fails?
-  Future<List> getNotesFuture(int id) async => backend.getNotes(httpClient, subjectId: id);
+  Future<List> getNotesFuture(int id) => backend.getNotes(httpClient, subjectId: id);
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
 
