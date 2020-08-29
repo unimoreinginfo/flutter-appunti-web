@@ -98,16 +98,18 @@ class NoteEditPage extends StatefulWidget {
 
 
   @override
-  _NoteEditPageState createState() => _NoteEditPageState();
+  _NoteEditPageState createState() => _NoteEditPageState(note);
 
 
 }
 
 class _NoteEditPageState extends State<NoteEditPage> {
+  _NoteEditPageState(this.note);
 
   bool _deletionInProgress;
   TextEditingController _noteTitle;
   int _subjectId;
+  Map note;
   
   Future<List> _subjectsFuture;
 
@@ -120,7 +122,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   void _setFieldsToDefault() {
     _noteTitle = TextEditingController(text: widget.note["title"]);
-    _subjectId = widget.note["id"];
+    _subjectId = note["id"];
     _deletionInProgress = false;
   }
 
@@ -199,13 +201,13 @@ class _NoteEditPageState extends State<NoteEditPage> {
             }
             final subjects = snapshot.data;
             return DropdownButton( // select subject
-              value: widget.note["subject_id"],
+              value: _subjectId,
               items: subjects.map(
                 (subject) => DropdownMenuItem(
                   value: subject["id"], 
                   child: Text(subject["name"])
                 )
-              ),
+              ).toList(),
               onChanged: (value) {
                 setState(() {
                   _subjectId = value;
@@ -222,7 +224,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ),
         FlatButton(
           onPressed: () {
-            editNote(widget.note["id"], widget.jwt, data: {
+            editNote(note["id"], widget.jwt, data: {
               "subject_id": _subjectId,
               "title": _noteTitle.text
             });
@@ -233,7 +235,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         FlatButton(
           color: Colors.redAccent,
           textColor: Colors.white,
-          onPressed: () {deleteNote(widget.note["id"], widget.jwt);},
+          onPressed: () {deleteNote(note["id"], widget.jwt);},
           child: _deletionInProgress ? CircularProgressIndicator() : Text("Non mi piace questo file, ELIMINA ORA")
         )
       ],
