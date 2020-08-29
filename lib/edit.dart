@@ -6,9 +6,6 @@ import 'platform.dart' show httpClient, tokenStorage;
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
 
-import 'dart:convert' show json;
-
-
 class EditPage extends StatelessWidget {
   EditPage(this.mod, this.token);
 

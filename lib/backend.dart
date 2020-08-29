@@ -52,7 +52,7 @@ Future<Map<String, Object>> getUser(uid, BaseClient httpClient) async {
 Future<bool> isMod(String token, BaseClient httpClient) async {
   // we suppose the user is logged in
   Map decodedToken = getPayload(token);
-  Map user = json.decode(await httpClient.read("$baseUrl/users/${decodedToken["user_id"]}"));
+  Map user = await getUser(decodedToken["id"], httpClient);
   if(user["is_admin"] == 1) return true;
   else return false;
 

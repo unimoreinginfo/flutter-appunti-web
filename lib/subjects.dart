@@ -77,12 +77,15 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
             itemCount: widget.subjects.length,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, i) =>
-              InkWell(
-                child: Card(child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Center(child: Text(widget.subjects[i]["name"],)),
-                )),
-                onTap:() => setState(() {
+              FlatButton(
+                child: Card(
+                  margin: selectedSubject == i ? EdgeInsets.all(5.0) : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Center(child: Text(widget.subjects[i]["name"],)),
+                  )
+                ),
+                onPressed:() => setState(() {
                   selectedSubject = i;
                 }),
               )
