@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'dart:convert' show json;
 
 import 'note.dart';
 import 'platform.dart';
-import 'consts.dart';
 import 'utils.dart';
 import 'backend.dart' as backend;
 
@@ -13,7 +11,8 @@ class SubjectsPage extends StatelessWidget {
 
   final String name = "Ingegneria informatica";
 
-  Future<List<Map>> get subjectsFuture async => json.decode(await httpClient.read("$baseUrl/subjects"));
+  // TODO: what if this fails?
+  Future<List<Map>> get subjectsFuture async => backend.getSubjects(httpClient);
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +139,9 @@ class SubjectNotes extends StatelessWidget {
                     print("user: ${snapshot.data}");
                     print("note: ${notes[i]}");
                     if(!snapshot.hasData) return CircularProgressIndicator();
-                    final user = snapshot.data;
+                    var user = snapshot.data;
+                    print("user name: ${user["name"]} ${user["surname"]}");
+                    print("note title: ${notes[i]["title"]}");
                     return ListTile(
                       title: Text("${notes[i]["title"]}"),
                       subtitle: FlatButton(
