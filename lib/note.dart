@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'consts.dart';
+
 enum ProvidedArg {
   id,
   data
@@ -67,16 +69,20 @@ class NotePageBody extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    // TODO: add link to profile
     List files = noteData["files"];
     return Column(
       children: [
-        Text(noteData["title"], style: Theme.of(context).textTheme.headline4),
-        ListView.builder(
-          itemCount: files.length,
-          itemBuilder: (context, i) => ListTile(
-            title: Text(files[i]),
-            onTap:() => launch("${noteData['storage_url']}/${files[i]}"),
-          )
+        Text(noteData["info"]["title"], style: Theme.of(context).textTheme.headline4),
+        Container(
+          height: MediaQuery.of(context).size.height*80/100,
+          child: ListView.builder(
+            itemCount: files.length,
+            itemBuilder: (context, i) => ListTile(
+              title: Text(files[i]),
+              onTap:() => launch("$baseUrl${noteData["info"]['storage_url']}/${files[i]}"),
+            )
+          ),
         ),
       ],
     );
