@@ -41,9 +41,9 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  Future<List> get notesFuture async => await backend.getNotes(httpClient);
+  Future<List> get notesFuture => backend.getNotes(httpClient);
 
-  Future<Map> getUser(uid) async => await backend.getUser(uid, httpClient);
+  Future<Map> getUser(uid) => backend.getUser(uid, httpClient);
   
   @override
   Widget build(BuildContext context) {
