@@ -129,7 +129,7 @@ class SubjectNotes extends StatelessWidget {
             if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
             final List<Map> notes = snapshot.data;
             print("notes: $notes");
-            if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline4,);
+            if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,);
             return Container(
               height: MediaQuery.of(context).size.height*70/100,
               child: ListView.builder(
@@ -149,7 +149,7 @@ class SubjectNotes extends StatelessWidget {
                         subtitle: Text("${user["name"]} ${user["surname"]}"),                        
                         onTap:() => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => NotePage(noteData: notes[i]))
+                          MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], httpClient)))
                         ),
                       );
                     }

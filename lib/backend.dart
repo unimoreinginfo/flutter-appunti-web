@@ -43,9 +43,9 @@ Future<List> getSubjects(BaseClient httpClient) async =>
     json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
 
 /// Get note by id
-Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
+Future<Map> getNote(String sub_id, String id, BaseClient httpClient) async => json.decode(
   // TODO: what if this fails?
-  await httpClient.read("$baseUrl/notes/$id")
+  await httpClient.read("$baseUrl/notes/$sub_id/$id")
 )["result"];
 
 
@@ -54,15 +54,15 @@ Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author
   // TODO: what if this fails?
   Map<String, Object> result;
   if(author == null && subjectId != null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?subject_id=$subjectId}")
+    await httpClient.read("$baseUrl/notes?subject_id=$subjectId")
   );
-  if(author != null && subjectId == null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?author_id=$author}")
+  else if(author != null && subjectId == null) result =  json.decode(
+    await httpClient.read("$baseUrl/notes?author_id=$author")
   );
-  if(author != null && subjectId != null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?author_id=$author}&subject_id=$subjectId")
+  else if(author != null && subjectId != null) result =  json.decode(
+    await httpClient.read("$baseUrl/notes?author_id=$author&subject_id=$subjectId")
   );
-  result = json.decode(
+  else result = json.decode(
     await httpClient.read("$baseUrl/notes")
   );
 

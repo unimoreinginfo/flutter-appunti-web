@@ -122,7 +122,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   void _setFieldsToDefault() {
     _noteTitle = TextEditingController(text: widget.note["title"]);
-    _subjectId = note["id"];
+    _subjectId = note["subject_id"];
     _deletionInProgress = false;
   }
 
@@ -224,7 +224,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ),
         FlatButton(
           onPressed: () {
-            editNote(note["id"], widget.jwt, data: {
+            editNote(note["note_id"], widget.jwt, data: {
               "subject_id": _subjectId,
               "title": _noteTitle.text
             });
@@ -235,7 +235,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         FlatButton(
           color: Colors.redAccent,
           textColor: Colors.white,
-          onPressed: () {deleteNote(note["id"], widget.jwt);},
+          onPressed: () {deleteNote(note["note_id"], widget.jwt);},
           child: _deletionInProgress ? CircularProgressIndicator() : Text("Non mi piace questo file, ELIMINA ORA")
         )
       ],
