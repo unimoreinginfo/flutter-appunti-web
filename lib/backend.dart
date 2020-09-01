@@ -11,7 +11,7 @@ Map getPayload(String token) => json.decode(
 
 Future<List> getSubjects(BaseClient httpClient) async =>
   // TODO: what if this fails?
-    json.decode(await httpClient.read("$baseUrl/subjects"));
+    json.decode(await httpClient.read("$baseUrl/subjects/subjects"));
 
 /// Get note by id
 Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
