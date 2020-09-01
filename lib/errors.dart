@@ -1,6 +1,7 @@
 // remote errors
 
 const USER_EXISTS = 409;
+const USER_NOT_FOUND = 400;
 const NOT_FOUND = 404;
 const INVALID_CREDENTIALS = 401;
 const EXPIRED_CREDENTIALS = 401;

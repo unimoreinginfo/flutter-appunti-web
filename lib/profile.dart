@@ -173,30 +173,25 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> editProfile(int id, String jwt, {@required Map data}) async {
-  // TODO: what if this fails?
-  // TODO:move out of here
+    // TODO: handle more errors
+    try {
+      backend.editProfile(id, jwt, httpClient, data: data);
+    }
 
-    var res = await httpClient.post(
-      "$baseUrl/users/$id",
-      body: data,
-      headers: {
-        "Authorization": "Bearer $jwt"
+    on errors.BackendError catch(e) {
+      if(e.code == errors.INVALID_CREDENTIALS) {
+        LoginManager.logOut(tokenStorage);
+        showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text("La sessione potrebbe essere scaduta o corrotta"),
+            content: Text("Verrai riportato alla pagina di accesso"),
+          )
+        );
+        Navigator.pushReplacementNamed(context, "/login");
       }
-    );
-
-    if(res.statusCode == errors.INVALID_CREDENTIALS) {
-      LoginManager.logOut(tokenStorage);
-      showDialog(
-        context: context,
-        child: AlertDialog(
-          title: Text("La sessione potrebbe essere scaduta o corrotta"),
-          content: Text("Verrai riportato alla pagina di accesso"),
-        )
-      );
-      Navigator.pushReplacementNamed(context, "/login");
       return;
     }
-    getAndUpdateToken(res, tokenStorage);
   }
 
   Future<void> deleteUser(int id, String jwt) async {

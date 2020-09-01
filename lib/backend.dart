@@ -1,6 +1,7 @@
 import 'dart:convert' show json, ascii, base64;
 import 'consts.dart' show baseUrl;
 import 'package:http/http.dart' show BaseClient;
+import 'errors.dart' as errors;
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
@@ -9,9 +10,37 @@ Map getPayload(String token) => json.decode(
   )
 );
 
+Future<void> editProfile(int id, String jwt, BaseClient httpClient, {@required Map data}) async {
+  try {
+    var res = await httpClient.post(
+      "$baseUrl/users/$id",
+      body: data,
+      headers: {
+        "Authorization": "Bearer $jwt"
+      }
+    );
+    if(res.statusCode == errors.SERVER_DOWN) {
+      throw errors.ServerError();
+    } else if(res.statusCode == errors.NOT_FOUND) {
+      throw errors.NotFoundError();
+    } else {
+      var body = json.decode(res.body);
+      if(body["success"] == false) {
+        throw errors.BackendError(res.statusCode);
+      } else {
+        return body["result"];
+      }
+    }
+  } catch(e) {
+    print(e);
+    throw errors.ServerError();
+  }
+
+}
+
 Future<List> getSubjects(BaseClient httpClient) async =>
   // TODO: what if this fails?
-    json.decode(await httpClient.read("$baseUrl/subjects/subjects"));
+    json.decode(await httpClient.read("$baseUrl/subjects/subjects"))["result"];
 
 /// Get note by id
 Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
@@ -23,21 +52,21 @@ Future<Map> getNote(String id, BaseClient httpClient) async => json.decode(
 // Get notes, optionally 
 Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author, int subjectId}) async {
   // TODO: what if this fails?
-    
-  if(author == null && subjectId != null) return json.decode(
+  Map<String, Object> result;
+  if(author == null && subjectId != null) result =  json.decode(
     await httpClient.read("$baseUrl/notes?subject_id=$subjectId}")
   );
-  if(author != null && subjectId == null) return json.decode(
+  if(author != null && subjectId == null) result =  json.decode(
     await httpClient.read("$baseUrl/notes?author_id=$author}")
   );
-  if(author != null && subjectId != null) return json.decode(
+  if(author != null && subjectId != null) result =  json.decode(
     await httpClient.read("$baseUrl/notes?author_id=$author}&subject_id=$subjectId")
   );
-  
-  // both null
-  return json.decode(
+  result = json.decode(
     await httpClient.read("$baseUrl/notes")
   );
+
+  return result["result"];
 }
 
 
