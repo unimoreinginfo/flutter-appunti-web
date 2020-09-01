@@ -175,7 +175,7 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> editProfile(int id, String jwt, {@required Map data}) async {
     // TODO: handle more errors
     try {
-      backend.editProfile(id, jwt, httpClient, data: data);
+      backend.editProfile(id, jwt, data, httpClient);
     }
 
     on errors.BackendError catch(e) {

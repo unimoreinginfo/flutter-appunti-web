@@ -10,7 +10,7 @@ Map getPayload(String token) => json.decode(
   )
 );
 
-Future<void> editProfile(int id, String jwt, BaseClient httpClient, {@required Map data}) async {
+Future<void> editProfile(int id, String jwt, Map data, BaseClient httpClient) async {
   try {
     var res = await httpClient.post(
       "$baseUrl/users/$id",

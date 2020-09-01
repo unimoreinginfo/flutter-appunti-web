@@ -130,38 +130,32 @@ class SubjectNotes extends StatelessWidget {
             final List<Map> notes = snapshot.data;
             print("notes: $notes");
             if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline4,);
-            return ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (context, i) {
-                return FutureBuilder(
-                  future: backend.getUser(notes[i]["author_id"], httpClient),
-                  builder: (context, snapshot) {
-                    print("user: ${snapshot.data}");
-                    print("note: ${notes[i]}");
-                    if(!snapshot.hasData) return CircularProgressIndicator();
-                    var user = snapshot.data;
-                    print("user name: ${user["name"]} ${user["surname"]}");
-                    print("note title: ${notes[i]["title"]}");
-                    return ListTile(
-                      title: Text("${notes[i]["title"]}"),
-                      subtitle: FlatButton(
-                        child: Text("${user["name"]} ${user["surname"]}"),
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            "/profile",
-                            arguments: [ProvidedArg.data, user]
-                          );
-                        },
-                      ),
-                      onTap:() => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => NotePage(noteData: notes[i],))
-                      ),
-                    );
-                  }
-                );
-              }
+            return Container(
+              height: MediaQuery.of(context).size.height*70/100,
+              child: ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (context, i) {
+                  return FutureBuilder(
+                    future: backend.getUser(notes[i]["author_id"], httpClient),
+                    builder: (context, snapshot) {
+                      print("user: ${snapshot.data}");
+                      print("note: ${notes[i]}");
+                      if(!snapshot.hasData) return CircularProgressIndicator();
+                      var user = snapshot.data;
+                      print("user name: ${user["name"]} ${user["surname"]}");
+                      print("note title: ${notes[i]["title"]}");
+                      return ListTile(
+                        title: Text("${notes[i]["title"]}"),
+                        subtitle: Text("${user["name"]} ${user["surname"]}"),                        
+                        onTap:() => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => NotePage(noteData: notes[i]))
+                        ),
+                      );
+                    }
+                  );
+                }
+              ),
             );
           }
         )
