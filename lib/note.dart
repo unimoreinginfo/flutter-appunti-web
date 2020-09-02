@@ -53,7 +53,7 @@ class NotePage extends StatelessWidget {
         future: noteDataFuture,
         builder: (context, snapshot) {
           // TODO: error handling
-          if(!snapshot.data) return CircularProgressIndicator();
+          if(!snapshot.hasData) return CircularProgressIndicator();
           var noteData = snapshot.data;
           return NotePageBody(noteData);
         }
@@ -71,11 +71,11 @@ class NotePageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     print("notedata: $noteData");
     // TODO: add link to profile
-    //List files = noteData["files"];
+    List files = noteData["files"];
     return Column(
       children: [
         Text('noteData["info"]["title"]', style: Theme.of(context).textTheme.headline4),
-        /*Container(
+        Container(
           height: MediaQuery.of(context).size.height*80/100,
           child: ListView.builder(
             itemCount: files.length,
@@ -84,7 +84,7 @@ class NotePageBody extends StatelessWidget {
               onTap:() => launch("$baseUrl${noteData["info"]['storage_url']}/${files[i]}"),
             )
           ),
-        ),*/
+        ),
       ],
     );
   }
