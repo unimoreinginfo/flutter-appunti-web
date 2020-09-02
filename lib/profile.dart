@@ -75,7 +75,7 @@ class ProfilePageBody extends StatelessWidget {
               onPressed: () {launch("mailto:${user["email"]}");},
             ),
             FlatButton(
-              child: Text("/${user["unimore_id"]}@studenti.unimore.it"),
+              child: Text("${user["unimore_id"]}@studenti.unimore.it"),
               onPressed: () {launch("mailto:${user["unimore_id"]}@studenti.unimore.it");},
             )
           ],

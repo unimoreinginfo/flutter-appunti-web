@@ -106,6 +106,7 @@ class SubjectNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: make responsive, just like the home and login page
     print("Trying to build subjectnotes");
     return Column(
       children: [
@@ -145,6 +146,7 @@ class SubjectNotes extends StatelessWidget {
                       print("user name: ${user["name"]} ${user["surname"]}");
                       print("note title: ${notes[i]["title"]}");
                       return ListTile(
+                        leading: Icon(Icons.note),
                         title: Text("${notes[i]["title"]}"),
                         subtitle: FlatButton(
                           child: Text("${user["name"]} ${user["surname"]}"),
