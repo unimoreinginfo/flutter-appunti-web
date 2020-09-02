@@ -74,7 +74,7 @@ class NotePageBody extends StatelessWidget {
     return Column(
       children: [
         Text(noteData["info"]["title"], style: Theme.of(context).textTheme.headline4),
-        Container(
+       /* Container(
           height: MediaQuery.of(context).size.height*80/100,
           child: ListView.builder(
             itemCount: files.length,
@@ -83,7 +83,7 @@ class NotePageBody extends StatelessWidget {
               onTap:() => launch("$baseUrl${noteData["info"]['storage_url']}/${files[i]}"),
             )
           ),
-        ),
+        ),*/
       ],
     );
   }
