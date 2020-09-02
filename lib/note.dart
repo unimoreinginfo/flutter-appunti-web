@@ -69,11 +69,12 @@ class NotePageBody extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    print("notedata: $noteData");
     // TODO: add link to profile
     //List files = noteData["files"];
     return Column(
       children: [
-        Text(noteData["info"]["title"], style: Theme.of(context).textTheme.headline4),
+        Text('noteData["info"]["title"]', style: Theme.of(context).textTheme.headline4),
         /*Container(
           height: MediaQuery.of(context).size.height*80/100,
           child: ListView.builder(
