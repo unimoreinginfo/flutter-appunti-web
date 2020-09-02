@@ -44,11 +44,17 @@ Future<List> getSubjects(BaseClient httpClient) async =>
     json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
 
 /// Get note by id
-Future getNote(String sub_id, String id, BaseClient httpClient) async => json.decode(
-  // TODO: what if this fails?
-  await httpClient.read("$baseUrl/notes/$sub_id/$id")
-)["result"];
+Future getNote(String sub_id, String id, BaseClient httpClient) async {
+    // TODO: what if this fails?
 
+  var note = json.decode(
+    await httpClient.read("$baseUrl/notes/$sub_id/$id")
+  )["result"];
+
+  print("ottenendo nota $note");
+
+  return note;
+}
 
 // Get notes, optionally 
 Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author, int subjectId}) async {
