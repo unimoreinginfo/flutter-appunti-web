@@ -7,7 +7,7 @@ enum ProvidedArg {
   id,
   data
 }
-
+/*
 class Note extends StatelessWidget {
   Note({@required this.name, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.noteData});
 
@@ -34,30 +34,30 @@ class Note extends StatelessWidget {
       ),
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => NotePage(noteData: noteData,))
+        MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: noteData["note_id"],))
       )
     );
   }
-}
+}*/
 
 class NotePage extends StatelessWidget {
-  NotePage({this.noteDataFuture = null, this.noteData = null});
+  NotePage({this.noteDataFuture = null});
 
   final Future<Map> noteDataFuture;
-  final Map noteData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Scarica file appunti")),
-      body: noteData == null ? FutureBuilder(
+      body: FutureBuilder(
         future: noteDataFuture,
         builder: (context, snapshot) {
+          // TODO: error handling
           if(!snapshot.data) return CircularProgressIndicator();
-          Map noteData = snapshot.data;
+          var noteData = snapshot.data;
           return NotePageBody(noteData);
         }
-      ) : NotePageBody(noteData),
+      ),
     );
   }
 }
@@ -70,11 +70,11 @@ class NotePageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: add link to profile
-    List files = noteData["files"];
+    //List files = noteData["files"];
     return Column(
       children: [
         Text(noteData["info"]["title"], style: Theme.of(context).textTheme.headline4),
-       /* Container(
+        /*Container(
           height: MediaQuery.of(context).size.height*80/100,
           child: ListView.builder(
             itemCount: files.length,

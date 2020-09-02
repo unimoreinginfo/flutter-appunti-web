@@ -118,14 +118,7 @@ class ProfilePageBody extends StatelessWidget {
               return ListView.builder(
                 itemCount: notes.length,
                 itemBuilder: (context, i) {
-                  return Note(
-                    authorId: user["id"],
-                    name: notes[i]["title"],
-                    authorName: "${user["name"]} ${user["surname"]}",
-                    uploadedAt: DateTime.parse(notes[i]["uploaded_at"]*1000),
-                    userData: user,
-                    noteData: notes[i],
-                  );
+                  return ListTile(title: Text("esempio"));
                 }
               );
             }

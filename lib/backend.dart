@@ -38,12 +38,13 @@ Future<void> editProfile(int id, String jwt, Map data, BaseClient httpClient) as
 
 }
 
+// TODO: error handling
 Future<List> getSubjects(BaseClient httpClient) async =>
   // TODO: what if this fails?
     json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
 
 /// Get note by id
-Future<Map> getNote(String sub_id, String id, BaseClient httpClient) async => json.decode(
+Future getNote(String sub_id, String id, BaseClient httpClient) async => json.decode(
   // TODO: what if this fails?
   await httpClient.read("$baseUrl/notes/$sub_id/$id")
 )["result"];
