@@ -146,7 +146,10 @@ class SubjectNotes extends StatelessWidget {
                       print("note title: ${notes[i]["title"]}");
                       return ListTile(
                         title: Text("${notes[i]["title"]}"),
-                        subtitle: Text("${user["name"]} ${user["surname"]}"),                        
+                        subtitle: FlatButton(
+                          child: Text("${user["name"]} ${user["surname"]}"),
+                          onPressed: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, user]),
+                        ),                        
                         onTap:() => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], httpClient)))

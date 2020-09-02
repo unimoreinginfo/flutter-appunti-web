@@ -118,7 +118,8 @@ class ProfilePageBody extends StatelessWidget {
               return ListView.builder(
                 itemCount: notes.length,
                 itemBuilder: (context, i) {
-                  return ListTile(title: Text("esempio"));
+                  // TODO: far diventare listtile cliccabile ecc. ec., insomma fixare sta cosa
+                  return ListTile(title: Text(notes[i]["name"]));
                 }
               );
             }
