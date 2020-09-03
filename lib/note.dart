@@ -7,38 +7,6 @@ enum ProvidedArg {
   id,
   data
 }
-/*
-class Note extends StatelessWidget {
-  Note({@required this.name, @required this.authorName, @required this.authorId, @required this.uploadedAt, this.userData, @required this.noteData});
-
-  final String name;
-  final String authorName;
-  final String authorId;
-  final DateTime uploadedAt;
-  final Map userData;
-  final Map noteData;
-
-  @override
-  Widget build(context) {
-    return ListTile(
-      leading: Text(
-        "${uploadedAt.day}/${uploadedAt.month}/${uploadedAt.year}",
-        style: Theme.of(context).textTheme.overline,
-      ),
-      title: Text(name),
-      subtitle: FlatButton(
-        child: Text(authorName, style: Theme.of(context).textTheme.subtitle1),
-        onPressed: () {
-          Navigator.pushNamed(context, "/profile", arguments: userData == null ? [ProvidedArg.id, authorId] : [ProvidedArg.data, userData]);
-        },
-      ),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: noteData["note_id"],))
-      )
-    );
-  }
-}*/
 
 class NotePage extends StatelessWidget {
   NotePage({this.noteDataFuture = null});

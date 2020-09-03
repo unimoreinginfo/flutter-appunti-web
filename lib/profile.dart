@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
 
 import 'platform.dart' show httpClient, tokenStorage;
-import 'note.dart';
 import 'consts.dart';
 import 'utils.dart';
 import 'errors.dart' as errors;
@@ -54,14 +53,15 @@ class ProfilePageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isUser;
+    bool canEdit;
     String token;
     try {
       token = getToken(tokenStorage);
-      if(getPayload(token)["id"] == user["id"]) isUser = true;
-      else isUser = false;
+      bool mod = isMod(token);
+      if(mod || getPayload(token)["id"] == user["id"]) canEdit = true;
+      else canEdit = false;
     } catch(_) {
-      isUser = false;
+      canEdit = false;
     }
     return Column(
       children: [
@@ -80,50 +80,34 @@ class ProfilePageBody extends StatelessWidget {
             )
           ],
         ),
-        if(isUser)
+        if(canEdit)
           FlatButton(child: Text("Modifica profilo",), onPressed: () {
             goToRouteAsap(context, "/editProfile", arguments: user);
-          },)
-        else Builder(
-          builder: (context) {
-            try {
-              bool mod = isMod(token, httpClient);
-              if(mod) return FlatButton(child: Text("Modifica profilo",), onPressed: () {
-                goToRouteAsap(context, "/editProfile", arguments: user);
-              },);
-              return Divider();
-            } catch(e) {
-              print("$e");
-              return Divider();
-            }
-          }
-        ),
-        Expanded(
-          child: FutureBuilder(
-            future: notesFuture,
-            builder: (context, snapshot) {
-              final List<Map> notes = snapshot.data;
-              if(snapshot.hasError) {
-                doItAsap(context, (context) =>
-                  showDialog(
-                    context: context,
-                    child: AlertDialog(
-                      title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
-                    )
+          },),
+        FutureBuilder(
+          future: notesFuture,
+          builder: (context, snapshot) {
+            final List<Map> notes = snapshot.data;
+            if(snapshot.hasError) {
+              doItAsap(context, (context) =>
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
                   )
-                );
-                return Text("Si è verificato un errore");
-              }
-              if(!snapshot.hasData) return CircularProgressIndicator();
-              return ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, i) {
-                  // TODO: far diventare listtile cliccabile ecc. ec., insomma fixare sta cosa
-                  return ListTile(title: Text(notes[i]["name"]));
-                }
+                )
               );
+              return Text("Si è verificato un errore");
             }
-          )
+            if(!snapshot.hasData) return CircularProgressIndicator();
+            return ListView.builder(
+              itemCount: notes.length,
+              itemBuilder: (context, i) {
+                // TODO: far diventare listtile cliccabile ecc. ec., insomma fixare sta cosa
+                return ListTile(title: Text(notes[i]["name"]));
+              }
+            );
+          }
         )
       ],
     );

@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
             if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
             else {
               try {
-                bool mod = isMod(token, httpClient);
+                bool mod = isMod(token);
                 return EditPage(mod, token);
               }
               catch(e) {

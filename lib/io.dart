@@ -11,7 +11,7 @@ Map getPayload(String token) => json.decode(
   )
 );
 
-bool isMod(String token, BaseClient httpClient) {
+bool isMod(String token) {
   // we suppose the user is logged in
   Map decodedToken = getPayload(token);
   if(decodedToken["is_admin"] == 1) return true;
