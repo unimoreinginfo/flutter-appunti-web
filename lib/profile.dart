@@ -58,11 +58,14 @@ class ProfilePageBody extends StatelessWidget {
     try {
       token = getToken(tokenStorage);
       bool mod = isMod(token);
-      if(mod || getPayload(token)["id"] == user["id"]) canEdit = true;
-      else canEdit = false;
-    } catch(_) {
+      canEdit = mod || getPayload(token)["id"] == user["id"];
+    } catch(e) {
+      print("errore $e");
       canEdit = false;
     }
+
+    if(canEdit) print("can edit");
+    else print("can't edit");
     return Column(
       children: [
         Text("Utente ${user["name"]} ${user["surname"]}", style: Theme.of(context).textTheme.headline4,),
