@@ -85,3 +85,19 @@ Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
   )["result"];
 }
 
+Future<void> editNote(int id, String jwt, BaseClient httpClient,  Map data) async {
+    // TODO: what if this fails?
+
+    var res = await httpClient.post(
+      "$baseUrl/notes/$id",
+      body: data,
+      headers: {
+        "Authorization": "Bearer $jwt"
+      }
+    );
+
+    if(res.statusCode == errors.INVALID_CREDENTIALS) {
+      throw errors.BackendError(errors.INVALID_CREDENTIALS);
+    }
+  //  getAndUpdateToken(res, tokenStorage);
+  }

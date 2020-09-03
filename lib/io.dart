@@ -23,6 +23,14 @@ void updateToken(TokenStorage storage, String newTok) {
   storage.writeJson("token", newTok);
 }
 
+String getUserIdOrNull(TokenStorage storage) {
+  try {
+    return json.decode(storage.readJson("token"))["id"];
+  } catch(_) {
+    return null;
+  }
+}
+
 String getToken(TokenStorage storage) =>
   storage.readJson("token");
 

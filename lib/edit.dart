@@ -128,8 +128,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   Future<void> editNote(int id, String jwt, {@required Map data}) async {
     // TODO: what if this fails?
-    // TODO: move out of here
-
+    // TODO: call the backend thing
+  
     var res = await httpClient.post(
       "$baseUrl/notes/$id",
       body: data,
@@ -224,10 +224,21 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ),
         FlatButton(
           onPressed: () {
-            editNote(note["note_id"], widget.jwt, data: {
-              "subject_id": _subjectId,
-              "title": _noteTitle.text
-            });
+            try {
+              editNote(note["note_id"], widget.jwt, data: {
+                "subject_id": _subjectId,
+                "title": _noteTitle.text
+              });
+            } catch(e) {
+              print("Error: $e");
+              showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Text("Errore"),
+                  content: Text("$e")
+                )
+              );
+            }
           },
           child: Text("Modifica valori appunto")
         ),

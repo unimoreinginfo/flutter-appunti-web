@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 
 import 'note.dart';
-import 'platform.dart';
+import 'platform.dart' as platform;
 import 'utils.dart';
 import 'backend.dart' as backend;
+import 'io.dart';
 
 
 class SubjectsPage extends StatelessWidget {
@@ -12,12 +13,21 @@ class SubjectsPage extends StatelessWidget {
   final String name = "Ingegneria informatica";
 
   // TODO: what if this fails?
-  Future<List<Map>> get subjectsFuture => backend.getSubjects(httpClient);
+  Future<List<Map>> get subjectsFuture => backend.getSubjects(platform.httpClient);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Appunti di $name"),),
+      appBar: AppBar(
+        title: Text("Appunti di $name"),
+        actions: [
+          if(getUserIdOrNull(platform.tokenStorage) != null)
+            IconButton(
+              onPressed: () {LoginManager.logOut(platform.tokenStorage); Navigator.pushNamed(context, '/');},
+              icon: Icon(Icons.logout)
+            )
+        ],
+      ),
       body: FutureBuilder(
         future: subjectsFuture,
         builder: (context, snapshot) {
@@ -53,7 +63,7 @@ class SubjectsPageContents extends StatefulWidget {
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
   // TODO: what if this fails?
-  Future<List> getNotesFuture(int id) => backend.getNotes(httpClient, subjectId: id);
+  Future<List> getNotesFuture(int id) => backend.getNotes(platform.httpClient, subjectId: id);
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
 
@@ -137,7 +147,7 @@ class SubjectNotes extends StatelessWidget {
                 itemCount: notes.length,
                 itemBuilder: (context, i) {
                   return FutureBuilder(
-                    future: backend.getUser(notes[i]["author_id"], httpClient),
+                    future: backend.getUser(notes[i]["author_id"], platform.httpClient),
                     builder: (context, snapshot) {
                       print("user: ${snapshot.data}");
                       print("note: ${notes[i]}");
@@ -154,7 +164,7 @@ class SubjectNotes extends StatelessWidget {
                         ),                        
                         onTap:() => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], httpClient)))
+                          MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], platform.httpClient)))
                         ),
                       );
                     }
