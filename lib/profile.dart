@@ -113,7 +113,7 @@ class ProfilePageBody extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NotePage(noteDataFuture: Future.value(notes[i]))
+                        builder: (context) => NotePage(noteDataFuture: getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
                       )
                     );
                   },
