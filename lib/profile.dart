@@ -117,7 +117,7 @@ class ProfilePageBody extends StatelessWidget {
                       )
                     );
                   },
-                  title: Text(notes[i]["name"])
+                  title: Text(notes[i]["title"])
                 );
               }
             );
