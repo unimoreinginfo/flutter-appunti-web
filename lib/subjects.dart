@@ -28,23 +28,29 @@ class SubjectsPage extends StatelessWidget {
             )
         ],
       ),
-      body: FutureBuilder(
-        future: subjectsFuture,
-        builder: (context, snapshot) {
-          if(snapshot.hasError) {
-            doItAsap(context, (context) =>
-              showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Text("Si è verificato un errore durante l'accesso alle materie")
-                )
-              )
-            );
-            return Text("si è verificato un errore");
-          }
-          if(!snapshot.hasData) return CircularProgressIndicator();
-          return SubjectsPageContents(snapshot.data);
-        }
+      body: Center(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          width: 800.0,
+          child: FutureBuilder(
+            future: subjectsFuture,
+            builder: (context, snapshot) {
+              if(snapshot.hasError) {
+                doItAsap(context, (context) =>
+                  showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Text("Si è verificato un errore durante l'accesso alle materie")
+                    )
+                  )
+                );
+                return Text("si è verificato un errore");
+              }
+              if(!snapshot.hasData) return CircularProgressIndicator();
+              return SubjectsPageContents(snapshot.data);
+            }
+          ),
+        ),
       )
     );
   }
