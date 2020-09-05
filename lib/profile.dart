@@ -91,7 +91,7 @@ class ProfilePageBody extends StatelessWidget {
         FutureBuilder(
           future: notesFuture,
           builder: (context, snapshot) {
-            final List<Map> notes = snapshot.data;
+            final List<Map<String, String>> notes = snapshot.data;
             print("user notes: $notes");
             if(snapshot.hasError) {
               doItAsap(context, (context) =>
@@ -110,15 +110,15 @@ class ProfilePageBody extends StatelessWidget {
               itemBuilder: (context, i) {
                 print("creando nota $i (${Text(notes[i]["title"])})");
                 return ListTile(
-                 /* onTap: () {
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
                       )
                     );
-                  },*/
-                  title: Text('notes[i]["title"]')
+                  },
+                  title: Text(notes[i]["title"])
                 );
               }
             );
