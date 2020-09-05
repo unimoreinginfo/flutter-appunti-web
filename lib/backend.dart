@@ -2,6 +2,8 @@ import 'dart:convert' show json, ascii, base64;
 import 'consts.dart' show baseUrl;
 import 'package:http/http.dart' show BaseClient, MultipartFile, MultipartRequest, Response;
 import 'errors.dart' as errors;
+import 'io.dart' as io;
+import 'platform.dart' as platform;
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
@@ -116,17 +118,19 @@ Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
 
 Future<void> editNote(int id, String jwt, BaseClient httpClient,  Map data) async {
     // TODO: what if this fails?
+    // TODO:tenere presente che la route backend è considerata WIP/instabile
 
-    var res = await httpClient.post(
-      "$baseUrl/notes/$id",
-      body: data,
-      headers: {
-        "Authorization": "Bearer $jwt"
-      }
-    );
 
-    if(res.statusCode == errors.INVALID_CREDENTIALS) {
-      throw errors.BackendError(errors.INVALID_CREDENTIALS);
+  var res = await httpClient.post(
+    "$baseUrl/notes/$id",
+    body: data,
+    headers: {
+      "Authorization": "Bearer $jwt"
     }
-  //  getAndUpdateToken(res, tokenStorage);
+  );
+
+  if(res.statusCode == errors.INVALID_CREDENTIALS) {
+    throw errors.BackendError(errors.INVALID_CREDENTIALS);
   }
+  io.getAndUpdateToken(res, platform.tokenStorage);
+}

@@ -128,18 +128,13 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   Future<void> editNote(int id, String jwt, {@required Map data}) async {
     // TODO: what if this fails?
-    // TODO: call the backend thing
   
-    var res = await httpClient.post(
-      "$baseUrl/notes/$id",
-      body: data,
-      headers: {
-        "Authorization": "Bearer $jwt"
-      }
-    );
-
-    if(res.statusCode == errors.INVALID_CREDENTIALS) {
+    try {
+      backend.editNote(id, jwt, httpClient, data);
+    }
+    on errors.BackendError catch(_) {
       LoginManager.logOut(tokenStorage);
+      Navigator.pushReplacementNamed(context, "/login");
       showDialog(
         context: context,
         child: AlertDialog(
@@ -147,10 +142,15 @@ class _NoteEditPageState extends State<NoteEditPage> {
           content: Text("Verrai riportato alla pagina di accesso"),
         )
       );
-      Navigator.pushReplacementNamed(context, "/login");
-      return;
+    } catch(e) {
+      Navigator.pushReplacementNamed(context, "/edit");
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("Si è verificato un errore sconosciuto"),
+        )
+      );
     }
-    getAndUpdateToken(res, tokenStorage);
   }
 
   Future<void> deleteNote(int id, String jwt) async {
