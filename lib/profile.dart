@@ -108,17 +108,17 @@ class ProfilePageBody extends StatelessWidget {
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
-                print("creando nota $i");
+                print("creando nota $i (${Text(notes[i]["title"])})");
                 return ListTile(
-                  onTap: () {
+                 /* onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
                       )
                     );
-                  },
-                  title: Text(notes[i]["title"])
+                  },*/
+                  title: Text('notes[i]["title"]')
                 );
               }
             );
