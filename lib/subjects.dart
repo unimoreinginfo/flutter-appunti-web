@@ -79,9 +79,11 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   Widget build(context) {
     return Column(
       children: [
-        Text("Scegli una materia", style: Theme.of(context).textTheme.headline5,),
+        SizedBox(height: 15.0),
+        Text("Scegli una materia", style: Theme.of(context).textTheme.headline4,),
         Container(
           height: 100.0,
+          padding: EdgeInsets.all(16.0),
           child: ListView.builder(
             itemCount: widget.subjects.length,
             scrollDirection: Axis.horizontal,
@@ -117,64 +119,67 @@ class SubjectNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: make responsive, just like the home and login page
-    print("Trying to build subjectnotes");
-    return Column(
-      children: [
-        Text(subject["name"], style: Theme.of(context).textTheme.headline4),
-        Text("Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
-        FutureBuilder(
-          future: notesFuture,
-          builder: (context, snapshot) {
-            if(snapshot.hasError) {
-              print("notes: ${snapshot.data}");
-              doItAsap(context, (context) =>
-                showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Text("Si è verificato un errore durante l'accesso agli appunti di ${subject["name"]}")
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          Text(subject["name"], style: Theme.of(context).textTheme.headline4),
+          Text("Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
+          FutureBuilder(
+            future: notesFuture,
+            builder: (context, snapshot) {
+              if(snapshot.hasError) {
+                print("notes: ${snapshot.data}");
+                doItAsap(context, (context) =>
+                  showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Text("Si è verificato un errore durante l'accesso agli appunti di ${subject["name"]}")
+                    )
                   )
-                )
+                );
+                return Text("Si è verificato un errore");
+              }
+              if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
+              final List<Map> notes = snapshot.data;
+              print("notes: $notes");
+              if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,);
+              return Container(
+                height: MediaQuery.of(context).size.height*70/100,
+                padding: EdgeInsets.all(16.0),
+                child: ListView.builder(
+                  itemCount: notes.length,
+                  itemBuilder: (context, i) {
+                    return FutureBuilder(
+                      future: backend.getUser(notes[i]["author_id"], platform.httpClient),
+                      builder: (context, snapshot) {
+                        print("user: ${snapshot.data}");
+                        print("note: ${notes[i]}");
+                        if(!snapshot.hasData) return CircularProgressIndicator();
+                        var user = snapshot.data;
+                        print("user name: ${user["name"]} ${user["surname"]}");
+                        print("note title: ${notes[i]["title"]}");
+                        return ListTile(
+                          leading: Icon(Icons.note),
+                          title: Text("${notes[i]["title"]}"),
+                          subtitle: FlatButton(
+                            child: Text("${user["name"]} ${user["surname"]}"),
+                            onPressed: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, user]),
+                          ),                        
+                          onTap:() => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], platform.httpClient)))
+                          ),
+                        );
+                      }
+                    );
+                  }
+                ),
               );
-              return Text("Si è verificato un errore");
             }
-            if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
-            final List<Map> notes = snapshot.data;
-            print("notes: $notes");
-            if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,);
-            return Container(
-              height: MediaQuery.of(context).size.height*70/100,
-              child: ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, i) {
-                  return FutureBuilder(
-                    future: backend.getUser(notes[i]["author_id"], platform.httpClient),
-                    builder: (context, snapshot) {
-                      print("user: ${snapshot.data}");
-                      print("note: ${notes[i]}");
-                      if(!snapshot.hasData) return CircularProgressIndicator();
-                      var user = snapshot.data;
-                      print("user name: ${user["name"]} ${user["surname"]}");
-                      print("note title: ${notes[i]["title"]}");
-                      return ListTile(
-                        leading: Icon(Icons.note),
-                        title: Text("${notes[i]["title"]}"),
-                        subtitle: FlatButton(
-                          child: Text("${user["name"]} ${user["surname"]}"),
-                          onPressed: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, user]),
-                        ),                        
-                        onTap:() => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(notes[i]["subject_id"], notes[i]["note_id"], platform.httpClient)))
-                        ),
-                      );
-                    }
-                  );
-                }
-              ),
-            );
-          }
-        )
-      ]
+          )
+        ]
+      ),
     ); 
   }
 }

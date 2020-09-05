@@ -60,7 +60,6 @@ class ModPage extends StatelessWidget {
             );
           },
         ),
-
         Expanded(
           child: FutureBuilder<List>(
             future: notesFuture,

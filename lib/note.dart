@@ -19,25 +19,28 @@ class NotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Scarica file appunti")),
-      body: FutureBuilder(
-        future: noteDataFuture,
-        builder: (context, snapshot) {
-          // TODO: error handling
-          if(!snapshot.hasData) return CircularProgressIndicator();
-          if(snapshot.hasError) {
-            if(snapshot.error is NotFoundError) {
-              goToRouteAsap(context, "/");
-              showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Text("Non è stato possibile ottenere i dati dell'appunto")
-                )
-              );
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder(
+          future: noteDataFuture,
+          builder: (context, snapshot) {
+            // TODO: error handling
+            if(!snapshot.hasData) return CircularProgressIndicator();
+            if(snapshot.hasError) {
+              if(snapshot.error is NotFoundError) {
+                goToRouteAsap(context, "/");
+                showDialog(
+                  context: context,
+                  child: AlertDialog(
+                    title: Text("Non è stato possibile ottenere i dati dell'appunto")
+                  )
+                );
+              }
             }
+            var noteData = snapshot.data;
+            return NotePageBody(noteData);
           }
-          var noteData = snapshot.data;
-          return NotePageBody(noteData);
-        }
+        ),
       ),
     );
   }
