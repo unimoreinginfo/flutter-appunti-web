@@ -32,7 +32,7 @@ class SubjectsPage extends StatelessWidget {
       body: Center(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 5.0),
-          width: 800.0,
+          width: 900.0,
           child: FutureBuilder(
             future: subjectsFuture,
             builder: (context, snapshot) {
@@ -196,9 +196,9 @@ class SubjectNotes extends StatelessWidget {
                           leading: Icon(Icons.note),
                           trailing: Text("${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
                           title: Text("${notes[i]["title"]}"),
-                          subtitle: FlatButton(
+                          subtitle: InkWell(
                             child: Text("${user["name"]} ${user["surname"]}"),
-                            onPressed: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, user]),
+                            onTap: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, user]),
                           ),                        
                           onTap:() => Navigator.push(
                             context,
@@ -225,6 +225,6 @@ class SearchedNotes  extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    throw UnimplementedError();
+    return(Text("$data"));
   }
 }

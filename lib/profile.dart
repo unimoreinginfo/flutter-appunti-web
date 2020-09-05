@@ -67,68 +67,75 @@ class ProfilePageBody extends StatelessWidget {
 
     if(canEdit) print("can edit");
     else print("can't edit");
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Text("Utente ${user["name"]} ${user["surname"]}", style: Theme.of(context).textTheme.headline4,),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+    return Center(
+      child: Container(
+        width: 900.0,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             children: [
-              Text("Email: "),
-              FlatButton(
-                child: Text(user["email"]),
-                onPressed: () {launch("mailto:${user["email"]}");},
+              Text("Utente ${user["name"]} ${user["surname"]}", style: Theme.of(context).textTheme.headline4,),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Email: "),
+                  FlatButton(
+                    child: Text(user["email"]),
+                    onPressed: () {launch("mailto:${user["email"]}");},
+                  ),
+                  FlatButton(
+                    child: Text("${user["unimore_id"]}@studenti.unimore.it"),
+                    onPressed: () {launch("mailto:${user["unimore_id"]}@studenti.unimore.it");},
+                  )
+                ],
               ),
-              FlatButton(
-                child: Text("${user["unimore_id"]}@studenti.unimore.it"),
-                onPressed: () {launch("mailto:${user["unimore_id"]}@studenti.unimore.it");},
+              if(canEdit)
+                FlatButton(child: Text("Modifica profilo",), onPressed: () {
+                  goToRouteAsap(context, "/editProfile", arguments: user);
+                },),
+              FutureBuilder(
+                future: notesFuture,
+                builder: (context, snapshot) {
+                  if(snapshot.hasError) {
+                    doItAsap(context, (context) =>
+                      showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
+                        )
+                      )
+                    );
+                    return Text("Si è verificato un errore");
+                  }
+                  if(!snapshot.hasData) return CircularProgressIndicator();
+                  final List<Map<String, String>> notes = snapshot.data;
+                  return Container(
+                    height: MediaQuery.of(context).size.height*70/100,
+                    child: ListView.builder(
+                      itemCount: notes.length,
+                      itemBuilder: (context, i) {
+                        print("creando nota $i (${notes[i]["title"]})");
+                        var date = DateTime.parse(notes[i]["uploaded_at"]);
+                        return ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
+                              )
+                            );
+                          },
+                          trailing: Text("${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
+                          title: Text(notes[i]["title"])
+                        );
+                      }
+                    ),
+                  );
+                }
               )
             ],
           ),
-          if(canEdit)
-            FlatButton(child: Text("Modifica profilo",), onPressed: () {
-              goToRouteAsap(context, "/editProfile", arguments: user);
-            },),
-          FutureBuilder(
-            future: notesFuture,
-            builder: (context, snapshot) {
-              if(snapshot.hasError) {
-                doItAsap(context, (context) =>
-                  showDialog(
-                    context: context,
-                    child: AlertDialog(
-                      title: Text("Si è verificato un errore durante l'accesso agli appunti dell'utente")
-                    )
-                  )
-                );
-                return Text("Si è verificato un errore");
-              }
-              if(!snapshot.hasData) return CircularProgressIndicator();
-              final List<Map<String, String>> notes = snapshot.data;
-              return Container(
-                height: MediaQuery.of(context).size.height*70/100,
-                child: ListView.builder(
-                  itemCount: notes.length,
-                  itemBuilder: (context, i) {
-                    print("creando nota $i (${notes[i]["title"]})");
-                    return ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
-                          )
-                        );
-                      },
-                      title: Text(notes[i]["title"])
-                    );
-                  }
-                ),
-              );
-            }
-          )
-        ],
+        ),
       ),
     );
   }
