@@ -15,6 +15,7 @@ class SubjectsPage extends StatelessWidget {
   // TODO: what if this fails?
   Future<List<Map>> get subjectsFuture => backend.getSubjects(platform.httpClient);
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +73,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   Future<List> getNotesFuture(int id) => backend.getNotes(platform.httpClient, subjectId: id);
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
+  List<Map<String, Object>> data = null;
 
   @override
   void initState() {
@@ -86,28 +88,54 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     return Column(
       children: [
         SizedBox(height: 15.0),
-        Text("Scegli una materia", style: Theme.of(context).textTheme.headline4,),
-        Container(
-          height: 100.0,
-          padding: EdgeInsets.all(16.0),
-          child: ListView.builder(
-            itemCount: widget.subjects.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, i) =>
-              FlatButton(
-                child: Card(
-                  margin: selectedSubject == i ? EdgeInsets.all(5.0) : null,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Center(child: Text(widget.subjects[i]["name"],)),
-                  )
-                ),
-                onPressed:() => setState(() {
-                  selectedSubject = i;
-                }),
-              )
-          ),
+        Text("Cerca", style: Theme.of(context).textTheme.headline4,),
+        TextField(
+          onSubmitted: (q) async {
+            data = await backend.search(q, platform.httpClient);
+            print("risultati ricerca: $data");
+            setState(() {
+              
+            });
+            try {
+              if(data.length != 0) print("${data[0]["uploaded_at"]}");
+            } catch(_) {
+              showDialog(
+                context: context,
+                child: AlertDialog(title: Text("La ricerca non funziona ancora"))
+              );
+            }
+            // TODO:continua
+          },
         ),
+        if(data == null) Column(
+          children: [
+            Text("oppure"),
+            Text("Scegli una materia", style: Theme.of(context).textTheme.headline4,),
+            Container(
+              height: 100.0,
+              padding: EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: widget.subjects.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, i) =>
+                  FlatButton(
+                    child: Card(
+                      margin: selectedSubject == i ? EdgeInsets.all(5.0) : null,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Center(child: Text(widget.subjects[i]["name"],)),
+                      )
+                    ),
+                    onPressed:() => setState(() {
+                      selectedSubject = i;
+                    }),
+                  )
+              ),
+            ),
+          ]
+        ),
+        if(data != null)
+          SearchedNotes(data),
         if(selectedSubject >= 0)
           SubjectNotes(widget.subjects[selectedSubject], notesFuture[selectedSubject])
       ],
@@ -151,7 +179,7 @@ class SubjectNotes extends StatelessWidget {
               print("notes: $notes");
               if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,);
               return Container(
-                height: MediaQuery.of(context).size.height*70/100,
+                height: MediaQuery.of(context).size.height*60/100,
                 padding: EdgeInsets.all(16.0),
                 child: ListView.builder(
                   itemCount: notes.length,
@@ -187,5 +215,16 @@ class SubjectNotes extends StatelessWidget {
         ]
       ),
     ); 
+  }
+}
+
+class SearchedNotes  extends StatelessWidget {
+  SearchedNotes(this.data);
+
+  final List<Map<String, Object>> data;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }

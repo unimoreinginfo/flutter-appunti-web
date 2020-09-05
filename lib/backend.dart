@@ -116,6 +116,12 @@ Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
   )["result"];
 }
 
+Future<List<Map<String, Object>>> search(String q, BaseClient httpClient) async {
+  return json.decode(
+    await httpClient.read('$baseUrl/notes/search?q=$q')
+  )["result"];
+}
+
 Future<void> editNote(int id, String jwt, BaseClient httpClient,  Map data) async {
     // TODO: what if this fails?
     // TODO:tenere presente che la route backend è considerata WIP/instabile
