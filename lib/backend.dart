@@ -38,22 +38,26 @@ Future<void> editProfile(int id, String jwt, Map data, BaseClient httpClient) as
 
 }
 
-// TODO: error handling
-Future<List> getSubjects(BaseClient httpClient) async =>
-  // TODO: what if this fails?
-    json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
+Future<List> getSubjects(BaseClient httpClient) async {
+  try {
+    var res = json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
+    return res;
+  } catch(_) {
+    throw errors.ServerError();
+  }
+}
 
 /// Get note by id
 Future getNote(String sub_id, String id, BaseClient httpClient) async {
-    // TODO: what if this fails?
+  // TODO: what if this fails?
 
-  var note = json.decode(
+  var res = json.decode(
     await httpClient.read("$baseUrl/notes/$sub_id/$id")
-  )["result"];
-
-  print("ottenendo nota $note");
-
-  return note;
+  );
+  if(res["success"] == false) {
+    throw errors.NotFoundError();
+  }
+  return res["result"];
 }
 
 Future<void> addNote(String jwt, Map data, Future<MultipartFile> file, BaseClient httpClient) async {

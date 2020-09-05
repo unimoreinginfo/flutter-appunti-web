@@ -1,3 +1,5 @@
+import 'package:appunti_web_frontend/errors.dart';
+import 'package:appunti_web_frontend/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,6 +24,17 @@ class NotePage extends StatelessWidget {
         builder: (context, snapshot) {
           // TODO: error handling
           if(!snapshot.hasData) return CircularProgressIndicator();
+          if(snapshot.hasError) {
+            if(snapshot.error is NotFoundError) {
+              goToRouteAsap(context, "/");
+              showDialog(
+                context: context,
+                child: AlertDialog(
+                  title: Text("Non è stato possibile ottenere i dati dell'appunto")
+                )
+              );
+            }
+          }
           var noteData = snapshot.data;
           return NotePageBody(noteData);
         }

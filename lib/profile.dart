@@ -1,4 +1,5 @@
 import 'package:appunti_web_frontend/io.dart';
+import 'package:appunti_web_frontend/note.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
 
@@ -91,6 +92,7 @@ class ProfilePageBody extends StatelessWidget {
           future: notesFuture,
           builder: (context, snapshot) {
             final List<Map> notes = snapshot.data;
+            print("user notes: $notes");
             if(snapshot.hasError) {
               doItAsap(context, (context) =>
                 showDialog(
@@ -106,8 +108,17 @@ class ProfilePageBody extends StatelessWidget {
             return ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, i) {
-                // TODO: far diventare listtile cliccabile ecc. ec., insomma fixare sta cosa
-                return ListTile(title: Text(notes[i]["name"]));
+                return ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotePage(noteDataFuture: Future.value(notes[i]))
+                      )
+                    );
+                  },
+                  title: Text(notes[i]["name"])
+                );
               }
             );
           }
