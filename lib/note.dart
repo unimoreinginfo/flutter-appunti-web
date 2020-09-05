@@ -1,4 +1,6 @@
+import 'package:appunti_web_frontend/backend.dart';
 import 'package:appunti_web_frontend/errors.dart';
+import 'package:appunti_web_frontend/platform.dart';
 import 'package:appunti_web_frontend/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -56,10 +58,24 @@ class NotePageBody extends StatelessWidget {
     print("notedata: $noteData");
     // TODO: add link to profile
     List files = noteData["files"];
+    DateTime date = DateTime.parse(noteData["info"]["uploaded_at"]);
     return Column(
       children: [
         Text(noteData["info"]["title"], style: Theme.of(context).textTheme.headline4),
+        SizedBox(height: 10.0),
+        FutureBuilder(
+          future: getUser(noteData["info"]["author_id"], httpClient),
+          builder: (context, snapshot) {
+            if(!snapshot.hasData) return CircularProgressIndicator();
+            return FlatButton(
+              child: Text("${snapshot.data["name"]} ${snapshot.data["surname"]}"),
+              onPressed: () => Navigator.pushNamed(context, '/profile', arguments: [ProvidedArg.data, snapshot.data]),
+            );
+          }
+        ),
+        Text("${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
         Container(
+          padding: EdgeInsets.all(8.0),
           height: MediaQuery.of(context).size.height*80/100,
           child: ListView.builder(
             itemCount: files.length,
