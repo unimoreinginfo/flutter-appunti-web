@@ -91,8 +91,6 @@ class ProfilePageBody extends StatelessWidget {
         FutureBuilder(
           future: notesFuture,
           builder: (context, snapshot) {
-            final List<Map<String, String>> notes = snapshot.data;
-            print("user notes: $notes");
             if(snapshot.hasError) {
               doItAsap(context, (context) =>
                 showDialog(
@@ -105,22 +103,26 @@ class ProfilePageBody extends StatelessWidget {
               return Text("Si è verificato un errore");
             }
             if(!snapshot.hasData) return CircularProgressIndicator();
-            return ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (context, i) {
-                print("creando nota $i (${Text(notes[i]["title"])})");
-                return ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
-                      )
-                    );
-                  },
-                  title: Text(notes[i]["title"])
-                );
-              }
+            final List<Map<String, String>> notes = snapshot.data;
+            return Container(
+              height: MediaQuery.of(context).size.height*70/100,
+              child: ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (context, i) {
+                  print("creando nota $i (${notes[i]["title"]})");
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotePage(noteDataFuture: backend.getNote("${notes[i]["subject_id"]}", notes[i]["note_id"], httpClient))
+                        )
+                      );
+                    },
+                    title: Text(notes[i]["title"])
+                  );
+                }
+              ),
             );
           }
         )
