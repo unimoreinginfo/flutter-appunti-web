@@ -1,6 +1,6 @@
 import 'dart:convert' show json, ascii, base64;
 import 'consts.dart' show baseUrl;
-import 'package:http/http.dart' show BaseClient;
+import 'package:http/http.dart' show BaseClient, MultipartFile, MultipartRequest, Response;
 import 'errors.dart' as errors;
 
 /// Get payload from the base64 JWT token string
@@ -54,6 +54,31 @@ Future getNote(String sub_id, String id, BaseClient httpClient) async {
   print("ottenendo nota $note");
 
   return note;
+}
+
+Future<void> addNote(String jwt, Map data, Future<MultipartFile> file, BaseClient httpClient) async {
+  var req = MultipartRequest('POST', Uri.parse("$baseUrl/"));
+  req.fields.addAll(data);
+  req.files.add(await file);
+
+  try {
+    var res = await Response.fromStream(await httpClient.send(req));
+    if(res.statusCode == errors.SERVER_DOWN) {
+      throw errors.ServerError();
+    } else if(res.statusCode == errors.NOT_FOUND) {
+      throw errors.NotFoundError();
+    } else {
+      var body = json.decode(res.body);
+      if(body["success"] == false) {
+        throw errors.BackendError(res.statusCode);
+      } else {
+        return;
+      }
+    }
+  } catch(e) {
+    print(e);
+    throw errors.ServerError();
+  }
 }
 
 // Get notes, optionally 
