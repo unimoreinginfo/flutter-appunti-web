@@ -201,28 +201,34 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> deleteUser(int id, String jwt) async {
   // TODO: what if this fails?
-  // TODO:move out of here
 
     setState(() {_deletionInProgress = true;});
 
-    var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
-
-    setState(() {_deletionInProgress = false;});
-
-    if(res.statusCode == errors.INVALID_CREDENTIALS) {
-      LoginManager.logOut(tokenStorage);
-      showDialog(
-        context: context,
-        child: AlertDialog(
-          title: Text("La sessione potrebbe essere scaduta o corrotta"),
-          content: Text("Verrai riportato alla pagina di accesso"),
-        )
-      );
-      Navigator.pushReplacementNamed(context, "/login");
-    } else {
-      getAndUpdateToken(res, tokenStorage);
+    try {
+      await backend.deleteUser(id, jwt, httpClient);
       Navigator.pop(context);
+    } on errors.BackendError catch(e) {
+      if(e.code == errors.INVALID_CREDENTIALS) {
+        LoginManager.logOut(tokenStorage);
+        showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text("La sessione potrebbe essere scaduta o corrotta"),
+            content: Text("Verrai riportato alla pagina di accesso"),
+          )
+        );
+        Navigator.pushReplacementNamed(context, "/login");
+      } else if(e.code == errors.USER_NOT_FOUND) {
+
+      }
+    } catch(e) {
+
+    } finally {
+      setState(() {_deletionInProgress = false;});
     }
+
+    
+
   }
 
   @override

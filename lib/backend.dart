@@ -107,6 +107,20 @@ Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author
   return result["result"];
 }
 
+  Future<void> deleteUser(int id, String jwt, BaseClient httpClient) async {
+    var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
+
+    if(res.statusCode == errors.SERVER_DOWN) {
+      throw errors.ServerError();
+    }
+    else if(res.statusCode == errors.INVALID_CREDENTIALS || res.statusCode == errors.USER_NOT_FOUND) {
+      throw errors.BackendError(res.statusCode);
+    } else if(json.decode(res.body)["success"] == true) {
+      return;
+    } 
+    io.getAndUpdateToken(res, platform.tokenStorage);
+  }
+
 
 Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
   // TODO: what if this fails?
