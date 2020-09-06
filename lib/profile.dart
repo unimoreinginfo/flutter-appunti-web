@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
 
 import 'platform.dart' show httpClient, tokenStorage;
-import 'consts.dart';
 import 'utils.dart';
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;

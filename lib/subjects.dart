@@ -225,6 +225,23 @@ class SearchedNotes  extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return(Text("$data"));
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, i) {
+        // TODO: aspettare progressi backend
+        // DateTime date = DateTime.parse(data[i]["uploaded_at"]);
+        return ListTile(
+          leading: Icon(Icons.note),
+          title: Text(data[i]["title"]),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote(data[i]["subject_id"], data[i]["note_id"], platform.httpClient)))
+            );
+          },
+        );
+
+      },
+    );
   }
 }
