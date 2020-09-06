@@ -136,7 +136,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         ),
         if(data != null)
           SearchedNotes(data),
-        if(selectedSubject >= 0)
+        if(data == null && selectedSubject >= 0)
           SubjectNotes(widget.subjects[selectedSubject], notesFuture[selectedSubject])
       ],
     );
