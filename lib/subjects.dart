@@ -88,30 +88,27 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     return Column(
       children: [
         SizedBox(height: 15.0),
-        Text("Cerca", style: Theme.of(context).textTheme.headline4,),
-        TextField(
-          onChanged: (q) async {
-            List<Map<String, Object>> res;
-            if(q.length == 0) setState(() {data = null;});
-            else {
-              res = await backend.search(q, platform.httpClient);
-              setState(() {
-                if(res.length == 0) {
-                  data = null;
-                } else {data = res;}
-                print("risultati ricerca: $data");
-              });
-            }
-            try {
-              if(data.length != 0) print("${data[0]["uploaded_at"]}");
-            } catch(_) {
-              showDialog(
-                context: context,
-                child: AlertDialog(title: Text("La ricerca non funziona ancora"))
-              );
-            }
-          },
-        ),
+        if(selectedSubject < 0)
+          Column(
+            children: [
+              Text("Cerca", style: Theme.of(context).textTheme.headline4,),
+              TextField(
+                onChanged: (q) async {
+                  List<Map<String, Object>> res;
+                  if(q.length == 0) setState(() {data = null;});
+                  else {
+                    res = await backend.search(q, platform.httpClient);
+                    setState(() {
+                      if(res.length == 0) {
+                        data = null;
+                      } else {data = res;}
+                      print("risultati ricerca: $data");
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
         if(data == null) Column(
           children: [
             Text("oppure"),
@@ -157,7 +154,6 @@ class SubjectNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: make responsive, just like the home and login page
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Column(
