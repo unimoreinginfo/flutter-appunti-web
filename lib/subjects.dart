@@ -238,7 +238,7 @@ class SearchedNotes  extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote('${data[i]["subject_id"]}', data[i]["note_id"], platform.httpClient)))
+                MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote('${data[i]["subject_id"]}', data[i]["id"], platform.httpClient)))
               );
             },
           );
