@@ -56,7 +56,6 @@ class NotePageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("notedata: $noteData");
-    // TODO: add link to profile
     List files = noteData["files"];
     DateTime date = DateTime.parse(noteData["info"]["uploaded_at"]);
     return Column(

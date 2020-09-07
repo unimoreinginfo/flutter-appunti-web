@@ -90,12 +90,18 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         SizedBox(height: 15.0),
         Text("Cerca", style: Theme.of(context).textTheme.headline4,),
         TextField(
-          onSubmitted: (q) async {
-            data = await backend.search(q, platform.httpClient);
-            print("risultati ricerca: $data");
-            setState(() {
-              
-            });
+          onChanged: (q) async {
+            List<Map<String, Object>> res;
+            if(q.length == 0) setState(() {data = null;});
+            else {
+              res = await backend.search(q, platform.httpClient);
+              setState(() {
+                if(res.length == 0) {
+                  data = null;
+                } else {data = res;}
+                print("risultati ricerca: $data");
+              });
+            }
             try {
               if(data.length != 0) print("${data[0]["uploaded_at"]}");
             } catch(_) {
@@ -176,7 +182,10 @@ class SubjectNotes extends StatelessWidget {
               if(snapshot.connectionState == ConnectionState.waiting) return CircularProgressIndicator();
               final List<Map> notes = snapshot.data;
               print("notes: $notes");
-              if(notes.length == 0) return Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,);
+              if(notes.length == 0) return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Non ci sono appunti per questa materia", style: Theme.of(context).textTheme.headline5,),
+              );
               return Container(
                 height: MediaQuery.of(context).size.height*60/100,
                 padding: EdgeInsets.all(16.0),
