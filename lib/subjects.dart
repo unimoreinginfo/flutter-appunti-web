@@ -104,7 +104,6 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                 child: AlertDialog(title: Text("La ricerca non funziona ancora"))
               );
             }
-            // TODO:continua
           },
         ),
         if(data == null) Column(
@@ -225,23 +224,27 @@ class SearchedNotes  extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ListView.builder(
-      itemCount: data.length,
-      itemBuilder: (context, i) {
-        // TODO: aspettare progressi backend
-        // DateTime date = DateTime.parse(data[i]["uploaded_at"]);
-        return ListTile(
-          leading: Icon(Icons.note),
-          title: Text(data[i]["title"]),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote('${data[i]["subject_id"]}', data[i]["note_id"], platform.httpClient)))
-            );
-          },
-        );
+    return Container(
+      height: MediaQuery.of(context).size.height*60/100,
+      padding: EdgeInsets.all(16.0),
+      child: ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (context, i) {
+          // TODO: aspettare progressi backend
+          // DateTime date = DateTime.parse(data[i]["uploaded_at"]);
+          return ListTile(
+            leading: Icon(Icons.note),
+            title: Text(data[i]["title"]),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotePage(noteDataFuture: backend.getNote('${data[i]["subject_id"]}', data[i]["note_id"], platform.httpClient)))
+              );
+            },
+          );
 
-      },
+        },
+      ),
     );
   }
 }
