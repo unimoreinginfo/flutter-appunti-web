@@ -130,7 +130,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
     // TODO: what if this fails?
   
     try {
-      backend.editNote(id, sub_id, jwt, httpClient, data);
+      await backend.editNote(id, sub_id, jwt, httpClient, data);
+      Navigator.pop(context);
     }
     on errors.BackendError catch(_) {
       LoginManager.logOut(tokenStorage);
