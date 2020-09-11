@@ -171,8 +171,8 @@ class _EditProfileState extends State<EditProfile> {
 
   void _setFieldsToDefault() {
     _userName = TextEditingController(text: widget.userData["name"]);
-    _userSurname = widget.userData["surname"];
-    _userUnimoreId = widget.userData["unimore_id"];
+    _userSurname = TextEditingController(text: widget.userData["surname"]);
+    _userUnimoreId = TextEditingController(text: widget.userData["unimore_id"]);
     _deletionInProgress = false;
   }
 
