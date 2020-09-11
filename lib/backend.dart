@@ -165,3 +165,9 @@ Future<void> editNote(String id, String subjectId, String jwt, BaseClient httpCl
   }
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
+
+Future<List<Map<String, Object>>> getUsers(BaseClient httpClient) async {
+  return json.decode(
+    await httpClient.read('$baseUrl/users')
+  )["result"];
+}

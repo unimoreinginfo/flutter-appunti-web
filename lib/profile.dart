@@ -206,7 +206,7 @@ class _EditProfileState extends State<EditProfile> {
     try {
       await backend.deleteUser(id, jwt, httpClient);
       Navigator.pop(context);
-    } on errors.BackendError catch(e) {
+    } on errors.BackendError catch(_) {
       LoginManager.logOut(tokenStorage);
       showDialog(
         context: context,

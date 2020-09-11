@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'consts.dart';
 import 'io.dart';
+import 'note.dart' show ProvidedArg;
 import 'platform.dart' show httpClient, tokenStorage;
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
@@ -47,7 +47,6 @@ class ModPage extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // TODO: add users list
     return Column(
       children: [
         FlatButton(
@@ -57,6 +56,17 @@ class ModPage extends StatelessWidget {
               Scaffold(
                 appBar: AppBar(title: Text("Ci dia i suoi appunti, signor moderatore.")),
                 body: PlebPage(jwt))
+              )
+            );
+          },
+        ),
+        FlatButton(
+          child: Text("Lista utenti"),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => 
+              Scaffold(
+                appBar: AppBar(title: Text("Elenco degli utenti")),
+                body: UsersList(jwt))
               )
             );
           },
@@ -156,10 +166,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   Future<void> deleteNote(String id, String sub_id, String jwt) async {
     // TODO: what if this fails?
-    // TODO: move out of here
     setState(() {_deletionInProgress = true;});
     try {
-      var res = await backend.deleteNote(id, sub_id, jwt, httpClient);
+      await backend.deleteNote(id, sub_id, jwt, httpClient);
       Navigator.pop(context);
     }
     on errors.BackendError {
@@ -262,6 +271,33 @@ class _NoteEditPageState extends State<NoteEditPage> {
           child: _deletionInProgress ? CircularProgressIndicator() : Text("Non mi piace questo file, ELIMINA ORA")
         )
       ],
+    );
+  }
+}
+
+
+class UsersList extends StatelessWidget {
+  UsersList(this.jwt);
+  final String jwt;
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: backend.getUsers(httpClient),
+      builder: (context, snapshot) {
+        if(!snapshot.hasData) return CircularProgressIndicator();
+        var users = snapshot.data;
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (context, i) =>
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('${users[i]["name"]} ${users[i]["surname"]}'),
+              onTap: () {
+                Navigator.pushNamed(context, "/profile", arguments: [ProvidedArg.data, users[i]]);
+              }
+            )
+        );
+      }
     );
   }
 }
