@@ -12,7 +12,7 @@ Map getPayload(String token) => json.decode(
   )
 );
 
-Future<void> editProfile(int id, String jwt, Map data, BaseClient httpClient) async {
+Future<void> editProfile(String id, String jwt, Map data, BaseClient httpClient) async {
   try {
     var res = await httpClient.post(
       "$baseUrl/users/$id",
@@ -49,6 +49,17 @@ Future<List> getSubjects(BaseClient httpClient) async {
   }
 }
 
+
+Future<void> deleteNote(String id, String sub_id, String jwt, BaseClient httpClient) async {
+    var res = await httpClient.delete("$baseUrl/notes/$sub_id/$id", headers: {"Authorization": "Bearer $jwt"});
+    if(res.statusCode == errors.SERVER_DOWN) {
+      throw errors.ServerError();
+    } else if(json.decode(res.body)["success"] == false) {
+      throw errors.BackendError(res.statusCode);
+    } else {
+      io.getAndUpdateToken(res, platform.tokenStorage);
+    }
+  }
 /// Get note by id
 Future getNote(String sub_id, String id, BaseClient httpClient) async {
   // TODO: what if this fails?
@@ -107,19 +118,19 @@ Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author
   return result["result"];
 }
 
-  Future<void> deleteUser(int id, String jwt, BaseClient httpClient) async {
-    var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
+Future<void> deleteUser(int id, String jwt, BaseClient httpClient) async {
+  var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
 
-    if(res.statusCode == errors.SERVER_DOWN) {
-      throw errors.ServerError();
-    }
-    else if(res.statusCode == errors.INVALID_CREDENTIALS || res.statusCode == errors.USER_NOT_FOUND) {
-      throw errors.BackendError(res.statusCode);
-    } else if(json.decode(res.body)["success"] == true) {
-      return;
-    } 
-    io.getAndUpdateToken(res, platform.tokenStorage);
+  if(res.statusCode == errors.SERVER_DOWN) {
+    throw errors.ServerError();
   }
+  else if(res.statusCode == errors.INVALID_CREDENTIALS || res.statusCode == errors.USER_NOT_FOUND) {
+    throw errors.BackendError(res.statusCode);
+  } else if(json.decode(res.body)["success"] == true) {
+    return;
+  } 
+  io.getAndUpdateToken(res, platform.tokenStorage);
+}
 
 
 Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
@@ -136,13 +147,13 @@ Future<List<Map<String, Object>>> search(String q, BaseClient httpClient) async 
   )["result"];
 }
 
-Future<void> editNote(int id, String jwt, BaseClient httpClient,  Map data) async {
+Future<void> editNote(String id, String subjectId, String jwt, BaseClient httpClient,  Map data) async {
     // TODO: what if this fails?
     // TODO:tenere presente che la route backend è considerata WIP/instabile
 
 
   var res = await httpClient.post(
-    "$baseUrl/notes/$id",
+    "$baseUrl/$subjectId/$id",
     body: data,
     headers: {
       "Authorization": "Bearer $jwt"

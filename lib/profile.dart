@@ -176,7 +176,7 @@ class _EditProfileState extends State<EditProfile> {
     _deletionInProgress = false;
   }
 
-  Future<void> editProfile(int id, String jwt, {@required Map data}) async {
+  Future<void> editProfile(String id, String jwt, {@required Map data}) async {
     // TODO: handle more errors
     try {
       backend.editProfile(id, jwt, data, httpClient);
@@ -207,21 +207,25 @@ class _EditProfileState extends State<EditProfile> {
       await backend.deleteUser(id, jwt, httpClient);
       Navigator.pop(context);
     } on errors.BackendError catch(e) {
-      if(e.code == errors.INVALID_CREDENTIALS) {
-        LoginManager.logOut(tokenStorage);
-        showDialog(
-          context: context,
-          child: AlertDialog(
-            title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
-          )
-        );
-        Navigator.pushReplacementNamed(context, "/login");
-      } else if(e.code == errors.USER_NOT_FOUND) {
-
-      }
+      LoginManager.logOut(tokenStorage);
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("La sessione potrebbe essere scaduta o corrotta"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+      Navigator.pushReplacementNamed(context, "/login");
     } catch(e) {
-
+      LoginManager.logOut(tokenStorage);
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("Si è verificato un errore sconosciuto"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+      Navigator.pushReplacementNamed(context, "/login");
     } finally {
       setState(() {_deletionInProgress = false;});
     }

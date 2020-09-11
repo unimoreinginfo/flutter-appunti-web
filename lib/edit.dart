@@ -47,6 +47,7 @@ class ModPage extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    // TODO: add users list
     return Column(
       children: [
         FlatButton(
@@ -125,11 +126,11 @@ class _NoteEditPageState extends State<NoteEditPage> {
     _deletionInProgress = false;
   }
 
-  Future<void> editNote(int id, String jwt, {@required Map data}) async {
+  Future<void> editNote(String id, String sub_id, String jwt, {@required Map data}) async {
     // TODO: what if this fails?
   
     try {
-      backend.editNote(id, jwt, httpClient, data);
+      backend.editNote(id, sub_id, jwt, httpClient, data);
     }
     on errors.BackendError catch(_) {
       LoginManager.logOut(tokenStorage);
@@ -152,13 +153,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
     }
   }
 
-  Future<void> deleteNote(int id, String jwt) async {
+  Future<void> deleteNote(String id, String sub_id, String jwt) async {
     // TODO: what if this fails?
     // TODO: move out of here
     setState(() {_deletionInProgress = true;});
-    var res = await httpClient.delete("$baseUrl/notes/$id", headers: {"Authorization": "Bearer $jwt"});
-    setState(() {_deletionInProgress = false;});
-    if(res.statusCode == errors.INVALID_CREDENTIALS) {
+    try {
+      var res = await backend.deleteNote(id, sub_id, jwt, httpClient);
+      Navigator.pop(context);
+    }
+    on errors.BackendError {
+      Navigator.pushReplacementNamed(context, "/login");
       LoginManager.logOut(tokenStorage);
       showDialog(
         context: context,
@@ -167,11 +171,19 @@ class _NoteEditPageState extends State<NoteEditPage> {
           content: Text("Verrai riportato alla pagina di accesso"),
         )
       );
+    } catch(_) {
       Navigator.pushReplacementNamed(context, "/login");
-    } else {
-      getAndUpdateToken(res, tokenStorage);
-      Navigator.pop(context);
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("Si è verificato un errore sconosciuto"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+    } finally {
+      setState(() {_deletionInProgress = false;});
     }
+
   }
 
   @override
@@ -224,7 +236,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         FlatButton(
           onPressed: () {
             try {
-              editNote(note["note_id"], widget.jwt, data: {
+              editNote(note["note_id"], '${note['subject_id']}', widget.jwt, data: {
                 "subject_id": _subjectId,
                 "title": _noteTitle.text
               });
@@ -245,7 +257,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         FlatButton(
           color: Colors.redAccent,
           textColor: Colors.white,
-          onPressed: () {deleteNote(note["note_id"], widget.jwt);},
+          onPressed: () {deleteNote(note["note_id"], '${note["subject_id"]}', widget.jwt);},
           child: _deletionInProgress ? CircularProgressIndicator() : Text("Non mi piace questo file, ELIMINA ORA")
         )
       ],
