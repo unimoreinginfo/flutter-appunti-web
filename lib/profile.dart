@@ -177,24 +177,30 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> editProfile(String id, String jwt, {@required Map data}) async {
-    // TODO: handle more errors
     try {
-      backend.editProfile(id, jwt, data, httpClient);
-    }
-
-    on errors.BackendError catch(e) {
-      if(e.code == errors.INVALID_CREDENTIALS) {
-        LoginManager.logOut(tokenStorage);
-        showDialog(
-          context: context,
-          child: AlertDialog(
-            title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
-          )
-        );
-        Navigator.pushReplacementNamed(context, "/login");
-      }
-      return;
+      await backend.editProfile(id, jwt, data, httpClient);
+      Navigator.pop(context);
+    } on errors.BackendError {
+      LoginManager.logOut(tokenStorage);
+      Navigator.pushReplacementNamed(context, "/login");
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("La sessione potrebbe essere scaduta o corrotta"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
+      
+    } catch(_) {
+      LoginManager.logOut(tokenStorage);
+      Navigator.pushReplacementNamed(context, "/login");
+      showDialog(
+        context: context,
+        child: AlertDialog(
+          title: Text("Si è verificato un errore sconosciuto"),
+          content: Text("Verrai riportato alla pagina di accesso"),
+        )
+      );
     }
   }
 
