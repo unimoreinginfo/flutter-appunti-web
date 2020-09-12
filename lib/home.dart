@@ -33,47 +33,51 @@ class HomePage extends StatelessWidget {
         ],
       ),
     ),
-    body: Center(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 5.0),
-        width: 750.0,
-        child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.bodyText2,
-          textAlign: TextAlign.justify,
-          child: ListView(
-          padding: EdgeInsets.all(15.0),
-          children : [
-            Illustration("lesson"),
-           Text("Appunti qua,\nlorem ipsum fanglerio", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline3),
-            SizedBox(height: 30,),
-            Text("La risorsa principale di fanglerico fanglerioso e robe fantastiche ez clap ciaooo"),
-            SizedBox(height: 30,),
-            MaterialButton(
-              height: 50.0,
-              color: Theme.of(context).primaryColor,
-              textColor: Colors.white,
-              child: Text("Sgancia gli appunti bastardo"),
-              onPressed: () {
-                Navigator.pushNamed(context, "/subjects");
-              },
+    body: DefaultTextStyle(
+        style: Theme.of(context).textTheme.bodyText2,
+        textAlign: TextAlign.justify,
+        child: ListView(
+        padding: EdgeInsets.all(15.0),
+        children : [
+          Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 5.0),
+              width: 750.0,
+              child: Column(
+                children: [
+                  Illustration("lesson"),
+                  Text("Appunti qua,\nlorem ipsum fanglerio", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline3),
+                  SizedBox(height: 30,),
+                  Text("La risorsa principale di fanglerico fanglerioso e robe fantastiche ez clap ciaooo"),
+                  SizedBox(height: 30,),
+                  MaterialButton(
+                    height: 50.0,
+                    color: Theme.of(context).primaryColor,
+                    textColor: Colors.white,
+                    child: Text("Sgancia gli appunti bastardo"),
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/subjects");
+                    },
+                  ),
+                  Divider(height: 45.0),
+                  Text("Appunti per tutti", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+                  Illustration("read"),
+                  Text(loremIpsum),
+                  SizedBox(height: 15,),
+                  Text("Risorse affidabili e controllate", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+                  Illustration("control"),
+                  Text(loremIpsum,),
+                  SizedBox(height: 15,),
+                  Text("E ti laurei pure, bastardo", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
+                  Illustration("letsgo"),
+                  Text(loremIpsum),
+                  FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Mandaci i tuoi appunti"), onPressed: () => Navigator.pushNamed(context, "/edit"))
+                ],
+              )
             ),
-            Divider(height: 45.0),
-            Text("Appunti per tutti", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
-            Illustration("read"),
-            Text(loremIpsum),
-            SizedBox(height: 15,),
-            Text("Risorse affidabili e controllate", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
-            Illustration("control"),
-            Text(loremIpsum,),
-            SizedBox(height: 15,),
-            Text("E ti laurei pure, bastardo", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4),
-            Illustration("letsgo"),
-            Text(loremIpsum),
-            FlatButton(color: Theme.of(context).primaryColor, textColor: Colors.white, child: Text("Mandaci i tuoi appunti"), onPressed: () => Navigator.pushNamed(context, "/edit"))
-          ]
-        ),
-        )
-      ),
+          )
+        ]
+      )
     ),
   );
 }

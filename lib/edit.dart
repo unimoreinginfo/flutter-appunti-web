@@ -29,7 +29,7 @@ class PlebPage extends StatelessWidget {
   final String jwt;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    // TODO: implement build (in progress @Grimos10)
     return Text(
       "L'accesso è stato eseguito con succeso, ma la pagina per l'aggiunta degli appunti ancora non è stata implementata",
     );

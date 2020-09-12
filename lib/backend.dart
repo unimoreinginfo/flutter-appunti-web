@@ -5,6 +5,9 @@ import 'errors.dart' as errors;
 import 'io.dart' as io;
 import 'platform.dart' as platform;
 
+
+// TODO: find out why cookies are not being sent to the server
+
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
   ascii.decode(
