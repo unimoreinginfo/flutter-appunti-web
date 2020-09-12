@@ -2,7 +2,7 @@ import 'dart:convert' show json, base64, ascii;
 
 import 'consts.dart' show baseUrl;
 import 'errors.dart';
-import 'package:http/http.dart' show Response, BaseClient;
+import 'package:http/http.dart' as http;
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json.decode(
@@ -38,7 +38,7 @@ bool refreshTokenStillValid(TokenStorage storage) =>
   DateTime.parse(storage.readJson("expiry")).difference(DateTime.now()).inMinutes >= 60;
 
 
-void getAndUpdateToken(Response res, TokenStorage storage) {
+void getAndUpdateToken(http.Response res, TokenStorage storage) {
   var newTok = res.headers["Authorization"].split(" ")[1];
   updateToken(storage, newTok);
 }
@@ -48,11 +48,11 @@ void getAndUpdateToken(Response res, TokenStorage storage) {
 class LoginManager {
   LoginManager(this.client, this.tokenStorage);
 
-  BaseClient client;
+  http.BaseClient client;
   TokenStorage tokenStorage;
 
   Future<bool> logIn(String email, String password) async {
-    var res = await client.post(
+    var res = await http.post(
       "$baseUrl/auth/login",
       body: {
         "email": email,
@@ -80,7 +80,7 @@ class LoginManager {
   }
 
   Future<bool> signUp(String email, String password, String unimoreId, String name, String surname) async {
-    var res = await client.post(
+    var res = await http.post(
       "$baseUrl/auth/register",
       body: {
         "email": email,
