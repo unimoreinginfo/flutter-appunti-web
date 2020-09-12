@@ -68,6 +68,7 @@ class SubjectsPageContents extends StatefulWidget {
 
 
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
+  // TODO: rework note fetching by subj, this will not be feasible with many subjects and notes
 
   // TODO: what if this fails?
   Future<List> getNotesFuture(int id) => backend.getNotes(platform.httpClient, subjectId: id);
@@ -111,7 +112,15 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
           ),
         if(data == null) Column(
           children: [
-            Text("oppure"),
+            if(selectedSubject < 0)
+              Text("oppure")
+            else
+              FlatButton(
+                child: Text("RESET"),
+                onPressed: () {
+                  setState(() {selectedSubject = -1;})
+                },
+              ),
             Text("Scegli una materia", style: Theme.of(context).textTheme.headline4,),
             Container(
               height: 100.0,
