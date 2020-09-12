@@ -74,6 +74,7 @@ class _LoginControlsState extends State<LoginControls> {
         ),
         Text("oppure"),
         TextField(
+          autofocus: true,
           controller: _emailController,
             decoration: InputDecoration(
                 labelText: "email"

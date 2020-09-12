@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Appunti Web',
+      locale: Locale('it', 'IT'),
       theme: ThemeData(
         primaryColor: Color(0xff6246ea),
         textTheme: TextTheme(

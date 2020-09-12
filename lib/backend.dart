@@ -1,6 +1,6 @@
 import 'dart:convert' show json, ascii, base64;
 import 'consts.dart' show baseUrl;
-import 'package:http/http.dart' show BaseClient, MultipartFile, MultipartRequest, Response;
+import 'package:http/http.dart' as http;
 import 'errors.dart' as errors;
 import 'io.dart' as io;
 import 'platform.dart' as platform;
@@ -12,9 +12,9 @@ Map getPayload(String token) => json.decode(
   )
 );
 
-Future<void> editProfile(String id, String jwt, Map data, BaseClient httpClient) async {
+Future<void> editProfile(String id, String jwt, Map data, http.BaseClient httpClient) async {
   try {
-    var res = await httpClient.post(
+    var res = await http.post(
       "$baseUrl/users/$id",
       body: data,
       headers: {
@@ -40,9 +40,9 @@ Future<void> editProfile(String id, String jwt, Map data, BaseClient httpClient)
 
 }
 
-Future<List> getSubjects(BaseClient httpClient) async {
+Future<List> getSubjects(http.BaseClient httpClient) async {
   try {
-    var res = json.decode(await httpClient.read("$baseUrl/subjects"))["result"];
+    var res = json.decode(await http.read("$baseUrl/subjects"))["result"];
     return res;
   } catch(_) {
     throw errors.ServerError();
@@ -50,8 +50,8 @@ Future<List> getSubjects(BaseClient httpClient) async {
 }
 
 
-Future<void> deleteNote(String id, String sub_id, String jwt, BaseClient httpClient) async {
-    var res = await httpClient.delete("$baseUrl/notes/$sub_id/$id", headers: {"Authorization": "Bearer $jwt"});
+Future<void> deleteNote(String id, String sub_id, String jwt, http.BaseClient httpClient) async {
+    var res = await http.delete("$baseUrl/notes/$sub_id/$id", headers: {"Authorization": "Bearer $jwt"});
     if(res.statusCode == errors.SERVER_DOWN) {
       throw errors.ServerError();
     } else if(json.decode(res.body)["success"] == false) {
@@ -61,11 +61,11 @@ Future<void> deleteNote(String id, String sub_id, String jwt, BaseClient httpCli
     }
   }
 /// Get note by id
-Future getNote(String sub_id, String id, BaseClient httpClient) async {
+Future getNote(String sub_id, String id, http.BaseClient httpClient) async {
   // TODO: what if this fails?
 
   var res = json.decode(
-    await httpClient.read("$baseUrl/notes/$sub_id/$id")
+    await http.read("$baseUrl/notes/$sub_id/$id")
   );
   if(res["success"] == false) {
     throw errors.NotFoundError();
@@ -73,13 +73,13 @@ Future getNote(String sub_id, String id, BaseClient httpClient) async {
   return res["result"];
 }
 
-Future<void> addNote(String jwt, Map data, Future<MultipartFile> file, BaseClient httpClient) async {
-  var req = MultipartRequest('POST', Uri.parse("$baseUrl/"));
+Future<void> addNote(String jwt, Map data, Future<http.MultipartFile> file, http.BaseClient httpClient) async {
+  var req = http.MultipartRequest('POST', Uri.parse("$baseUrl/"));
   req.fields.addAll(data);
   req.files.add(await file);
 
   try {
-    var res = await Response.fromStream(await httpClient.send(req));
+    var res = await http.Response.fromStream(await httpClient.send(req));
     if(res.statusCode == errors.SERVER_DOWN) {
       throw errors.ServerError();
     } else if(res.statusCode == errors.NOT_FOUND) {
@@ -99,27 +99,27 @@ Future<void> addNote(String jwt, Map data, Future<MultipartFile> file, BaseClien
 }
 
 // Get notes, optionally 
-Future<List<Map<String, Object>>> getNotes(BaseClient httpClient, {String author, int subjectId}) async {
+Future<List<Map<String, Object>>> getNotes(http.BaseClient httpClient, {String author, int subjectId}) async {
   // TODO: what if this fails?
   Map<String, Object> result;
   if(author == null && subjectId != null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?subject_id=$subjectId")
+    await http.read("$baseUrl/notes?subject_id=$subjectId")
   );
   else if(author != null && subjectId == null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?author_id=$author")
+    await http.read("$baseUrl/notes?author_id=$author")
   );
   else if(author != null && subjectId != null) result =  json.decode(
-    await httpClient.read("$baseUrl/notes?author_id=$author&subject_id=$subjectId")
+    await http.read("$baseUrl/notes?author_id=$author&subject_id=$subjectId")
   );
   else result = json.decode(
-    await httpClient.read("$baseUrl/notes")
+    await http.read("$baseUrl/notes")
   );
 
   return result["result"];
 }
 
-Future<void> deleteUser(int id, String jwt, BaseClient httpClient) async {
-  var res = await httpClient.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
+Future<void> deleteUser(int id, String jwt, http.BaseClient httpClient) async {
+  var res = await http.delete("$baseUrl/users/$id", headers: {"Authorization": "Bearer $jwt"});
 
   if(res.statusCode == errors.SERVER_DOWN) {
     throw errors.ServerError();
@@ -133,26 +133,26 @@ Future<void> deleteUser(int id, String jwt, BaseClient httpClient) async {
 }
 
 
-Future<Map<String, Object>> getUser(String uid, BaseClient httpClient) async {
+Future<Map<String, Object>> getUser(String uid, http.BaseClient httpClient) async {
   // TODO: what if this fails?
 
   return json.decode(
-    await httpClient.read("$baseUrl/users/$uid")
+    await http.read("$baseUrl/users/$uid")
   )["result"];
 }
 
-Future<List<Map<String, Object>>> search(String q, BaseClient httpClient) async {
+Future<List<Map<String, Object>>> search(String q, http.BaseClient httpClient) async {
   return json.decode(
-    await httpClient.read('$baseUrl/notes/search?q=$q')
+    await http.read('$baseUrl/notes/search?q=$q')
   )["result"];
 }
 
-Future<void> editNote(String id, String subjectId, String jwt, BaseClient httpClient,  Map data) async {
+Future<void> editNote(String id, String subjectId, String jwt, http.BaseClient httpClient,  Map data) async {
     // TODO: what if this fails?
     // TODO:tenere presente che la route backend è considerata WIP/instabile
 
 
-  var res = await httpClient.post(
+  var res = await http.post(
     "$baseUrl/$subjectId/$id",
     body: data,
     headers: {
@@ -166,8 +166,8 @@ Future<void> editNote(String id, String subjectId, String jwt, BaseClient httpCl
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<List<Map<String, Object>>> getUsers(BaseClient httpClient) async {
+Future<List<Map<String, Object>>> getUsers(http.BaseClient httpClient) async {
   return json.decode(
-    await httpClient.read('$baseUrl/users')
+    await http.read('$baseUrl/users')
   )["result"];
 }
