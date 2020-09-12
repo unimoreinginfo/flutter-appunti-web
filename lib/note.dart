@@ -79,6 +79,7 @@ class NotePageBody extends StatelessWidget {
           child: ListView.builder(
             itemCount: files.length,
             itemBuilder: (context, i) => ListTile(
+              leading: Icon(Icons.file_download),
               title: Text(files[i]),
               onTap:() => launch("$baseUrl${noteData["info"]['storage_url']}/${files[i]}"),
             )
