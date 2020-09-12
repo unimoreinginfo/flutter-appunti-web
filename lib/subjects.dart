@@ -118,7 +118,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
               FlatButton(
                 child: Text("RESET"),
                 onPressed: () {
-                  setState(() {selectedSubject = -1;})
+                  setState(() {selectedSubject = -1;});
                 },
               ),
             Text("Scegli una materia", style: Theme.of(context).textTheme.headline4,),
