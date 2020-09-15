@@ -9,9 +9,6 @@ import 'io.dart';
 class SubjectsPage extends StatelessWidget {
   final String name = "Ingegneria informatica";
 
-  // TODO: what if this fails?
-  Future<List<Map>> get subjectsFuture => backend.getSubjects();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +29,7 @@ class SubjectsPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 5.0),
             width: 900.0,
             child: FutureBuilder(
-                future: subjectsFuture,
+                future: backend.getSubjects(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     doItAsap(

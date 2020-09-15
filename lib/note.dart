@@ -1,6 +1,5 @@
 import 'package:appunti_web_frontend/backend.dart';
 import 'package:appunti_web_frontend/errors.dart';
-import 'package:appunti_web_frontend/platform.dart';
 import 'package:appunti_web_frontend/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

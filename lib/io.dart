@@ -1,8 +1,9 @@
 import 'dart:convert' show json, base64, ascii;
 
-import 'consts.dart' show baseUrl;
+import 'package:dio/dio.dart';
+
+import 'consts.dart' show baseUrl, http;
 import 'errors.dart';
-import 'package:http/http.dart' as http;
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json
@@ -37,8 +38,8 @@ bool refreshTokenStillValid(TokenStorage storage) =>
         .inMinutes >=
     60;
 
-void getAndUpdateToken(http.Response res, TokenStorage storage) {
-  var newTok = res.headers["Authorization"].split(" ")[1];
+void getAndUpdateToken(Response res, TokenStorage storage) {
+  var newTok = res.headers.map["Authorization"].first.split(" ")[1];
   updateToken(storage, newTok);
 }
 
@@ -51,14 +52,19 @@ class LoginManager {
 
   Future<bool> logIn(String email, String password) async {
     var res = await http.post("$baseUrl/auth/login",
-        body: {"email": email, "password": password});
+        data: {"email": email, "password": password});
+
+    print("<login>");
+    print("data: ${res.data}");
+    print("statuscode: ${res.statusCode}");
+    print("</login>");
 
     if (res.statusCode == INVALID_CREDENTIALS)
       throw BackendError(INVALID_CREDENTIALS);
     if (res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if (res.statusCode == SERVER_DOWN) throw ServerError();
 
-    Map resBody = json.decode(res.body);
+    Map resBody = res.data;
 
     tokenStorage.writeJson("token", resBody["auth_token"]);
     tokenStorage.writeJson(
@@ -77,7 +83,7 @@ class LoginManager {
 
   Future<bool> signUp(String email, String password, String unimoreId,
       String name, String surname) async {
-    var res = await http.post("$baseUrl/auth/register", body: {
+    var res = await http.post("$baseUrl/auth/register", data: {
       "email": email,
       "password": password,
       "name": name,
@@ -89,7 +95,7 @@ class LoginManager {
     if (res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if (res.statusCode == SERVER_DOWN) throw ServerError();
 
-    return json.decode(res.body)["success"];
+    return res.data["success"];
   }
 }
 

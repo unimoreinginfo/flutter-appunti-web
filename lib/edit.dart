@@ -44,8 +44,6 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  Future<List> get notesFuture => backend.getNotes();
-
   Future<Map> getUser(uid) => backend.getUser(uid);
 
   @override
@@ -78,7 +76,7 @@ class ModPage extends StatelessWidget {
         ),
         Expanded(
           child: FutureBuilder<List>(
-              future: notesFuture,
+              future: backend.getNotes(),
               builder: (context, snapshot) {
                 final List<Map> notes = snapshot.data;
                 return ListView.builder(itemBuilder: (context, i) {
