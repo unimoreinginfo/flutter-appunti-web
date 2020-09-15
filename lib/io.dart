@@ -64,7 +64,7 @@ class LoginManager {
     if (res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if (res.statusCode == SERVER_DOWN) throw ServerError();
 
-    Map resBody = res.data;
+    Map resBody = json.decode(res.data);
 
     tokenStorage.writeJson("token", resBody["auth_token"]);
     tokenStorage.writeJson(
@@ -95,7 +95,7 @@ class LoginManager {
     if (res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if (res.statusCode == SERVER_DOWN) throw ServerError();
 
-    return res.data["success"];
+    return json.decode(res.data["success"]);
   }
 }
 

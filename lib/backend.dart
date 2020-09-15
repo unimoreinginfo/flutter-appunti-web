@@ -22,8 +22,8 @@ Future<void> editProfile(String id, String jwt, Map data) async {
     } else if (res.statusCode == errors.NOT_FOUND) {
       throw errors.NotFoundError();
     } else {
-      print('editProfile response: ${res.data}');
-      var body = res.data;
+      print('response editProfile: ${res.data}');
+      var body = json.decode(res.data as String);
       if (body["success"] == false) {
         throw errors.BackendError(res.statusCode);
       } else {
@@ -36,10 +36,10 @@ Future<void> editProfile(String id, String jwt, Map data) async {
   }
 }
 
-Future<List<Map<String, Object>>> getSubjects() async {
+Future<List> getSubjects() async {
   try {
-    var res = (await http.get("$baseUrl/subjects")).data["result"];
-    print('materie: $res');
+    var res = json
+        .decode((await http.get("$baseUrl/subjects")).data as String)["result"];
     return res;
   } catch (_) {
     throw errors.ServerError();
@@ -51,7 +51,7 @@ Future<void> deleteNote(String id, String sub_id, String jwt) async {
       options: Options(headers: {"Authorization": "Bearer $jwt"}));
   if (res.statusCode == errors.SERVER_DOWN) {
     throw errors.ServerError();
-  } else if (res.data["success"] == false) {
+  } else if (json.decode(res.data as String)["success"] == false) {
     throw errors.BackendError(res.statusCode);
   } else {
     io.getAndUpdateToken(res, platform.tokenStorage);
@@ -87,7 +87,7 @@ Future<void> addNote(
     } else if (res.statusCode == errors.NOT_FOUND) {
       throw errors.NotFoundError();
     } else {
-      var body = res.data;
+      var body = json.decode(res.data as String);
       if (body["success"] == false) {
         throw errors.BackendError(res.statusCode);
       } else {
@@ -106,15 +106,18 @@ Future<List<Map<String, Object>>> getNotes(
   // TODO: what if this fails?
   Map<String, Object> result;
   if (author == null && subjectId != null)
-    result = (await http.get("$baseUrl/notes?subject_id=$subjectId")).data;
+    result = json.decode(
+        (await http.get("$baseUrl/notes?subject_id=$subjectId")).data
+            as String);
   else if (author != null && subjectId == null)
-    result = (await http.get("$baseUrl/notes?author_id=$author")).data;
+    result = json.decode(
+        (await http.get("$baseUrl/notes?author_id=$author")).data as String);
   else if (author != null && subjectId != null)
-    result = (await http
+    result = json.decode((await http
             .get("$baseUrl/notes?author_id=$author&subject_id=$subjectId"))
-        .data;
+        .data as String);
   else
-    result = (await http.get("$baseUrl/notes")).data;
+    result = json.decode((await http.get("$baseUrl/notes")).data as String);
 
   return result["result"];
 }
@@ -128,7 +131,7 @@ Future<void> deleteUser(int id, String jwt) async {
   } else if (res.statusCode == errors.INVALID_CREDENTIALS ||
       res.statusCode == errors.USER_NOT_FOUND) {
     throw errors.BackendError(res.statusCode);
-  } else if (res.data["success"] == true) {
+  } else if (json.decode(res.data as String)["success"] == true) {
     return;
   }
   io.getAndUpdateToken(res, platform.tokenStorage);
@@ -142,7 +145,8 @@ Future<Map<String, Object>> getUser(String uid) async {
 }
 
 Future<List<Map<String, Object>>> search(String q) async {
-  return (await http.get('$baseUrl/notes/search?q=$q')).data["result"];
+  return json.decode(
+      (await http.get('$baseUrl/notes/search?q=$q')).data as String)["result"];
 }
 
 Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
