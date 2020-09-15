@@ -22,16 +22,23 @@ class NotePage extends StatelessWidget {
         child: FutureBuilder(
             future: noteDataFuture,
             builder: (context, snapshot) {
-              // TODO: error handling
               if (!snapshot.hasData) return CircularProgressIndicator();
               if (snapshot.hasError) {
-                if (snapshot.error is NotFoundError) {
+                if (snapshot.error is BackendError) {
                   goToRouteAsap(context, "/");
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                          title: Text(
-                              "Non è stato possibile ottenere i dati dell'appunto")));
+                        title: Text(
+                            "Non è stato possibile ottenere i dati dell'appunto"),
+                        content: Text(
+                            "Error ${(snapshot.error as BackendError).code}"),
+                      ));
+                } else {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                          title: Text("C'è un problema con i server")));
                 }
               }
               var noteData = snapshot.data;

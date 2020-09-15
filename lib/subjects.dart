@@ -177,6 +177,7 @@ class SubjectNotes extends StatelessWidget {
             future: notesFuture,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
+                // TODO: better error handling
                 print("notes: ${snapshot.data}");
                 doItAsap(
                     context,
@@ -251,15 +252,12 @@ class SearchedNotes extends StatelessWidget {
   final List<Map<String, Object>> data;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       height: MediaQuery.of(context).size.height * 60 / 100,
       padding: EdgeInsets.all(16.0),
       child: ListView.builder(
         itemCount: data.length,
         itemBuilder: (context, i) {
-          // TODO: aspettare progressi backend
-          // DateTime date = DateTime.parse(data[i]["uploaded_at"]);
           return ListTile(
             leading: Icon(Icons.note),
             title: Text(data[i]["title"]),

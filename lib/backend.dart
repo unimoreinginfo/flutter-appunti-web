@@ -6,8 +6,6 @@ import 'errors.dart' as errors;
 import 'io.dart' as io;
 import 'platform.dart' as platform;
 
-// TODO: find out why cookies are not being sent to the server
-
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json
     .decode(ascii.decode(base64.decode(base64.normalize(token.split(".")[1]))));
@@ -60,12 +58,11 @@ Future<void> deleteNote(String id, String sub_id, String jwt) async {
 
 /// Get note by id
 Future getNote(String sub_id, String id) async {
-  // TODO: what if this fails?
-
   var res = json
       .decode((await http.get("$baseUrl/notes/$sub_id/$id")).data as String);
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
   if (res["success"] == false) {
-    throw errors.NotFoundError();
+    throw errors.BackendError(res.statusCode);
   }
   return res["result"];
 }
@@ -100,26 +97,28 @@ Future<void> addNote(
   }
 }
 
-// Get notes, optionally
+// Get notes, optionally with filters
 Future<List<Map<String, Object>>> getNotes(
     {String author, int subjectId}) async {
   // TODO: what if this fails?
-  Map<String, Object> result;
+  Response res;
   if (author == null && subjectId != null)
-    result = json.decode(
-        (await http.get("$baseUrl/notes?subject_id=$subjectId")).data
-            as String);
+    res = await http.get("$baseUrl/notes?subject_id=$subjectId");
   else if (author != null && subjectId == null)
-    result = json.decode(
-        (await http.get("$baseUrl/notes?author_id=$author")).data as String);
+    res = await http.get("$baseUrl/notes?author_id=$author");
   else if (author != null && subjectId != null)
-    result = json.decode((await http
-            .get("$baseUrl/notes?author_id=$author&subject_id=$subjectId"))
-        .data as String);
+    res = await http
+        .get("$baseUrl/notes?author_id=$author&subject_id=$subjectId");
   else
-    result = json.decode((await http.get("$baseUrl/notes")).data as String);
+    res = await http.get("$baseUrl/notes");
 
-  return result["result"];
+  if (res.statusCode == errors.SERVER_DOWN)
+    throw errors.ServerError();
+  else {
+    Map<String, Object> data = json.decode(res.data);
+    if (data["success"] == false) throw errors.BackendError(res.statusCode);
+    return data["result"];
+  }
 }
 
 Future<void> deleteUser(int id, String jwt) async {
@@ -151,7 +150,7 @@ Future<List<Map<String, Object>>> search(String q) async {
 
 Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
   // TODO: what if this fails?
-  // TODO:tenere presente che la route backend è considerata WIP/instabile
+  // TODO: backend is WIP/unstable
 
   var res = await http.post("$baseUrl/$subjectId/$id",
       data: data, options: Options(headers: {"Authorization": "Bearer $jwt"}));

@@ -27,6 +27,7 @@ class ProfilePage extends StatelessWidget {
               future: userFuture,
               builder: (context, snapshot) {
                 final Map user = snapshot.data;
+                // TODO: better error handling
                 if (snapshot.hasError) {
                   showDialog(
                       context: context,
@@ -108,6 +109,7 @@ class ProfilePageBody extends StatelessWidget {
               FutureBuilder(
                   future: notesFuture,
                   builder: (context, snapshot) {
+                    // TODO: better error handling
                     if (snapshot.hasError) {
                       doItAsap(
                           context,
