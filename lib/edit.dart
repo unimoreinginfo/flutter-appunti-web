@@ -5,6 +5,21 @@ import 'note.dart' show ProvidedArg;
 import 'platform.dart' show tokenStorage;
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
+import 'platform.dart' as platform;
+
+class LogoutButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.logout),
+      tooltip: "Esci",
+      onPressed: () {
+        LoginManager.logOut(platform.tokenStorage);
+        Navigator.pushNamed(context, "/");
+      },
+    );
+  }
+}
 
 class EditPage extends StatelessWidget {
   EditPage(this.mod, this.token);
@@ -18,6 +33,7 @@ class EditPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
             mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),
+        actions: [LogoutButton()],
       ),
       body: Scaffold(
         body: mod ? ModPage(token) : PlebPage(token),
@@ -58,8 +74,10 @@ class ModPage extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) => Scaffold(
                         appBar: AppBar(
-                            title: Text(
-                                "Ci dia i suoi appunti, signor moderatore.")),
+                          title:
+                              Text("Ci dia i suoi appunti, signor moderatore."),
+                          actions: [LogoutButton()],
+                        ),
                         body: PlebPage(jwt))));
           },
         ),
@@ -70,8 +88,12 @@ class ModPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Scaffold(
-                        appBar: AppBar(title: Text("Elenco degli utenti")),
-                        body: UsersList(jwt))));
+                          appBar: AppBar(
+                            title: Text("Elenco degli utenti"),
+                            actions: [LogoutButton()],
+                          ),
+                          body: UsersList(jwt),
+                        )));
           },
         ),
         Expanded(

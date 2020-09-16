@@ -1,8 +1,11 @@
 import 'package:appunti_web_frontend/backend.dart';
 import 'package:appunti_web_frontend/errors.dart';
+import 'package:appunti_web_frontend/io.dart';
+import 'package:appunti_web_frontend/platform.dart';
 import 'package:appunti_web_frontend/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:appunti_web_frontend/edit.dart' show LogoutButton;
 
 import 'consts.dart';
 
@@ -16,7 +19,11 @@ class NotePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Scarica file appunti")),
+      appBar: AppBar(
+        title: Text("Scarica file appunti"),
+        actions:
+            getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder(

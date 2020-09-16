@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'note.dart';
+import 'note.dart' show ProvidedArg, NotePage;
 import 'platform.dart' as platform;
 import 'utils.dart';
 import 'backend.dart' as backend;
+import 'edit.dart' show LogoutButton;
 import 'io.dart';
 
 class SubjectsPage extends StatelessWidget {
@@ -13,17 +14,10 @@ class SubjectsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Appunti di $name"),
-          actions: [
-            if (getUserIdOrNull(platform.tokenStorage) != null)
-              IconButton(
-                  onPressed: () {
-                    LoginManager.logOut(platform.tokenStorage);
-                    Navigator.pushNamed(context, '/');
-                  },
-                  icon: Icon(Icons.logout))
-          ],
-        ),
+            title: Text("Appunti di $name"),
+            actions: getUserIdOrNull(platform.tokenStorage) == null
+                ? null
+                : [LogoutButton()]),
         body: Center(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 5.0),

@@ -7,6 +7,7 @@ import 'platform.dart' show tokenStorage;
 import 'utils.dart';
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
+import 'edit.dart' show LogoutButton;
 
 class ProfilePage extends StatelessWidget {
   ProfilePage(this.uid, {this.userData = null});
@@ -21,7 +22,10 @@ class ProfilePage extends StatelessWidget {
     final notesFuture = backend.getNotes(author: uid);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Pagina dell'autore")),
+      appBar: AppBar(
+          title: Text("Pagina dell'autore"),
+          actions:
+              getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()]),
       body: userData == null
           ? FutureBuilder(
               future: userFuture,
@@ -78,24 +82,18 @@ class ProfilePageBody extends StatelessWidget {
                 "Utente ${user["name"]} ${user["surname"]}",
                 style: Theme.of(context).textTheme.headline4,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Email: "),
-                  FlatButton(
-                    child: Text(user["email"]),
-                    onPressed: () {
-                      launch("mailto:${user["email"]}");
-                    },
-                  ),
-                  FlatButton(
-                    child: Text("${user["unimore_id"]}@studenti.unimore.it"),
-                    onPressed: () {
-                      launch(
-                          "mailto:${user["unimore_id"]}@studenti.unimore.it");
-                    },
-                  )
-                ],
+              Text("Email: "),
+              FlatButton(
+                child: Text(user["email"]),
+                onPressed: () {
+                  launch("mailto:${user["email"]}");
+                },
+              ),
+              FlatButton(
+                child: Text("${user["unimore_id"]}@studenti.unimore.it"),
+                onPressed: () {
+                  launch("mailto:${user["unimore_id"]}@studenti.unimore.it");
+                },
               ),
               if (canEdit)
                 FlatButton(
@@ -130,6 +128,7 @@ class ProfilePageBody extends StatelessWidget {
                             print("creando nota $i (${notes[i]["title"]})");
                             var date = DateTime.parse(notes[i]["uploaded_at"]);
                             return ListTile(
+                                leading: Icon(Icons.note),
                                 onTap: () {
                                   Navigator.push(
                                       context,
