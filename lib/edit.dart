@@ -265,7 +265,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
             onPressed: () {
               try {
                 editNote(note["note_id"], '${note['subject_id']}', widget.jwt,
-                    data: {"subject_id": _subjectId, "title": _noteTitle.text});
+                    data: {"new_subject_id": _subjectId, "title": _noteTitle.text});
               } catch (e) {
                 print("Error: $e");
                 showDialog(
