@@ -95,11 +95,9 @@ class LoginManager {
       "unimore_id": unimoreId
     });
 
-    if (res.statusCode == USER_EXISTS) throw BackendError(USER_EXISTS);
-    if (res.statusCode == GENERIC_ERROR) throw BackendError(GENERIC_ERROR);
     if (res.statusCode == SERVER_DOWN) throw ServerError();
 
-    return json.decode(res.data["success"]);
+    return json.decode(res.data)["success"];
   }
 }
 

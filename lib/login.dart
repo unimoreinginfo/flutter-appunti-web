@@ -221,8 +221,8 @@ class _SignupControlsState extends State<SignupControls> {
                 if (!RegExp(emailRegex).hasMatch(_emailController.text)) {
                   setState(() {
                     _badEmail = true;
-                    return;
                   });
+                  return;
                 }
                 setState(() {
                   _badEmail = false;
