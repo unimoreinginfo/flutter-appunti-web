@@ -39,8 +39,12 @@ bool refreshTokenStillValid(TokenStorage storage) =>
     60;
 
 void getAndUpdateToken(Response res, TokenStorage storage) {
-  var newTok = res.headers.map["Authorization"].first.split(" ")[1];
-  updateToken(storage, newTok);
+  try {
+    var newTok = res.headers.map["Authorization"].first.split(" ")[1];
+    updateToken(storage, newTok);
+  } catch (_) {
+    print(res.headers.map["Authorization"]);
+  }
 }
 
 /// We call this class for login purposes so that we are at least
