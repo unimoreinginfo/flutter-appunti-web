@@ -54,6 +54,42 @@ class _LoginControlsState extends State<LoginControls> {
   Future<bool> _logIn(String email, String password) async =>
       await LoginManager(tokenStorage).logIn(email, password);
 
+  void _signIn(String email, String password) async {
+    setState(() {
+      _loggingIn = true;
+    });
+    String errorString = null;
+    try {
+      bool success = await _logIn(email, password);
+
+      if (success)
+        Navigator.pushReplacementNamed(context, "/edit");
+      else
+        errorString = "Si è verificato un errore sconosciuto";
+    } on BackendError catch (e) {
+      if (e.code == GENERIC_ERROR)
+        errorString = "Si è verificato un errore sconosciuto";
+      else if (e.code == INVALID_CREDENTIALS)
+        errorString = "Credenziali sbagliate";
+    } on NetworkError {
+      errorString =
+          "Si è verificato un errore durante la connessione al server";
+    } catch (e) {
+      errorString = "Si è verificato un errore sconosciuto $e";
+    } finally {
+      setState(() {
+        _loggingIn = false;
+      });
+    }
+    if (errorString != null) {
+      showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text(errorString),
+          ));
+    }
+  }
+
   @override
   Widget build(context) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -66,9 +102,11 @@ class _LoginControlsState extends State<LoginControls> {
       Text("oppure"),
       TextField(
           autofocus: true,
+          keyboardType: TextInputType.emailAddress,
           controller: _emailController,
           decoration: InputDecoration(labelText: "email")),
       TextField(
+          onSubmitted: (String pass) => _signIn(_emailController.text, pass),
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(labelText: "password")),
@@ -77,43 +115,8 @@ class _LoginControlsState extends State<LoginControls> {
           : RaisedButton(
               color: Theme.of(context).primaryColor,
               child: Text("Accedi", style: TextStyle(color: Colors.white)),
-              onPressed: () async {
-                setState(() {
-                  _loggingIn = true;
-                });
-                String errorString = null;
-                try {
-                  bool success = await _logIn(
-                      _emailController.text, _passwordController.text);
-
-                  if (success)
-                    Navigator.pushReplacementNamed(context, "/edit");
-                  else
-                    errorString = "Si è verificato un errore sconosciuto";
-                } on BackendError catch (e) {
-                  if (e.code == GENERIC_ERROR)
-                    errorString = "Si è verificato un errore sconosciuto";
-                  else if (e.code == INVALID_CREDENTIALS)
-                    errorString = "Credenziali sbagliate";
-                } on NetworkError {
-                  errorString =
-                      "Si è verificato un errore durante la connessione al server";
-                } catch (e) {
-                  errorString = "Si è verificato un errore sconosciuto $e";
-                } finally {
-                  setState(() {
-                    _loggingIn = false;
-                  });
-                }
-                if (errorString != null) {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text(errorString),
-                      ));
-                  Navigator.pushReplacementNamed(context, "/edit");
-                }
-              }),
+              onPressed: () =>
+                  _signIn(_emailController.text, _passwordController.text)),
     ]);
   }
 }
@@ -185,6 +188,7 @@ class _SignupControlsState extends State<SignupControls> {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       Text("Registrazione"),
       TextField(
+          keyboardType: TextInputType.emailAddress,
           controller: _emailController,
           decoration: InputDecoration(labelText: "Indirizzo e-mail")),
       TextField(
@@ -194,6 +198,7 @@ class _SignupControlsState extends State<SignupControls> {
           controller: _surnameController,
           decoration: InputDecoration(labelText: "Cognome")),
       TextField(
+          keyboardType: TextInputType.number,
           controller: _idController,
           decoration: InputDecoration(labelText: "ID esse3 unimore")),
       TextField(

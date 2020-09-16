@@ -233,7 +233,7 @@ class SubjectNotes extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => NotePage(
                                               noteDataFuture: backend.getNote(
-                                            notes[i]["subject_id"],
+                                            '${notes[i]["subject_id"]}',
                                             notes[i]["note_id"],
                                           )))),
                             );

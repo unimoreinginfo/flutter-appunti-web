@@ -57,14 +57,14 @@ Future<void> deleteNote(String id, String sub_id, String jwt) async {
 }
 
 /// Get note by id
-Future getNote(String sub_id, String id) async {
-  var res = json
-      .decode((await http.get("$baseUrl/notes/$sub_id/$id")).data as String);
+Future<Map> getNote(String sub_id, String id) async {
+  Response res = await http.get("$baseUrl/notes/$sub_id/$id");
   if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
-  if (res["success"] == false) {
+  Map resData = json.decode(res.data as String);
+  if (resData["success"] == false) {
     throw errors.BackendError(res.statusCode);
   }
-  return res["result"];
+  return resData["result"];
 }
 
 Future<void> addNote(
