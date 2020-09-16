@@ -152,7 +152,7 @@ Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
   // TODO: what if this fails?
   // TODO: backend is WIP/unstable
 
-  var res = await http.post("$baseUrl/$subjectId/$id",
+  var res = await http.post("$baseUrl/notes/$subjectId/$id",
       data: data, options: Options(headers: {"Authorization": "Bearer $jwt"}));
 
   if (res.statusCode == errors.INVALID_CREDENTIALS) {
