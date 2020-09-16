@@ -1,3 +1,4 @@
+import 'package:appunti_web_frontend/consts.dart';
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
 import 'package:flutter/material.dart';
@@ -161,12 +162,15 @@ class _SignupControlsState extends State<SignupControls> {
   TextEditingController _nameController;
   TextEditingController _surnameController;
   bool _signingUp;
+  bool _badEmail;
 
   @override
   initState() {
     super.initState();
 
+    _badEmail = false;
     _signingUp = false;
+
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _idController = TextEditingController();
@@ -190,7 +194,10 @@ class _SignupControlsState extends State<SignupControls> {
       TextField(
           keyboardType: TextInputType.emailAddress,
           controller: _emailController,
-          decoration: InputDecoration(labelText: "Indirizzo e-mail")),
+          decoration: InputDecoration(
+            labelText: "Indirizzo e-mail",
+            errorText: _badEmail ? "Email non valida" : null,
+          )),
       TextField(
           controller: _nameController,
           decoration: InputDecoration(labelText: "Nome")),
@@ -211,7 +218,14 @@ class _SignupControlsState extends State<SignupControls> {
               color: Theme.of(context).primaryColor,
               child: Text("Registrati", style: TextStyle(color: Colors.white)),
               onPressed: () async {
+                if (!RegExp(emailRegex).hasMatch(_emailController.text)) {
+                  setState(() {
+                    _badEmail = true;
+                    return;
+                  });
+                }
                 setState(() {
+                  _badEmail = false;
                   _signingUp = true;
                 });
                 String errorString = null;
