@@ -81,8 +81,6 @@ Future<void> addNote(
 
     if (res.statusCode == errors.SERVER_DOWN) {
       throw errors.ServerError();
-    } else if (res.statusCode == errors.NOT_FOUND) {
-      throw errors.NotFoundError();
     } else {
       var body = json.decode(res.data as String);
       if (body["success"] == false) {
@@ -100,7 +98,6 @@ Future<void> addNote(
 // Get notes, optionally with filters
 Future<List<Map<String, Object>>> getNotes(
     {String author, int subjectId}) async {
-  // TODO: what if this fails?
   Response res;
   if (author == null && subjectId != null)
     res = await http.get("$baseUrl/notes?subject_id=$subjectId");
@@ -127,41 +124,48 @@ Future<void> deleteUser(int id, String jwt) async {
 
   if (res.statusCode == errors.SERVER_DOWN) {
     throw errors.ServerError();
-  } else if (res.statusCode == errors.INVALID_CREDENTIALS ||
-      res.statusCode == errors.USER_NOT_FOUND) {
+  } else if (json.decode(res.data as String)["success"] == false) {
     throw errors.BackendError(res.statusCode);
-  } else if (json.decode(res.data as String)["success"] == true) {
-    return;
   }
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
 Future<Map<String, Object>> getUser(String uid) async {
-  // TODO: what if this fails?
+  var res = await http.get("$baseUrl/users/$uid");
 
-  return json
-      .decode((await http.get("$baseUrl/users/$uid")).data as String)["result"];
+  if (res.statusCode == errors.SERVER_DOWN)
+    throw errors.ServerError();
+  else if (json.decode(res.data as String)["success"] == false)
+    throw errors.BackendError(res.statusCode);
+  return json.decode(res.data as String)["result"];
 }
 
 Future<List<Map<String, Object>>> search(String q) async {
-  return json.decode(
-      (await http.get('$baseUrl/notes/search?q=$q')).data as String)["result"];
+  var res = await http.get('$baseUrl/notes/search?q=$q');
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
+  if (json.decode(res.data)["success"] == false)
+    throw errors.BackendError(res.statusCode);
+
+  return json.decode(res.data as String)["result"];
 }
 
 Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
-  // TODO: what if this fails?
-  // TODO: backend is WIP/unstable
-
   var res = await http.post("$baseUrl/notes/$subjectId/$id",
       data: data, options: Options(headers: {"Authorization": "Bearer $jwt"}));
 
-  if (res.statusCode == errors.INVALID_CREDENTIALS) {
-    throw errors.BackendError(errors.INVALID_CREDENTIALS);
-  }
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
+  if (json.decode(res.data)["success"] == false)
+    throw errors.BackendError(res.statusCode);
+
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
 Future<List<Map<String, Object>>> getUsers() async {
-  return json
-      .decode((await http.get('$baseUrl/users')).data as String)["result"];
+  var res = await http.get('$baseUrl/users');
+
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
+  if (json.decode(res.data)["success"] == false)
+    throw errors.BackendError(res.statusCode);
+
+  return json.decode(res.data as String)["result"];
 }
