@@ -6,5 +6,7 @@ final baseUrl = "https://beta.emilianomaccaferri.com";
 
 // not a constant but has to stay here for the time being
 var adapter = BrowserHttpClientAdapter()..withCredentials = true;
-var http = DioForBrowser(BaseOptions(responseType: ResponseType.plain))
+var http = DioForBrowser(BaseOptions(
+    contentType: Headers.formUrlEncodedContentType,
+    responseType: ResponseType.plain))
   ..httpClientAdapter = adapter;
