@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'note.dart' show ProvidedArg, NotePage;
@@ -60,6 +62,33 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
   List<Map<String, Object>> data = null;
+  Timer timer = null;
+
+  void searchDebounced(String q) async {
+    List<Map<String, Object>> res;
+    if (q.length < 2)
+      setState(() {
+        if (timer != null) {
+          timer.cancel();
+          timer = null;
+        }
+        data = null;
+      });
+    else {
+      if (timer != null) timer.cancel();
+      timer = Timer(Duration(seconds: 1), () async {
+        res = await backend.search(q);
+        setState(() {
+          if (res.length == 0) {
+            data = null;
+          } else {
+            data = res;
+          }
+          print("risultati ricerca: $data");
+        });
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -81,26 +110,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                 "Cerca",
                 style: Theme.of(context).textTheme.headline4,
               ),
-              TextField(
-                onChanged: (q) async {
-                  List<Map<String, Object>> res;
-                  if (q.length == 0)
-                    setState(() {
-                      data = null;
-                    });
-                  else {
-                    res = await backend.search(q);
-                    setState(() {
-                      if (res.length == 0) {
-                        data = null;
-                      } else {
-                        data = res;
-                      }
-                      print("risultati ricerca: $data");
-                    });
-                  }
-                },
-              ),
+              TextField(onChanged: searchDebounced),
             ],
           ),
         if (data == null)
