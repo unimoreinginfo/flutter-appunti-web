@@ -1,5 +1,5 @@
 import 'io.dart';
-import 'webio.dart';
+import 'mobileio.dart';
 
 // Web
-final TokenStorage tokenStorage = LocalStorageTokenStorage();
+final TokenStorage tokenStorage = SecureStorageTokenStorage();

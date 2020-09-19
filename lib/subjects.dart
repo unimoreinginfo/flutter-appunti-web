@@ -46,7 +46,7 @@ class SubjectsPage extends StatelessWidget {
 class SubjectsPageContents extends StatefulWidget {
   SubjectsPageContents(this.subjects);
 
-  final List<Map<String, Object>> subjects;
+  final List subjects;
 
   @override
   _SubjectsPageContentsState createState() => _SubjectsPageContentsState();
@@ -59,7 +59,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   Future<List> getNotesFuture(int id) => backend.getNotes(subjectId: id);
   int selectedSubject = -1;
   List<Future<List>> notesFuture;
-  List<Map<String, Object>> data = null;
+  List data = null;
 
   @override
   void initState() {
@@ -184,7 +184,7 @@ class SubjectNotes extends StatelessWidget {
               }
               if (snapshot.connectionState == ConnectionState.waiting)
                 return CircularProgressIndicator();
-              final List<Map> notes = snapshot.data;
+              final List notes = snapshot.data;
               print("notes: $notes");
               if (notes.length == 0)
                 return Padding(

@@ -14,7 +14,8 @@ class Illustration extends StatelessWidget {
   @override
   Widget build(context) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Image.network("/img/$name.png", height: 200.0));
+      child: Image.network("https://betappunti.carminezacc.com/img/$name.png",
+          height: 200.0));
 }
 
 class HomePage extends StatelessWidget {

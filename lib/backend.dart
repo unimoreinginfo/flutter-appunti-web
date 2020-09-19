@@ -96,8 +96,7 @@ Future<void> addNote(
 }
 
 // Get notes, optionally with filters
-Future<List<Map<String, Object>>> getNotes(
-    {String author, int subjectId}) async {
+Future<List> getNotes({String author, int subjectId}) async {
   Response res;
   if (author == null && subjectId != null)
     res = await http.get("$baseUrl/notes?subject_id=$subjectId");
@@ -130,7 +129,7 @@ Future<void> deleteUser(int id, String jwt) async {
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<Map<String, Object>> getUser(String uid) async {
+Future<Map> getUser(String uid) async {
   var res = await http.get("$baseUrl/users/$uid");
 
   if (res.statusCode == errors.SERVER_DOWN)
@@ -140,7 +139,7 @@ Future<Map<String, Object>> getUser(String uid) async {
   return json.decode(res.data as String)["result"];
 }
 
-Future<List<Map<String, Object>>> search(String q) async {
+Future<List> search(String q) async {
   var res = await http.get('$baseUrl/notes/search?q=$q');
   if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
   if (json.decode(res.data)["success"] == false)
@@ -160,7 +159,7 @@ Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<List<Map<String, Object>>> getUsers() async {
+Future<List> getUsers() async {
   var res = await http.get('$baseUrl/users');
 
   if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();

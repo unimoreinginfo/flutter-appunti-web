@@ -22,18 +22,19 @@ void updateToken(TokenStorage storage, String newTok) {
   storage.writeJson("token", newTok);
 }
 
-String getUserIdOrNull(TokenStorage storage) {
+Future<String> getUserIdOrNull(TokenStorage storage) async {
   try {
-    return json.decode(storage.readJson("token"))["id"];
+    return json.decode(await storage.readJson("token"))["id"];
   } catch (_) {
     return null;
   }
 }
 
-String getToken(TokenStorage storage) => storage.readJson("token");
+Future<String> getToken(TokenStorage storage) async =>
+    storage.readJson("token");
 
-bool refreshTokenStillValid(TokenStorage storage) =>
-    DateTime.parse(storage.readJson("expiry"))
+Future<bool> refreshTokenStillValid(TokenStorage storage) async =>
+    DateTime.parse(await storage.readJson("expiry"))
         .difference(DateTime.now())
         .inMinutes >=
     60;
@@ -104,7 +105,7 @@ class LoginManager {
 abstract class TokenStorage {
   /// throws `NotFoundError` if it can't read the thing
 
-  String readJson(String name);
-  void writeJson(String name, String value);
-  void delete(String name);
+  Future<String> readJson(String name);
+  Future<void> writeJson(String name, String value);
+  Future<void> delete(String name);
 }

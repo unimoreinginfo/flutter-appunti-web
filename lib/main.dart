@@ -14,80 +14,69 @@ void main() {
   runApp(MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Appunti Web',
       locale: Locale('it', 'IT'),
       theme: ThemeData(
-        primaryColor: Color(0xff6246ea),
-        textTheme: TextTheme(
-          bodyText2: TextStyle(
-             letterSpacing: 0,
-            wordSpacing: -1,
-            height: 1.3,
-            fontSize: 17.0
-          ),
-          headline4: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: Colors.black
-          ),
-          headline3: TextStyle(
-            height: 1.4,
-            fontWeight: FontWeight.w900,
-            color: Colors.black
-          ),
-          button: TextStyle(
-            color: Colors.white
-          )
-        )
-      ),
+          primaryColor: Color(0xff6246ea),
+          textTheme: TextTheme(
+              bodyText2: TextStyle(
+                  letterSpacing: 0,
+                  wordSpacing: -1,
+                  height: 1.3,
+                  fontSize: 17.0),
+              headline4:
+                  TextStyle(fontWeight: FontWeight.w900, color: Colors.black),
+              headline3: TextStyle(
+                  height: 1.4,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black),
+              button: TextStyle(color: Colors.white))),
       routes: {
         "/edit": (context) {
-          String token;
-          try {
-            token = getToken(tokenStorage);
-            if(!refreshTokenStillValid(tokenStorage)) goToRouteAsap(context, '/login');
-            else {
-              try {
-                bool mod = isMod(token);
-                return EditPage(mod, token);
-              }
-              catch(e) {
-                showDialog(
-                  context: context,
-                  child: AlertDialog(
-                    title: Text("$e")
-                  )
-                );
-                goToRouteAsap(context, '/login');
-              }
-            }
-          }
-          catch(e) {
-            goToRouteAsap(context, '/login');
-          } 
-          return CircularProgressIndicator();
-          
-        }, 
+          return FutureBuilder(
+              future: refreshTokenStillValid(tokenStorage),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  goToRouteAsap(context, '/login');
+                }
+                if (!snapshot.hasData) return CircularProgressIndicator();
+                if (snapshot.data == false) goToRouteAsap(context, '/login');
+                return FutureBuilder(
+                    future: getToken(tokenStorage),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        goToRouteAsap(context, '/login');
+                        showDialog(
+                            context: context,
+                            child:
+                                AlertDialog(title: Text("${snapshot.error}")));
+                      }
+                      if (!snapshot.hasData) return CircularProgressIndicator();
+                      return EditPage(isMod(snapshot.data), snapshot.data);
+                    });
+              });
+        },
         "/login": (context) => LoginPage(),
         "/signup": (context) => SignupPage(),
         "/": (context) => HomePage(),
         "/subjects": (context) => SubjectsPage(),
-        "/profile": (context)  {
+        "/profile": (context) {
           List args = ModalRoute.of(context).settings.arguments;
-          if(args[0] == ProvidedArg.id) {
+          if (args[0] == ProvidedArg.id) {
             String uid = args[1];
             return ProfilePage(uid);
-          } else return ProfilePage(args[1]["id"], userData: args[1]);
+          } else
+            return ProfilePage(args[1]["id"], userData: args[1]);
         },
         "/editProfile": (context) {
-          Map args = ModalRoute.of(context).settings.arguments;
-          return EditProfile(args);
+          List args = ModalRoute.of(context).settings.arguments;
+          Map userData = args[0];
+          String jwt = args[1];
+          return EditProfile(userData, jwt);
         }
       },
       initialRoute: '/',
