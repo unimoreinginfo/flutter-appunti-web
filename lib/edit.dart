@@ -57,7 +57,8 @@ class PlebPage extends StatefulWidget {
 class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 0;
-  File _selectedFile = null;
+  String _selectedFilename = null;
+  List _fileData;
   bool _sendingNote = false;
 
   @override
@@ -99,13 +100,15 @@ class _PlebPageState extends State<PlebPage> {
             controller: _title,
             decoration: InputDecoration(labelText: "Titolo appunto"),
           ),
-          if (_selectedFile == null)
+          if (_selectedFilename == null)
             FlatButton(
                 onPressed: () async {
                   var res = await FilePicker.platform.pickFiles();
                   if (res != null && res.isSinglePick)
                     setState(() {
-                      _selectedFile = File(res.files.single.path);
+		      _fileData.clear();
+                      _selectedFilename = res.files.single.name;
+		      _fileData = res.files.single.bytes;
                     });
                 },
                 color: Theme.of(context).primaryColor,
@@ -114,12 +117,13 @@ class _PlebPageState extends State<PlebPage> {
           else
             Row(
               children: [
-                Text("Selezionato file ${_selectedFile.path.split('/').last}"),
+                Text("Selezionato file ${_selectedFilename}"),
                 IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
                       setState(() {
-                        _selectedFile = null;
+		        _fileData.clear();
+                        _selectedFilename = null;
                       });
                     })
               ],
@@ -134,7 +138,7 @@ class _PlebPageState extends State<PlebPage> {
                   });
                   try {
                     await backend.addNote(widget.jwt, _title.text,
-                        "$_subjectId", _selectedFile.path);
+                        "$_subjectId", _selectedFilename, _fileData);
                   } catch (e) {
                     setState(() {
                       _sendingNote = false;
