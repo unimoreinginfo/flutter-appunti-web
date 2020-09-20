@@ -58,64 +58,107 @@ class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 0;
   File _selectedFile = null;
+  bool _sendingNote = false;
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      FutureBuilder<List<Map>>(
-          future: backend.getSubjects(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              showDialog(
-                  context: context,
-                  child: AlertDialog(
-                      title: Text(
-                          "Si è verificato un errore durante l'accesso alle materie")));
-              return Text("si è verificato un errore");
-            }
-            if (!snapshot.hasData) {
-              return Text("aspettando le materie");
-            }
-            final subjects = snapshot.data;
-            return DropdownButton(
-                value: _subjectId,
-                items: subjects
-                    .map((subject) => DropdownMenuItem(
-                        value: subject["id"], child: Text(subject["name"])))
-                    .toList(),
-                onChanged: (value) {
+    return Center(
+      child: Container(
+        width: 900.0,
+        padding: EdgeInsets.all(15.0),
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          FutureBuilder<List<Map>>(
+              future: backend.getSubjects(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                          title: Text(
+                              "Si è verificato un errore durante l'accesso alle materie")));
+                  return Text("si è verificato un errore");
+                }
+                if (!snapshot.hasData) {
+                  return Text("aspettando le materie");
+                }
+                final subjects = snapshot.data;
+                return DropdownButton(
+                    value: _subjectId,
+                    items: subjects
+                        .map((subject) => DropdownMenuItem(
+                            value: subject["id"], child: Text(subject["name"])))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _subjectId = value;
+                      });
+                    });
+              }),
+          TextField(
+            controller: _title,
+            decoration: InputDecoration(labelText: "Titolo appunto"),
+          ),
+          if (_selectedFile == null)
+            FlatButton(
+                onPressed: () async {
+                  var res = await FilePicker.platform.pickFiles();
+                  if (res != null && res.isSinglePick)
+                    setState(() {
+                      _selectedFile = File(res.files.single.path);
+                    });
+                },
+                color: Theme.of(context).primaryColor,
+                textColor: Colors.white,
+                child: Text("Aggiungi file"))
+          else
+            Row(
+              children: [
+                Text("Selezionato file ${_selectedFile.path.split('/').last}"),
+                IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: () {
+                      setState(() {
+                        _selectedFile = null;
+                      });
+                    })
+              ],
+            ),
+          if (_sendingNote)
+            CircularProgressIndicator()
+          else
+            FlatButton(
+                onPressed: () async {
                   setState(() {
-                    _subjectId = value;
+                    _sendingNote = true;
                   });
-                });
-          }),
-      TextField(
-        controller: _title,
-        decoration: InputDecoration(labelText: "Titolo appunto"),
+                  try {
+                    await backend.addNote(widget.jwt, _title.text,
+                        "$_subjectId", _selectedFile.path);
+                  } catch (_) {
+                    setState(() {
+                      _sendingNote = false;
+                    });
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text("Si è verificato un errore"),
+                        ));
+                    return;
+                  }
+                  Navigator.pushNamed(context, '/edit');
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text("Grazie mille."),
+                      ));
+                },
+                color: Colors.green,
+                textColor: Colors.white,
+                child: Text("Invia appunto"))
+        ]),
       ),
-      if (_selectedFile == null)
-        FlatButton(
-            onPressed: () async {
-              var res = await FilePicker.platform.pickFiles();
-              if (res != null && res.isSinglePick)
-                setState(() {
-                  _selectedFile = File(res.files.single.path);
-                });
-            },
-            color: Theme.of(context).primaryColor,
-            textColor: Colors.white,
-            child: Text("Aggiungi file"))
-      else
-        Text("Selezionato file ${_selectedFile.path}"),
-      FlatButton(
-          onPressed: () {
-            backend.addNote(
-                widget.jwt, _title.text, "$_subjectId", _selectedFile.path);
-          },
-          color: Colors.green,
-          textColor: Colors.white,
-          child: Text("Invia appunto"))
-    ]);
+    );
   }
 }
 
