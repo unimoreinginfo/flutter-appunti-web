@@ -246,46 +246,55 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        FlatButton(
-            onPressed: () {
-              setState(_setFieldsToDefault);
-            },
-            child: Text("Resetta campi")),
-        TextField(
-          controller: _userName,
-          decoration: InputDecoration(labelText: "Nome"),
+    return Scaffold(
+      appBar: AppBar(title: Text("Modifica dati utente")),
+      body: Center(
+        child: Container(
+          width: 900.0,
+          padding: EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FlatButton(
+                  onPressed: () {
+                    setState(_setFieldsToDefault);
+                  },
+                  child: Text("Resetta campi")),
+              TextField(
+                controller: _userName,
+                decoration: InputDecoration(labelText: "Nome"),
+              ),
+              TextField(
+                controller: _userSurname,
+                decoration: InputDecoration(labelText: "Cognome"),
+              ),
+              TextField(
+                controller: _userUnimoreId,
+                decoration: InputDecoration(labelText: "ID Unimore"),
+              ),
+              FlatButton(
+                  onPressed: () {
+                    editProfile(widget.userData["id"], _jwt, data: {
+                      "unimore_id": _userUnimoreId.text,
+                      "name": _userName.text,
+                      "surname": _userSurname.text
+                    });
+                  },
+                  child: Text("Modifica profilo")),
+              Divider(),
+              FlatButton(
+                  color: Colors.redAccent,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    deleteUser(widget.userData["id"], _jwt);
+                  },
+                  child: _deletionInProgress
+                      ? CircularProgressIndicator()
+                      : Text("ELIMINA UTENTE"))
+            ],
+          ),
         ),
-        TextField(
-          controller: _userSurname,
-          decoration: InputDecoration(labelText: "Cognome"),
-        ),
-        TextField(
-          controller: _userUnimoreId,
-          decoration: InputDecoration(labelText: "ID Unimore"),
-        ),
-        FlatButton(
-            onPressed: () {
-              editProfile(widget.userData["id"], _jwt, data: {
-                "unimore_id": _userUnimoreId.text,
-                "name": _userName.text,
-                "surname": _userSurname.text
-              });
-            },
-            child: Text("Modifica profilo")),
-        Divider(),
-        FlatButton(
-            color: Colors.redAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              deleteUser(widget.userData["id"], _jwt);
-            },
-            child: _deletionInProgress
-                ? CircularProgressIndicator()
-                : Text("ELIMINA UTENTE"))
-      ],
+      ),
     );
   }
 }
