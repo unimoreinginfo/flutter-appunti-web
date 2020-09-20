@@ -72,7 +72,7 @@ Future<void> addNote(
   var formData = FormData.fromMap({
     "title": title,
     "subject_id": subject,
-    "notes": MultipartFile.fromFile(filePath)
+    "notes": MultipartFile.fromFileSync(filePath)
   });
   try {
     var res = await http.post('$baseUrl/notes',
