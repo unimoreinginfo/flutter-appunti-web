@@ -46,12 +46,55 @@ class PlebPage extends StatelessWidget {
   PlebPage(this.jwt);
 
   final String jwt;
+  TextEditingController _Title;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build (in progress @Grimos10)
-    return Text(
-      "L'accesso è stato eseguito con succeso, ma la pagina per l'aggiunta degli appunti ancora non è stata implementata",
-    );
+    // TODO: implement build
+    return Column(
+      children: [
+        
+          FutureBuilder<List<Map>>(
+                        future:  backend.getSubjects(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                    title: Text(
+                                        "Si è verificato un errore durante l'accesso alle materie")));
+                            return Text("si è verificato un errore");
+                          }
+                          if (!snapshot.hasData) {
+                            return Text("aspettando le materie");
+                          }
+                          final subjects = snapshot.data;
+                          return DropdownButton(
+                              // select subject
+                              value: _subjectId,
+                              items: subjects
+                                  .map((subject) => DropdownMenuItem(
+                                      value: subject["id"],
+                                      child: Text(subject["name"])))
+                                  .toList(),
+                              );
+                        }),
+        
+TextField(
+          controller: _Title,
+          decoration: InputDecoration(labelText: "Titolo appunto"),
+        ),
+        FlatButton(
+            onPressed: () {
+              
+            },
+            child: Text("Aggiungi file")),
+
+       
+      
+  
+      
+     ]  
+      );
   }
 }
 
