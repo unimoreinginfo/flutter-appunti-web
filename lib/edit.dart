@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'io.dart';
@@ -42,59 +45,77 @@ class EditPage extends StatelessWidget {
   }
 }
 
-class PlebPage extends StatelessWidget {
+class PlebPage extends StatefulWidget {
   PlebPage(this.jwt);
 
   final String jwt;
-  TextEditingController _Title;
+
+  @override
+  _PlebPageState createState() => _PlebPageState();
+}
+
+class _PlebPageState extends State<PlebPage> {
+  TextEditingController _title = TextEditingController();
+  int _subjectId = 0;
+  File _selectedFile = null;
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Column(
-      children: [
-        
-          FutureBuilder<List<Map>>(
-                        future:  backend.getSubjects(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            showDialog(
-                                context: context,
-                                child: AlertDialog(
-                                    title: Text(
-                                        "Si è verificato un errore durante l'accesso alle materie")));
-                            return Text("si è verificato un errore");
-                          }
-                          if (!snapshot.hasData) {
-                            return Text("aspettando le materie");
-                          }
-                          final subjects = snapshot.data;
-                          return DropdownButton(
-                              // select subject
-                              value: _subjectId,
-                              items: subjects
-                                  .map((subject) => DropdownMenuItem(
-                                      value: subject["id"],
-                                      child: Text(subject["name"])))
-                                  .toList(),
-                              );
-                        }),
-        
-TextField(
-          controller: _Title,
-          decoration: InputDecoration(labelText: "Titolo appunto"),
-        ),
+    return Column(children: [
+      FutureBuilder<List<Map>>(
+          future: backend.getSubjects(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              showDialog(
+                  context: context,
+                  child: AlertDialog(
+                      title: Text(
+                          "Si è verificato un errore durante l'accesso alle materie")));
+              return Text("si è verificato un errore");
+            }
+            if (!snapshot.hasData) {
+              return Text("aspettando le materie");
+            }
+            final subjects = snapshot.data;
+            return DropdownButton(
+                value: _subjectId,
+                items: subjects
+                    .map((subject) => DropdownMenuItem(
+                        value: subject["id"], child: Text(subject["name"])))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _subjectId = value;
+                  });
+                });
+          }),
+      TextField(
+        controller: _title,
+        decoration: InputDecoration(labelText: "Titolo appunto"),
+      ),
+      if (_selectedFile == null)
         FlatButton(
-            onPressed: () {
-              
+            onPressed: () async {
+              var res = await FilePicker.platform.pickFiles();
+              if (res != null && res.isSinglePick)
+                setState(() {
+                  _selectedFile = File(res.files.single.path);
+                });
             },
-            child: Text("Aggiungi file")),
-
-       
-      
-  
-      
-     ]  
-      );
+            color: Theme.of(context).primaryColor,
+            textColor: Colors.white,
+            child: Text("Aggiungi file"))
+      else
+        Text("Selezionato file ${_selectedFile.path}"),
+      FlatButton(
+          onPressed: () {
+            backend.addNote(
+                widget.jwt, _title.text, "$_subjectId", _selectedFile.path);
+          },
+          color: Colors.green,
+          textColor: Colors.white,
+          child: Text("Invia appunto"))
+    ]);
   }
 }
 
