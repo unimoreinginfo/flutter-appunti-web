@@ -135,7 +135,7 @@ class _PlebPageState extends State<PlebPage> {
                   try {
                     await backend.addNote(widget.jwt, _title.text,
                         "$_subjectId", _selectedFile.path);
-                  } catch (_) {
+                  } catch (e) {
                     setState(() {
                       _sendingNote = false;
                     });
@@ -143,6 +143,7 @@ class _PlebPageState extends State<PlebPage> {
                         context: context,
                         child: AlertDialog(
                           title: Text("Si è verificato un errore"),
+                          content: Text("error: $e"),
                         ));
                     return;
                   }
