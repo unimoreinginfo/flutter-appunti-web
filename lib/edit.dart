@@ -221,72 +221,84 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        FlatButton(
-            onPressed: () {
-              setState(_setFieldsToDefault);
-            },
-            child: Text("Resetta campi")),
-        FutureBuilder<List<Map>>(
-            future: _subjectsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                showDialog(
-                    context: context,
-                    child: AlertDialog(
-                        title: Text(
-                            "Si è verificato un errore durante l'accesso alle materie")));
-                return Text("si è verificato un errore");
-              }
-              if (!snapshot.hasData) {
-                return Text("aspettando le materie");
-              }
-              final subjects = snapshot.data;
-              return DropdownButton(
-                  // select subject
-                  value: _subjectId,
-                  items: subjects
-                      .map((subject) => DropdownMenuItem(
-                          value: subject["id"], child: Text(subject["name"])))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _subjectId = value;
-                    });
-                  });
-            }),
-        TextField(
-          controller: _noteTitle,
-          decoration: InputDecoration(labelText: "Titolo appunto"),
-        ),
-        FlatButton(
-            onPressed: () {
-              try {
-                editNote(note["note_id"], '${note['subject_id']}', widget.jwt,
-                    data: {"new_subject_id": _subjectId, "title": _noteTitle.text});
-              } catch (e) {
-                print("Error: $e");
-                showDialog(
-                    context: context,
-                    child: AlertDialog(
-                        title: Text("Errore"), content: Text("$e")));
-              }
-            },
-            child: Text("Modifica valori appunto")),
-        Divider(),
-        FlatButton(
-            color: Colors.redAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              deleteNote(note["note_id"], '${note["subject_id"]}', widget.jwt);
-            },
-            child: _deletionInProgress
-                ? CircularProgressIndicator()
-                : Text("Non mi piace questo file, ELIMINA ORA"))
-      ],
-    );
+    return Scaffold(
+        appBar: AppBar(title: Text("Modifica appunto")),
+        body: Center(
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 5.0),
+                width: 900.0,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FlatButton(
+                        onPressed: () {
+                          setState(_setFieldsToDefault);
+                        },
+                        child: Text("Resetta campi")),
+                    FutureBuilder<List<Map>>(
+                        future: _subjectsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                    title: Text(
+                                        "Si è verificato un errore durante l'accesso alle materie")));
+                            return Text("si è verificato un errore");
+                          }
+                          if (!snapshot.hasData) {
+                            return Text("aspettando le materie");
+                          }
+                          final subjects = snapshot.data;
+                          return DropdownButton(
+                              // select subject
+                              value: _subjectId,
+                              items: subjects
+                                  .map((subject) => DropdownMenuItem(
+                                      value: subject["id"],
+                                      child: Text(subject["name"])))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _subjectId = value;
+                                });
+                              });
+                        }),
+                    TextField(
+                      controller: _noteTitle,
+                      decoration: InputDecoration(labelText: "Titolo appunto"),
+                    ),
+                    FlatButton(
+                        onPressed: () {
+                          try {
+                            editNote(note["note_id"], '${note['subject_id']}',
+                                widget.jwt, data: {
+                              "new_subject_id": _subjectId,
+                              "title": _noteTitle.text
+                            });
+                          } catch (e) {
+                            print("Error: $e");
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                    title: Text("Errore"),
+                                    content: Text("$e")));
+                          }
+                        },
+                        child: Text("Modifica valori appunto")),
+                    Divider(),
+                    FlatButton(
+                        color: Colors.redAccent,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          deleteNote(note["note_id"], '${note["subject_id"]}',
+                              widget.jwt);
+                        },
+                        child: _deletionInProgress
+                            ? CircularProgressIndicator()
+                            : Text("Non mi piace questo file, ELIMINA ORA"))
+                  ],
+                ))));
   }
 }
 
