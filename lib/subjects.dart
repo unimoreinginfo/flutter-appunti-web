@@ -135,7 +135,13 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
             Row(
               children: [
                 IconButton(
-                    icon: Icon(Icons.arrow_left_outlined), onPressed: () {}),
+                    icon: Icon(Icons.arrow_left_outlined),
+                    onPressed: () {
+                      _subjectsScrollController.animateTo(
+                          _subjectsScrollController.offset + 80.0,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.linear);
+                    }),
                 Container(
                   height: 100.0,
                   width: 700.0,

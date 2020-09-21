@@ -69,14 +69,16 @@ Future<Map> getNote(String sub_id, String id) async {
 
 Future<void> addNote(String jwt, String title, String subject,
     List<String> names, List<List> datas) async {
-  var formData = FormData.fromMap({
-    "title": title,
-    "subject_id": subject,
-    "notes": [
-      for (var i = 0; i < names.length; i++)
-        MultipartFile.fromBytes(datas[i], filename: names[i])
-    ]
-  });
+  var formData = FormData();
+  formData.fields.addAll([
+    MapEntry("title", title),
+    MapEntry("subject_id", subject),
+  ]);
+  formData.files.addAll([
+    for (var i = 0; i < names.length; i++)
+      MapEntry("notes", MultipartFile.fromBytes(datas[i], filename: names[i])),
+  ]);
+
   try {
     var res = await http.post('$baseUrl/notes',
         data: formData,
