@@ -218,7 +218,7 @@ class _SignupControlsState extends State<SignupControls> {
           obscureText: true,
           decoration: InputDecoration(
             labelText: "password",
-            errorText: _badPassword ? "Email non valida" : null,
+            errorText: _badPassword ? "Password non valida" : null,
           )),
       _signingUp
           ? CircularProgressIndicator()
