@@ -128,7 +128,7 @@ class SignupPage extends StatelessWidget {
   @override
   Widget build(context) =>
       Scaffold(
-        appBar: AppBar(title: Text("Registrati"),
+        appBar: AppBar(title: Text("Registrati")),
         body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
             duration: Duration(milliseconds: 500),
