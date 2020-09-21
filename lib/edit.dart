@@ -7,6 +7,7 @@ import 'platform.dart' show tokenStorage;
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
 import 'platform.dart' as platform;
+import 'utils.dart';
 
 class LogoutButton extends StatelessWidget {
   @override
@@ -55,15 +56,26 @@ class PlebPage extends StatefulWidget {
 class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 1;
-  List<String> _selectedFilenames = [];
-  List<List> _filesData = [];
-  bool _sendingNote = false;
+  List<String> _selectedFilenames;
+  List<List> _filesData;
+  bool _sendingNote;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _filesData = [];
+    _selectedFilenames = [];
+    _sendingNote = false;
+  }
 
   void removeNote(int i) {
     setState(() {
       print("prima: $_selectedFilenames");
       if (_filesData[i] != null) _filesData[i].clear();
+      print("dopo: $_selectedFilenames");
       _selectedFilenames.removeAt(i);
+      print("dopo: $_selectedFilenames");
       _filesData.removeAt(i);
       print("dopo: $_selectedFilenames");
     });
@@ -81,11 +93,13 @@ class _PlebPageState extends State<PlebPage> {
               future: backend.getSubjects(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                          title: Text(
-                              "Si è verificato un errore durante l'accesso alle materie")));
+                  doItAsap(context, (context) {
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                            title: Text(
+                                "Si è verificato un errore durante l'accesso alle materie")));
+                  });
                   return Text("si è verificato un errore");
                 }
                 if (!snapshot.hasData) {
