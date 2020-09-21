@@ -205,7 +205,6 @@ class _SignupControlsState extends State<SignupControls> {
           controller: _nameController,
           decoration: InputDecoration(
             labelText: "Nome",
-            errorText: _badPassword ? "Email non valida" : null,
           )),
       TextField(
           controller: _surnameController,
@@ -217,7 +216,10 @@ class _SignupControlsState extends State<SignupControls> {
       TextField(
           controller: _passwordController,
           obscureText: true,
-          decoration: InputDecoration(labelText: "password")),
+          decoration: InputDecoration(
+            labelText: "password",
+            errorText: _badPassword ? "Email non valida" : null,
+          )),
       _signingUp
           ? CircularProgressIndicator()
           : RaisedButton(
