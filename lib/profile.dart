@@ -210,8 +210,6 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> deleteUser(int id, String jwt) async {
-    // TODO: what if this fails?
-
     setState(() {
       _deletionInProgress = true;
     });
