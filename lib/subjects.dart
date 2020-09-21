@@ -138,7 +138,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     icon: Icon(Icons.arrow_left_outlined),
                     onPressed: () {
                       _subjectsScrollController.animateTo(
-                          _subjectsScrollController.offset + 80.0,
+                          _subjectsScrollController.offset - 80.0,
                           duration: Duration(milliseconds: 300),
                           curve: Curves.linear);
                     }),
