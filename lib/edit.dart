@@ -56,7 +56,7 @@ class PlebPage extends StatefulWidget {
 
 class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
-  int _subjectId = 0;
+  int _subjectId = 1;
   File _selectedFile = null;
   bool _sendingNote = false;
 
@@ -68,7 +68,7 @@ class _PlebPageState extends State<PlebPage> {
         padding: EdgeInsets.all(15.0),
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          FutureBuilder<List<Map>>(
+          FutureBuilder(
               future: backend.getSubjects(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -85,10 +85,11 @@ class _PlebPageState extends State<PlebPage> {
                 final subjects = snapshot.data;
                 return DropdownButton(
                     value: _subjectId,
-                    items: subjects
-                        .map((subject) => DropdownMenuItem(
-                            value: subject["id"], child: Text(subject["name"])))
-                        .toList(),
+                    items: [
+                      for (var subject in subjects)
+                        DropdownMenuItem(
+                            value: subject["id"], child: Text(subject["name"])),
+                    ],
                     onChanged: (value) {
                       setState(() {
                         _subjectId = value;
