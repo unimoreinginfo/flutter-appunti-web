@@ -126,10 +126,9 @@ class SignupPage extends StatelessWidget {
   SignupPage();
 
   @override
-  Widget build(context) =>
-      Scaffold(
-        appBar: AppBar(title: Text("Registrati")),
-        body: LayoutBuilder(builder: (context, constraints) {
+  Widget build(context) => Scaffold(
+      appBar: AppBar(title: Text("Registrati")),
+      body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
             duration: Duration(milliseconds: 500),
             padding: constraints.maxWidth < 500
@@ -165,12 +164,14 @@ class _SignupControlsState extends State<SignupControls> {
   TextEditingController _surnameController;
   bool _signingUp;
   bool _badEmail;
+  bool _badPassword;
 
   @override
   initState() {
     super.initState();
 
     _badEmail = false;
+    _badPassword = false;
     _signingUp = false;
 
     _emailController = TextEditingController();
@@ -202,7 +203,10 @@ class _SignupControlsState extends State<SignupControls> {
           )),
       TextField(
           controller: _nameController,
-          decoration: InputDecoration(labelText: "Nome")),
+          decoration: InputDecoration(
+            labelText: "Nome",
+            errorText: _badPassword ? "Email non valida" : null,
+          )),
       TextField(
           controller: _surnameController,
           decoration: InputDecoration(labelText: "Cognome")),
@@ -223,6 +227,12 @@ class _SignupControlsState extends State<SignupControls> {
                 if (!RegExp(emailRegex).hasMatch(_emailController.text)) {
                   setState(() {
                     _badEmail = true;
+                  });
+                  return;
+                }
+                if (!RegExp(passwordRegex).hasMatch(_passwordController.text)) {
+                  setState(() {
+                    _badPassword = true;
                   });
                   return;
                 }
