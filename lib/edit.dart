@@ -72,8 +72,6 @@ class _PlebPageState extends State<PlebPage> {
   void removeNote(int i) {
     setState(() {
       print("prima: $_selectedFilenames");
-      if (_filesData[i] != null) _filesData[i].clear();
-      print("dopo: $_selectedFilenames");
       _selectedFilenames.removeAt(i);
       print("dopo: $_selectedFilenames");
       _filesData.removeAt(i);
