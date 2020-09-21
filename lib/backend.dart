@@ -34,7 +34,7 @@ Future<void> editProfile(String id, String jwt, Map data) async {
   }
 }
 
-Future<List> getSubjects() async {
+Future<List<Map<String, Object>>> getSubjects() async {
   try {
     var res = json
         .decode((await http.get("$baseUrl/subjects")).data as String)["result"];
@@ -67,12 +67,15 @@ Future<Map> getNote(String sub_id, String id) async {
   return resData["result"];
 }
 
-Future<void> addNote(
-    String jwt, String title, String subject, String name, List data) async {
+Future<void> addNote(String jwt, String title, String subject,
+    List<String> names, List<List> datas) async {
   var formData = FormData.fromMap({
     "title": title,
     "subject_id": subject,
-    "notes": MultipartFile.fromBytes(data, filename: name)
+    "notes": [
+      for (var i = 0; i < names.length; i++)
+        MultipartFile.fromBytes(datas[i], filename: names[i])
+    ]
   });
   try {
     var res = await http.post('$baseUrl/notes',

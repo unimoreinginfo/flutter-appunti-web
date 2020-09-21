@@ -28,6 +28,7 @@ class SubjectsPage extends StatelessWidget {
                 future: backend.getSubjects(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
+                    print("${snapshot.error}");
                     doItAsap(
                         context,
                         (context) => showDialog(
@@ -63,6 +64,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   List<Future<List>> notesFuture;
   List<Map<String, Object>> data = null;
   Timer timer = null;
+  ScrollController _subjectsScrollController = ScrollController();
 
   void searchDebounced(String q) async {
     List<Map<String, Object>> res;
@@ -130,28 +132,43 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
               "Scegli una materia",
               style: Theme.of(context).textTheme.headline4,
             ),
-            Container(
-              height: 100.0,
-              padding: EdgeInsets.all(16.0),
-              child: ListView.builder(
-                  itemCount: widget.subjects.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, i) => FlatButton(
-                        child: Card(
-                            margin: selectedSubject == i
-                                ? EdgeInsets.all(5.0)
-                                : null,
-                            child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Center(
-                                  child: Text(
-                                widget.subjects[i]["name"],
-                              )),
-                            )),
-                        onPressed: () => setState(() {
-                          selectedSubject = i;
-                        }),
-                      )),
+            Row(
+              children: [
+                IconButton(
+                    icon: Icon(Icons.arrow_left_outlined), onPressed: () {}),
+                Container(
+                  height: 100.0,
+                  padding: EdgeInsets.all(16.0),
+                  child: ListView.builder(
+                      controller: _subjectsScrollController,
+                      itemCount: widget.subjects.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, i) => FlatButton(
+                            child: Card(
+                                margin: selectedSubject == i
+                                    ? EdgeInsets.all(5.0)
+                                    : null,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Center(
+                                      child: Text(
+                                    widget.subjects[i]["name"],
+                                  )),
+                                )),
+                            onPressed: () => setState(() {
+                              selectedSubject = i;
+                            }),
+                          )),
+                ),
+                IconButton(
+                    icon: Icon(Icons.arrow_right_alt_outlined),
+                    onPressed: () {
+                      _subjectsScrollController.animateTo(
+                          _subjectsScrollController.offset + 80.0,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.linear);
+                    })
+              ],
             ),
           ]),
         if (data != null) SearchedNotes(data),
@@ -183,6 +200,7 @@ class SubjectNotes extends StatelessWidget {
               if (snapshot.hasError) {
                 // TODO: better error handling
                 print("notes: ${snapshot.data}");
+                print("${snapshot.error}");
                 doItAsap(
                     context,
                     (context) => showDialog(

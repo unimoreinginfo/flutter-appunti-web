@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -57,8 +55,8 @@ class PlebPage extends StatefulWidget {
 class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 1;
-  String _selectedFilename = null;
-  List _fileData;
+  List<String> _selectedFilenames = [];
+  List<List> _filesData;
   bool _sendingNote = false;
 
   @override
@@ -101,37 +99,35 @@ class _PlebPageState extends State<PlebPage> {
             controller: _title,
             decoration: InputDecoration(labelText: "Titolo appunto"),
           ),
-          if (_selectedFilename == null)
-            FlatButton(
-                onPressed: () async {
-                  var res = await FilePicker.platform.pickFiles();
-                  if (res != null && res.isSinglePick)
-                    setState(() {
-                      _selectedFilename = res.files.single.name
-                          .split('/')
-                          .last
-                          .split('\\')
-                          .last;
-                      _fileData = res.files.single.bytes;
-                    });
-                },
-                color: Theme.of(context).primaryColor,
-                textColor: Colors.white,
-                child: Text("Aggiungi file"))
-          else
+          for (var i = 0; i < _selectedFilenames.length; i++)
             Row(
               children: [
-                Text("Selezionato file ${_selectedFilename}"),
+                Text("Selezionato file ${_selectedFilenames[i]}"),
                 IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
                       setState(() {
-                        _fileData.clear();
-                        _selectedFilename = null;
+                        if (_filesData[i] != null) _filesData[i].clear();
+                        _selectedFilenames.removeAt(i);
+                        _filesData.removeAt(i);
                       });
                     })
               ],
             ),
+          FlatButton(
+              onPressed: () async {
+                var res = await FilePicker.platform.pickFiles();
+                if (res != null && res.isSinglePick)
+                  setState(() {
+                    print(res.files.single.name);
+                    _selectedFilenames.add(
+                        res.files.single.name.split('/').last.split('\\').last);
+                    _filesData.add(res.files.single.bytes);
+                  });
+              },
+              color: Theme.of(context).primaryColor,
+              textColor: Colors.white,
+              child: Text("Aggiungi file")),
           if (_sendingNote)
             CircularProgressIndicator()
           else
@@ -142,7 +138,7 @@ class _PlebPageState extends State<PlebPage> {
                   });
                   try {
                     await backend.addNote(widget.jwt, _title.text,
-                        "$_subjectId", _selectedFilename, _fileData);
+                        "$_subjectId", _selectedFilenames, _filesData);
                   } catch (e) {
                     setState(() {
                       _sendingNote = false;
