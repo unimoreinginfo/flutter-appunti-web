@@ -25,6 +25,7 @@ Future<void> editProfile(String id, String jwt, Map data) async {
       if (body["success"] == false) {
         throw errors.BackendError(res.statusCode);
       } else {
+        io.getAndUpdateToken(res, platform.tokenStorage);
         return body["result"];
       }
     }
@@ -91,6 +92,7 @@ Future<void> addNote(String jwt, String title, String subject,
       if (body["success"] == false) {
         throw errors.BackendError(res.statusCode);
       } else {
+        io.getAndUpdateToken(res, platform.tokenStorage);
         return;
       }
     }

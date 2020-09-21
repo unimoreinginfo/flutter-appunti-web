@@ -59,6 +59,14 @@ class _PlebPageState extends State<PlebPage> {
   List<List> _filesData = [];
   bool _sendingNote = false;
 
+  void removeNote(int i) {
+    setState(() {
+      if (_filesData[i] != null) _filesData[i].clear();
+      _selectedFilenames.removeAt(i);
+      _filesData.removeAt(i);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -106,11 +114,7 @@ class _PlebPageState extends State<PlebPage> {
                 IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
-                      setState(() {
-                        if (_filesData[i] != null) _filesData[i].clear();
-                        _selectedFilenames.removeAt(i);
-                        _filesData.removeAt(i);
-                      });
+                      removeNote(i);
                     })
               ],
             ),

@@ -144,7 +144,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     }),
                 Container(
                   height: 100.0,
-                  width: 700.0,
+                  width: MediaQuery.of(context).size.width < 900.0
+                      ? MediaQuery.of(context).size.width * 75 / 100
+                      : 700,
                   padding: EdgeInsets.all(16.0),
                   child: ListView.builder(
                       controller: _subjectsScrollController,
@@ -168,7 +170,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                           )),
                 ),
                 IconButton(
-                    icon: Icon(Icons.arrow_right_alt_outlined),
+                    icon: Icon(Icons.arrow_right_outlined),
                     onPressed: () {
                       _subjectsScrollController.animateTo(
                           _subjectsScrollController.offset + 80.0,
