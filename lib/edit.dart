@@ -56,7 +56,7 @@ class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 1;
   List<String> _selectedFilenames = [];
-  List<List> _filesData;
+  List<List> _filesData = [];
   bool _sendingNote = false;
 
   @override
@@ -116,7 +116,7 @@ class _PlebPageState extends State<PlebPage> {
             ),
           FlatButton(
               onPressed: () async {
-                var res = await FilePicker.platform.pickFiles();
+                var res = await FilePicker.platform.pickFiles(withData: true);
                 if (res != null && res.isSinglePick)
                   setState(() {
                     print(res.files.single.name);

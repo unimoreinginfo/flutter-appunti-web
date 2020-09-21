@@ -138,6 +138,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     icon: Icon(Icons.arrow_left_outlined), onPressed: () {}),
                 Container(
                   height: 100.0,
+                  width: 700.0,
                   padding: EdgeInsets.all(16.0),
                   child: ListView.builder(
                       controller: _subjectsScrollController,
