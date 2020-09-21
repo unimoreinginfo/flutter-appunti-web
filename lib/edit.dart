@@ -107,8 +107,11 @@ class _PlebPageState extends State<PlebPage> {
                   var res = await FilePicker.platform.pickFiles();
                   if (res != null && res.isSinglePick)
                     setState(() {
-                      _fileData.clear();
-                      _selectedFilename = res.files.single.name;
+                      _selectedFilename = res.files.single.name
+                          .split('/')
+                          .last
+                          .split('\\')
+                          .last;
                       _fileData = res.files.single.bytes;
                     });
                 },
