@@ -1,4 +1,3 @@
-import 'package:appunti_web_frontend/note.dart' show ProvidedArg;
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 

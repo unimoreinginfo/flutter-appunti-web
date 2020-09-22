@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'note.dart' show ProvidedArg, NotePage;
 import 'platform.dart' as platform;
 import 'utils.dart';
 import 'backend.dart' as backend;

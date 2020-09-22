@@ -1,13 +1,16 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'io.dart';
-import 'note.dart' show ProvidedArg;
 import 'platform.dart' show tokenStorage;
 import 'errors.dart' as errors;
 import 'backend.dart' as backend;
 import 'platform.dart' as platform;
 import 'utils.dart';
+
+const String fileTooBigTips =
+    "Per ridurre le dimensioni del file, ti consigliamo di provare ad utilizzare qualche tipo di software di compressione. Per i PDF, ci sono molti strumenti online di compressione PDF, come quello di iLovePDF o quello di Adobe. Se non state caricando PDF potete usare software come 7-Zip per creare archivi compressi potendo scegliere tra molti formati ed algoritmi di compressione, a seconda delle dimensioni del file che volete comprimere e quindi del rapporto di compressione cercato, tenendo presente che il limite della piattaforma è di 20MB per ogni gruppo di appunti (non per ogni file, ma per ogni richiesta di caricamento file) che volete caricare.";
 
 class LogoutButton extends StatelessWidget {
   @override
@@ -59,14 +62,15 @@ class _PlebPageState extends State<PlebPage> {
   List<String> _selectedFilenames;
   List<List> _filesData;
   bool _sendingNote;
+  int _runningTotalSize;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _filesData = [];
     _selectedFilenames = [];
     _sendingNote = false;
+    _runningTotalSize = 0;
   }
 
   void removeNote(int i) {
@@ -135,13 +139,37 @@ class _PlebPageState extends State<PlebPage> {
           FlatButton(
               onPressed: () async {
                 var res = await FilePicker.platform.pickFiles(withData: true);
-                if (res != null && res.isSinglePick)
+                if (res != null && res.isSinglePick) {
+                  if ((_runningTotalSize += res.files.single.size) > 20000) {
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text("File troppo grande"),
+                          content: Text(fileTooBigTips),
+                          actions: [
+                            FlatButton(
+                                onPressed: () {
+                                  launch(
+                                      "https://www.ilovepdf.com/compress_pdf");
+                                },
+                                child: Text("Compressione PDF iLovePDF")),
+                            FlatButton(
+                              onPressed: () {
+                                launch("https://www.7-zip.org/");
+                              },
+                              child: Text("Home page 7-Zip"),
+                            )
+                          ],
+                        ));
+                    return;
+                  }
                   setState(() {
                     print(res.files.single.name);
                     _selectedFilenames.add(
                         res.files.single.name.split('/').last.split('\\').last);
                     _filesData.add(res.files.single.bytes);
                   });
+                }
               },
               color: Theme.of(context).primaryColor,
               textColor: Colors.white,
