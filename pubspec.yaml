@@ -9,10 +9,7 @@ environment:
   sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
-  dio:
-    git:
-      url: git://github.com/unimoreinginfo/dio.git
-      path: dio/
+  dio: ^3.0.0
   url_launcher: ^5.5.0
   file_picker: ^2.0.0
   flutter:
