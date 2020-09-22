@@ -101,7 +101,10 @@ class ProfilePageBody extends StatelessWidget {
                     "Modifica profilo",
                   ),
                   onPressed: () {
-                    goToRouteAsap(context, "/editProfile", arguments: user);
+                    goToRouteAsap(
+                      context,
+                      "/editProfile/${user['id']}",
+                    );
                   },
                 ),
               FutureBuilder(
@@ -134,8 +137,9 @@ class ProfilePageBody extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => NotePage(
-                                                  noteDataFuture:
-                                                      backend.getNote(
+                                              "${notes[i]["subject_id"]}",
+                                              notes[i]["note_id"],
+                                              noteDataFuture: backend.getNote(
                                                 "${notes[i]["subject_id"]}",
                                                 notes[i]["note_id"],
                                               ))));
@@ -150,6 +154,23 @@ class ProfilePageBody extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class EditProfilePage extends StatelessWidget {
+  EditProfilePage(this.userId);
+
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: backend.getUser(userId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return CircularProgressIndicator();
+        return EditProfilePage(snapshot.data);
+      },
     );
   }
 }

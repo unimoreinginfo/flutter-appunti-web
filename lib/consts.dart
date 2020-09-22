@@ -1,6 +1,7 @@
 import 'package:dio/adapter_browser.dart';
 import 'package:dio/browser_imp.dart';
 import 'package:dio/dio.dart';
+import 'package:fluro/fluro.dart';
 
 final baseUrl = "https://beta.emilianomaccaferri.com";
 
@@ -9,7 +10,9 @@ const emailRegex =
 
 const passwordRegex = r""".{8,}$""";
 
-// not a constant but has to stay here for the time being
+// not constsnts but have to stay here for the time being
+final router = Router();
+
 var adapter = BrowserHttpClientAdapter()..withCredentials = true;
 var http = DioForBrowser(BaseOptions(
     contentType: Headers.formUrlEncodedContentType,

@@ -248,26 +248,18 @@ class SubjectNotes extends StatelessWidget {
                                 "user name: ${user["name"]} ${user["surname"]}");
                             print("note title: ${notes[i]["title"]}");
                             return ListTile(
-                              leading: Icon(Icons.note),
-                              trailing: Text(
-                                  "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                              title: Text("${notes[i]["title"]}"),
-                              subtitle: InkWell(
-                                child:
-                                    Text("${user["name"]} ${user["surname"]}"),
-                                onTap: () => Navigator.pushNamed(
-                                    context, '/profile',
-                                    arguments: [ProvidedArg.data, user]),
-                              ),
-                              onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => NotePage(
-                                              noteDataFuture: backend.getNote(
-                                            '${notes[i]["subject_id"]}',
-                                            notes[i]["note_id"],
-                                          )))),
-                            );
+                                leading: Icon(Icons.note),
+                                trailing: Text(
+                                    "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
+                                title: Text("${notes[i]["title"]}"),
+                                subtitle: InkWell(
+                                  child: Text(
+                                      "${user["name"]} ${user["surname"]}"),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, "/users/${user['id']}"),
+                                ),
+                                onTap: () => Navigator.pushNamed(context,
+                                    '/notes/${notes[i]["subject_id"]}/${notes[i]["note_id"]}'));
                           });
                     }),
               );
@@ -293,14 +285,8 @@ class SearchedNotes extends StatelessWidget {
             leading: Icon(Icons.note),
             title: Text(data[i]["title"]),
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NotePage(
-                              noteDataFuture: backend.getNote(
-                            '${data[i]["subject_id"]}',
-                            data[i]["id"],
-                          ))));
+              Navigator.pushNamed(
+                  context, '/notes/${data[i]["subject_id"]}/${data[i]["id"]}');
             },
           );
         },

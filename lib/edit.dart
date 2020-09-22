@@ -448,8 +448,7 @@ class UsersList extends StatelessWidget {
                   leading: Icon(Icons.person),
                   title: Text('${users[i]["name"]} ${users[i]["surname"]}'),
                   onTap: () {
-                    Navigator.pushNamed(context, "/profile",
-                        arguments: [ProvidedArg.data, users[i]]);
+                    Navigator.pushNamed(context, "/users/${users[i]['id']}");
                   }));
         });
   }

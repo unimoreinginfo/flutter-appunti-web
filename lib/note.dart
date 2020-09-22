@@ -12,9 +12,11 @@ import 'consts.dart';
 enum ProvidedArg { id, data }
 
 class NotePage extends StatelessWidget {
-  NotePage({this.noteDataFuture = null});
+  NotePage(this.subjectId, this.noteId, {this.noteDataFuture = null});
 
   final Future<Map> noteDataFuture;
+  final String subjectId;
+  final String noteId;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,9 @@ class NotePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder(
-            future: noteDataFuture,
+            future: noteDataFuture != null
+                ? noteDataFuture
+                : getNote(subjectId, noteId),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return CircularProgressIndicator();
               if (snapshot.hasError) {
@@ -76,11 +80,10 @@ class NotePageBody extends StatelessWidget {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return CircularProgressIndicator();
               return FlatButton(
-                child: Text(
-                    "${snapshot.data["name"]} ${snapshot.data["surname"]}"),
-                onPressed: () => Navigator.pushNamed(context, '/profile',
-                    arguments: [ProvidedArg.data, snapshot.data]),
-              );
+                  child: Text(
+                      "${snapshot.data["name"]} ${snapshot.data["surname"]}"),
+                  onPressed: () => Navigator.pushNamed(
+                      context, "/users/${snapshot.data['id']}"));
             }),
         Text(
             "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),

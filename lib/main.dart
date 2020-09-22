@@ -1,16 +1,76 @@
 import 'package:appunti_web_frontend/note.dart' show ProvidedArg;
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
+import 'consts.dart';
 import 'utils.dart';
 import 'platform.dart';
 import 'io.dart';
 import 'home.dart';
 import 'login.dart';
+import 'note.dart';
 import 'subjects.dart';
 import 'edit.dart';
 import 'profile.dart';
 
+void defineRoutes() {
+  router.define("/",
+      handler: Handler(
+        handlerFunc: (context, parameters) => HomePage(),
+      ));
+  router.define("/users/:id", handler: Handler(
+    handlerFunc: (context, parameters) {
+      return ProfilePage(parameters["id"][0]);
+    },
+  ));
+  router.define("/editProfile/:id", handler: Handler(
+    handlerFunc: (context, parameters) {
+      return EditProfilePage(parameters["id"][0]);
+    },
+  ));
+  router.define("/notes/:subjectId/:noteId", handler: Handler(
+    handlerFunc: (context, parameters) {
+      return NotePage(parameters["subjectId"][0], parameters["noteId"][0]);
+    },
+  ));
+  router.define("/edit", handler: Handler(
+    handlerFunc: (context, parameters) {
+      String token;
+      try {
+        token = getToken(tokenStorage);
+        if (!refreshTokenStillValid(tokenStorage))
+          goToRouteAsap(context, '/login');
+        else {
+          try {
+            bool mod = isMod(token);
+            return EditPage(mod, token);
+          } catch (e) {
+            showDialog(context: context, child: AlertDialog(title: Text("$e")));
+            goToRouteAsap(context, '/login');
+          }
+        }
+      } catch (e) {
+        goToRouteAsap(context, '/login');
+      }
+      return LoginPage();
+    },
+  ));
+  router.define("/subjects",
+      handler: Handler(
+        handlerFunc: (context, parameters) => SubjectsPage(),
+      ));
+  router.define("/login",
+      handler: Handler(
+        handlerFunc: (context, parameters) => LoginPage(),
+      ));
+  router.define("/signup",
+      handler: Handler(
+        handlerFunc: (context, parameters) => SignupPage(),
+      ));
+}
+
 void main() {
+  defineRoutes();
   runApp(MyApp());
 }
 
@@ -18,6 +78,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      onGenerateRoute: router.generator,
       title: 'Appunti Web',
       locale: Locale('it', 'IT'),
       theme: ThemeData(
@@ -35,45 +96,6 @@ class MyApp extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                   color: Colors.black),
               button: TextStyle(color: Colors.white))),
-      routes: {
-        "/edit": (context) {
-          String token;
-          try {
-            token = getToken(tokenStorage);
-            if (!refreshTokenStillValid(tokenStorage))
-              goToRouteAsap(context, '/login');
-            else {
-              try {
-                bool mod = isMod(token);
-                return EditPage(mod, token);
-              } catch (e) {
-                showDialog(
-                    context: context, child: AlertDialog(title: Text("$e")));
-                goToRouteAsap(context, '/login');
-              }
-            }
-          } catch (e) {
-            goToRouteAsap(context, '/login');
-          }
-          return LoginPage();
-        },
-        "/login": (context) => LoginPage(),
-        "/signup": (context) => SignupPage(),
-        "/": (context) => HomePage(),
-        "/subjects": (context) => SubjectsPage(),
-        "/profile": (context) {
-          List args = ModalRoute.of(context).settings.arguments;
-          if (args[0] == ProvidedArg.id) {
-            String uid = args[1];
-            return ProfilePage(uid);
-          } else
-            return ProfilePage(args[1]["id"], userData: args[1]);
-        },
-        "/editProfile": (context) {
-          Map args = ModalRoute.of(context).settings.arguments;
-          return EditProfile(args);
-        }
-      },
       initialRoute: '/',
     );
   }
