@@ -168,8 +168,14 @@ class EditProfilePage extends StatelessWidget {
     return FutureBuilder(
       future: backend.getUser(userId),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          showDialog(
+              context: context,
+              child: AlertDialog(title: Text("Si è verificato un errore")));
+          print(snapshot.error);
+        }
         if (!snapshot.hasData) return CircularProgressIndicator();
-        return EditProfilePage(snapshot.data);
+        return EditProfile(snapshot.data);
       },
     );
   }
