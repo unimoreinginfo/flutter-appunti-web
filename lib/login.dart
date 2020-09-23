@@ -10,7 +10,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(context) =>
-      Scaffold(body: LayoutBuilder(builder: (context, constraints) {
+    Scaffold(
+      appBar: AppBar(title: Text("Accedi")),
+      body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
             duration: Duration(milliseconds: 500),
             padding: constraints.maxWidth < 500
