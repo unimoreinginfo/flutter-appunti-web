@@ -15,6 +15,7 @@ final router = Router();
 
 var adapter = BrowserHttpClientAdapter()..withCredentials = true;
 var http = DioForBrowser(BaseOptions(
+    validateStatus: (status) => true,
     contentType: Headers.formUrlEncodedContentType,
     responseType: ResponseType.plain))
   ..httpClientAdapter = adapter;
