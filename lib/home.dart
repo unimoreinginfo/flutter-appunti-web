@@ -60,14 +60,15 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Illustration("lesson"),
-                        Text("Appunti qua,\nlorem ipsum fanglerio",
+                        Text(
+                            "La fonte di appunti più amata al mondo è tornata!",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline3),
                         SizedBox(
                           height: 30,
                         ),
                         Text(
-                            "La risorsa principale di fanglerico fanglerioso e robe fantastiche ez clap ciaooo"),
+                            "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
                         SizedBox(
                           height: 30,
                         ),
@@ -75,7 +76,7 @@ class HomePage extends StatelessWidget {
                           height: 50.0,
                           color: Theme.of(context).primaryColor,
                           textColor: Colors.white,
-                          child: Text("Sgancia gli appunti bastardo"),
+                          child: Text("Vai agli appunti"),
                           onPressed: () {
                             Navigator.pushNamed(context, "/subjects");
                           },
@@ -85,29 +86,44 @@ class HomePage extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline4),
                         Illustration("read"),
-                        Text(loremIpsum),
-                        SizedBox(
-                          height: 15,
-                        ),
+                        Text(
+                            "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
+                        Text(
+                            "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
+                        Text(
+                            "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
                         Text("Risorse affidabili e controllate",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline4),
                         Illustration("control"),
                         Text(
-                          loremIpsum,
+                          "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
+                        ),
+                        Text(
+                          "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
+                        ),
+                        Text(
+                            "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali."),
+                        Text(
+                          "E ti laurei pure, bastardo",
+                          style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 15,
                         ),
-                        Text("E ti laurei pure, bastardo",
+                        Text("Dai il tuo contributo",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline4),
                         Illustration("letsgo"),
-                        Text(loremIpsum),
+                        Text(
+                            "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
+                        Text("Non potrai caricare file enormi, però."),
                         FlatButton(
                             color: Theme.of(context).primaryColor,
                             textColor: Colors.white,
-                            child: Text("Mandaci i tuoi appunti"),
+                            child: Text("Aggiunta appunti"),
                             onPressed: () =>
                                 Navigator.pushNamed(context, "/edit"))
                       ],

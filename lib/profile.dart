@@ -195,19 +195,23 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController _userName;
   TextEditingController _userSurname;
   TextEditingController _userUnimoreId;
+  bool _userIsAdmin;
   String _jwt;
+  bool isAdmin;
 
   @override
   initState() {
     super.initState();
     _setFieldsToDefault();
     _jwt = getToken(tokenStorage);
+    isAdmin = isMod(_jwt);
   }
 
   void _setFieldsToDefault() {
     _userName = TextEditingController(text: widget.userData["name"]);
     _userSurname = TextEditingController(text: widget.userData["surname"]);
     _userUnimoreId = TextEditingController(text: widget.userData["unimore_id"]);
+    _userIsAdmin = widget.userData["admin"] == "true";
     _deletionInProgress = false;
   }
 
@@ -269,6 +273,12 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  void setUserState(bool admin) {
+    setState(() {
+      _userIsAdmin = admin;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -297,13 +307,23 @@ class _EditProfileState extends State<EditProfile> {
                 controller: _userUnimoreId,
                 decoration: InputDecoration(labelText: "ID Unimore"),
               ),
+              if (isAdmin)
+                Checkbox(value: _userIsAdmin, onChanged: setUserState),
               FlatButton(
                   onPressed: () {
-                    editProfile(widget.userData["id"], _jwt, data: {
-                      "unimore_id": _userUnimoreId.text,
-                      "name": _userName.text,
-                      "surname": _userSurname.text
-                    });
+                    editProfile(widget.userData["id"], _jwt,
+                        data: isAdmin
+                            ? {
+                                "unimore_id": _userUnimoreId.text,
+                                "name": _userName.text,
+                                "surname": _userSurname.text,
+                                "admin": _userIsAdmin
+                              }
+                            : {
+                                "unimore_id": _userUnimoreId.text,
+                                "name": _userName.text,
+                                "surname": _userSurname.text
+                              });
                   },
                   child: Text("Modifica profilo")),
               Divider(),
