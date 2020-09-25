@@ -317,7 +317,7 @@ class _EditProfileState extends State<EditProfile> {
                                 "unimore_id": _userUnimoreId.text,
                                 "name": _userName.text,
                                 "surname": _userSurname.text,
-                                "admin": _userIsAdmin
+                                "admin": _userIsAdmin == true ? "1" : "0"
                               }
                             : {
                                 "unimore_id": _userUnimoreId.text,
