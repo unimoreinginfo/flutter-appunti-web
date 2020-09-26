@@ -1,6 +1,3 @@
-import 'package:dio/adapter_browser.dart';
-import 'package:dio/browser_imp.dart';
-import 'package:dio/dio.dart';
 import 'package:fluro/fluro.dart';
 
 final baseUrl = "https://api.appunti.me";
@@ -12,10 +9,3 @@ const passwordRegex = r""".{8,}$""";
 
 // not constsnts but have to stay here for the time being
 final router = Router();
-
-var adapter = BrowserHttpClientAdapter()..withCredentials = true;
-var http = DioForBrowser(BaseOptions(
-    validateStatus: (status) => true,
-    contentType: Headers.formUrlEncodedContentType,
-    responseType: ResponseType.plain))
-  ..httpClientAdapter = adapter;
