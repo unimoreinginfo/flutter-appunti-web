@@ -163,8 +163,9 @@ Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<List<Map<String, Object>>> getUsers() async {
-  var res = await http.get('$baseUrl/users');
+Future<List<Map<String, Object>>> getUsers(String jwt) async {
+  var res = await http
+      .get('$baseUrl/users', headers: {"Authorization": "Bearer $jwt"});
 
   if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
   if (json.decode(res.body)["success"] == false)

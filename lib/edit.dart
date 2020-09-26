@@ -91,6 +91,12 @@ class _PlebPageState extends State<PlebPage> {
         padding: EdgeInsets.all(15.0),
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          FlatButton(
+              onPressed: () {
+                goToRouteAsap(context,
+                    '/editProfile/${getPayload(widget.jwt)["user_id"]}');
+              },
+              child: Text("voglio modificare il mio profilo")),
           FutureBuilder(
               future: backend.getSubjects(),
               builder: (context, snapshot) {
@@ -466,7 +472,7 @@ class UsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: backend.getUsers(),
+        future: backend.getUsers(jwt),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           var users = snapshot.data;
