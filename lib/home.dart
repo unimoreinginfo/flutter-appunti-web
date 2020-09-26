@@ -88,10 +88,19 @@ class HomePage extends StatelessWidget {
                         Illustration("read"),
                         Text(
                             "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text(
                             "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text(
                             "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text("Risorse affidabili e controllate",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline4),
@@ -99,13 +108,25 @@ class HomePage extends StatelessWidget {
                         Text(
                           "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
                         ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text(
                           "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
                         ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text(
-                            "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali."),
+                          "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
+                          textAlign: TextAlign.start,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Text(
                           "E ti laurei pure, bastardo",
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.bold),
@@ -119,7 +140,13 @@ class HomePage extends StatelessWidget {
                         Illustration("letsgo"),
                         Text(
                             "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
-                        Text("Non potrai caricare file enormi, però."),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "Non potrai caricare file enormi, però.",
+                          textAlign: TextAlign.start,
+                        ),
                         FlatButton(
                             color: Theme.of(context).primaryColor,
                             textColor: Colors.white,

@@ -211,7 +211,7 @@ class _EditProfileState extends State<EditProfile> {
     _userName = TextEditingController(text: widget.userData["name"]);
     _userSurname = TextEditingController(text: widget.userData["surname"]);
     _userUnimoreId = TextEditingController(text: widget.userData["unimore_id"]);
-    _userIsAdmin = widget.userData["admin"] == "true";
+    _userIsAdmin = widget.userData["admin"] == "1";
     _deletionInProgress = false;
   }
 
