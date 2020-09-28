@@ -1,6 +1,10 @@
+import 'package:appunti_web_frontend/consts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' show MultipartFile;
+import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:mime/mime.dart' show lookupMimeType;
 
 import 'io.dart';
 import 'platform.dart' show tokenStorage;
@@ -59,27 +63,21 @@ class PlebPage extends StatefulWidget {
 class _PlebPageState extends State<PlebPage> {
   TextEditingController _title = TextEditingController();
   int _subjectId = 1;
-  List<String> _selectedFilenames;
-  List<List> _filesData;
+  List<MultipartFile> _files;
   bool _sendingNote;
   int _runningTotalSize;
 
   @override
   void initState() {
     super.initState();
-    _filesData = [];
-    _selectedFilenames = [];
+    _files = [];
     _sendingNote = false;
     _runningTotalSize = 0;
   }
 
   void removeNote(int i) {
     setState(() {
-      print("prima: $_selectedFilenames");
-      _selectedFilenames.removeAt(i);
-      print("dopo: $_selectedFilenames");
-      _filesData.removeAt(i);
-      print("dopo: $_selectedFilenames");
+      _files.removeAt(i);
     });
   }
 
@@ -131,10 +129,10 @@ class _PlebPageState extends State<PlebPage> {
             controller: _title,
             decoration: InputDecoration(labelText: "Titolo appunto"),
           ),
-          for (var i = 0; i < _selectedFilenames.length; i++)
+          for (var i = 0; i < _files.length; i++)
             Row(
               children: [
-                Text("Selezionato file ${_selectedFilenames[i]}"),
+                Text("Selezionato file ${_files[i].filename}"),
                 IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
@@ -169,11 +167,24 @@ class _PlebPageState extends State<PlebPage> {
                         ));
                     return;
                   }
+                  var mimeType = lookupMimeType(res.files.single.name);
+                  if (!allowedMimeTypes.contains(mimeType)) {
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text("Tipo di file non permesso"),
+                        ));
+                    return;
+                  }
+                  String name =
+                      res.files.single.name.split('/').last.split('\\').last;
+                  var bytes = res.files.single.bytes;
+
+                  var file = MultipartFile.fromBytes("notes", bytes,
+                      filename: name, contentType: MediaType.parse(mimeType));
+
                   setState(() {
-                    print(res.files.single.name);
-                    _selectedFilenames.add(
-                        res.files.single.name.split('/').last.split('\\').last);
-                    _filesData.add(res.files.single.bytes);
+                    _files.add(file);
                   });
                 }
               },
@@ -189,8 +200,8 @@ class _PlebPageState extends State<PlebPage> {
                     _sendingNote = true;
                   });
                   try {
-                    await backend.addNote(widget.jwt, _title.text,
-                        "$_subjectId", _selectedFilenames, _filesData);
+                    await backend.addNote(
+                        widget.jwt, _title.text, "$_subjectId", _files);
                   } catch (e) {
                     setState(() {
                       _sendingNote = false;

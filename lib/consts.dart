@@ -7,5 +7,20 @@ const emailRegex =
 
 const passwordRegex = r""".{8,}$""";
 
+const allowedMimeTypes = [
+  "text/plain",
+  "application/pdf",
+  "application/msword", // doc
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
+  "application/vnd.oasis.opendocument.text", // odt
+  "image/jpeg",
+  "image/png",
+  "application/zip",
+  "application/x-7z-compressed",
+  "application/gzip",
+  "application/x-xz",
+  "application/x-bzip2"
+];
+
 // not constsnts but have to stay here for the time being
 final router = Router();
