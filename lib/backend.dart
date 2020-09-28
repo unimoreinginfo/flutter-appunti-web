@@ -69,12 +69,12 @@ Future<Map> getNote(String sub_id, String id) async {
 Future<void> addNote(String jwt, String title, String subject,
     List<http.MultipartFile> files) async {
   var req = http.MultipartRequest('POST', Uri.parse('$baseUrl/notes'))
-    ..headers.addAll({"Authorization": "Bearer $jwt"});
-  req.fields.addAll({
-    "title": title,
-    "subject_id": subject,
-  });
-  req.files.addAll(files);
+    ..headers.addAll({"Authorization": "Bearer $jwt"})
+    ..fields.addAll({
+      "title": title,
+      "subject_id": subject,
+    })
+    ..files.addAll(files);
 
   try {
     var res = await http.Response.fromStream(await req.send());

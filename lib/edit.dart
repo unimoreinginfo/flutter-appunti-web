@@ -168,11 +168,21 @@ class _PlebPageState extends State<PlebPage> {
                     return;
                   }
                   var mimeType = lookupMimeType(res.files.single.name);
+                  print("il file è $mimeType");
                   if (!allowedMimeTypes.contains(mimeType)) {
                     showDialog(
                         context: context,
                         child: AlertDialog(
                           title: Text("Tipo di file non permesso"),
+                          content: Text(
+                              "Se stai cercando di caricare codice dovresti provare ad aggiungerlo nelle repo GitHub di unimoreinginfo."),
+                          actions: [
+                            FlatButton(
+                                onPressed: () {
+                                  launch("https://github.com/unimoreinginfo");
+                                },
+                                child: Text("Vai al GitHub di unimoreinginfo"))
+                          ],
                         ));
                     return;
                   }
@@ -180,11 +190,10 @@ class _PlebPageState extends State<PlebPage> {
                       res.files.single.name.split('/').last.split('\\').last;
                   var bytes = res.files.single.bytes;
 
-                  var file = MultipartFile.fromBytes("notes", bytes,
-                      filename: name, contentType: MediaType.parse(mimeType));
-
                   setState(() {
-                    _files.add(file);
+                    _files.add(MultipartFile.fromBytes("notes", bytes,
+                        filename: name,
+                        contentType: MediaType.parse(mimeType)));
                   });
                 }
               },
