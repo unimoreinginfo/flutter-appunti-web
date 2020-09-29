@@ -2,7 +2,7 @@ import 'package:appunti_web_frontend/consts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' show MultipartFile;
+import 'package:dio/dio.dart' show MultipartFile;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart' show lookupMimeType;
 
@@ -191,7 +191,7 @@ class _PlebPageState extends State<PlebPage> {
                   var bytes = res.files.single.bytes;
 
                   setState(() {
-                    _files.add(MultipartFile.fromBytes("notes", bytes,
+                    _files.add(MultipartFile.fromBytes(bytes,
                         filename: name,
                         contentType: MediaType.parse(mimeType)));
                   });

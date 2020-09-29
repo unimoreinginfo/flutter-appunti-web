@@ -1,4 +1,7 @@
 import 'package:fluro/fluro.dart';
+import 'package:dio/adapter_browser.dart';
+import 'package:dio/browser_imp.dart';
+import 'package:dio/dio.dart';
 
 final baseUrl = "https://api.appunti.me";
 
@@ -23,4 +26,12 @@ const allowedMimeTypes = [
 ];
 
 // not constsnts but have to stay here for the time being
+
+var adapter = BrowserHttpClientAdapter()..withCredentials = true;
+var http = DioForBrowser(BaseOptions(
+    validateStatus: (status) => true,
+    contentType: Headers.formUrlEncodedContentType,
+    responseType: ResponseType.plain))
+  ..httpClientAdapter = adapter;
+
 final router = Router();
