@@ -17,7 +17,142 @@ class Illustration extends StatelessWidget {
       child: Image.network("/img/$name.png", height: 200.0));
 }
 
-class HomePage extends StatelessWidget {
+class LandingContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Illustration("lesson"),
+      Text("La fonte di appunti più amata al mondo è tornata!",
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline3),
+      SizedBox(
+        height: 30,
+      ),
+      Text(
+          "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
+      SizedBox(
+        height: 30,
+      ),
+      MaterialButton(
+        height: 50.0,
+        color: Theme.of(context).primaryColor,
+        textColor: Colors.white,
+        child: Text("Vai agli appunti"),
+        onPressed: () {
+          Navigator.pushNamed(context, "/subjects");
+        },
+      ),
+    ]);
+  }
+}
+
+class FirstExplanation extends StatelessWidget {
+  @override
+  Widget build(context) {
+    return Column(children: [
+      Text("Appunti per tutti",
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline4),
+      Illustration("read"),
+      Text(
+          "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
+      SizedBox(
+        height: 5,
+      ),
+      Text(
+          "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
+      SizedBox(
+        height: 5,
+      ),
+      Text(
+          "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
+    ]);
+  }
+}
+
+class SecondExplanation extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Text("Risorse affidabili e controllate",
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline4),
+      Illustration("control"),
+      Text(
+        "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
+      ),
+      SizedBox(
+        height: 5,
+      ),
+      Text(
+        "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
+      ),
+      SizedBox(
+        height: 5,
+      ),
+      Text(
+        "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
+      ),
+      Text(
+        "E ti laurei pure, bastardo",
+        textAlign: TextAlign.start,
+        style:
+            TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+      ),
+    ]);
+  }
+}
+
+class ShareYourNotes extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Dai il tuo contributo",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4),
+        Illustration("letsgo"),
+        Text(
+            "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
+        SizedBox(
+          height: 5,
+        ),
+        Text(
+          "Non potrai caricare file enormi, però.",
+        ),
+        FlatButton(
+            color: Theme.of(context).primaryColor,
+            textColor: Colors.white,
+            child: Text("Accedi e mandaci i tuoi appunti"),
+            onPressed: () => Navigator.pushNamed(context, "/edit"))
+      ],
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int currentPage;
+  PageController _controller;
+
+  @override
+  initState() {
+    super.initState();
+    currentPage = 0;
+    _controller = PageController(initialPage: 0);
+  }
+
+  List pages = [
+    LandingContent(),
+    FirstExplanation(),
+    SecondExplanation(),
+    ShareYourNotes()
+  ];
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -52,110 +187,71 @@ class HomePage extends StatelessWidget {
         body: DefaultTextStyle(
             style: Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
-            child: ListView(padding: EdgeInsets.all(15.0), children: [
-              Center(
-                child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    width: 750.0,
-                    child: Column(
-                      children: [
-                        Illustration("lesson"),
-                        Text(
-                            "La fonte di appunti più amata al mondo è tornata!",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline3),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Text(
-                            "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        MaterialButton(
-                          height: 50.0,
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                          child: Text("Vai agli appunti"),
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/subjects");
-                          },
-                        ),
-                        Divider(height: 45.0),
-                        Text("Appunti per tutti",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline4),
-                        Illustration("read"),
-                        Text(
-                            "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                            "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                            "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text("Risorse affidabili e controllate",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline4),
-                        Illustration("control"),
-                        Text(
-                          "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
-                          textAlign: TextAlign.start,
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "E ti laurei pure, bastardo",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Text("Dai il tuo contributo",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline4),
-                        Illustration("letsgo"),
-                        Text(
-                            "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Non potrai caricare file enormi, però.",
-                          textAlign: TextAlign.start,
-                        ),
-                        FlatButton(
-                            color: Theme.of(context).primaryColor,
-                            textColor: Colors.white,
-                            child: Text("Aggiunta appunti"),
-                            onPressed: () =>
-                                Navigator.pushNamed(context, "/edit"))
-                      ],
-                    )),
-              )
-            ])),
+            child: PageView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _controller,
+              onPageChanged: (page) => setState(() {
+                print("Page: $page");
+                currentPage = page;
+              }),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                Widget w;
+                switch (index) {
+                  case 0:
+                    w = Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          LandingContent(),
+                          IconButton(
+                              iconSize: 50.0,
+                              icon: Icon(Icons.arrow_downward),
+                              onPressed: () {
+                                _controller.nextPage(
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.linear);
+                              })
+                        ]);
+                    break;
+                  case 1:
+                    w = FirstExplanation();
+                    break;
+                  case 2:
+                    w = SecondExplanation();
+                    break;
+                  case 3:
+                    w = ShareYourNotes();
+                }
+                return Center(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                      Container(
+                          padding: EdgeInsets.all(20.0),
+                          width: 750.0,
+                          child: Center(child: w)),
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [0, 1, 2, 3]
+                              .map((i) => RawMaterialButton(
+                                  shape: StadiumBorder(),
+                                  textStyle: TextStyle(
+                                    color: currentPage == i
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  fillColor: currentPage == i
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.white,
+                                  onPressed: () => _controller.animateToPage(i,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.linear),
+                                  child: Text("${i + 1}")))
+                              .toList())
+                    ]));
+              },
+            )),
       );
 }
