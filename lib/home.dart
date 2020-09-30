@@ -138,20 +138,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentPage;
   PageController _controller;
+  bool showArrow;
 
   @override
   initState() {
     super.initState();
     currentPage = 0;
     _controller = PageController(initialPage: 0);
+    showArrow = true;
   }
 
-  List pages = [
-    LandingContent(),
-    FirstExplanation(),
-    SecondExplanation(),
-    ShareYourNotes()
-  ];
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -187,71 +183,77 @@ class _HomePageState extends State<HomePage> {
         body: DefaultTextStyle(
             style: Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
-            child: PageView.builder(
-              scrollDirection: Axis.vertical,
-              controller: _controller,
-              onPageChanged: (page) => setState(() {
-                print("Page: $page");
-                currentPage = page;
-              }),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                Widget w;
-                switch (index) {
-                  case 0:
-                    w = Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          LandingContent(),
-                          IconButton(
-                              iconSize: 50.0,
-                              icon: Icon(Icons.arrow_downward),
-                              onPressed: () {
-                                _controller.nextPage(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.linear);
-                              })
-                        ]);
-                    break;
-                  case 1:
-                    w = FirstExplanation();
-                    break;
-                  case 2:
-                    w = SecondExplanation();
-                    break;
-                  case 3:
-                    w = ShareYourNotes();
-                }
-                return Center(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                      Container(
-                          padding: EdgeInsets.all(20.0),
-                          width: 750.0,
-                          child: Center(child: w)),
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [0, 1, 2, 3]
-                              .map((i) => RawMaterialButton(
-                                  shape: StadiumBorder(),
-                                  textStyle: TextStyle(
-                                    color: currentPage == i
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  fillColor: currentPage == i
-                                      ? Theme.of(context).primaryColor
-                                      : Colors.white,
-                                  onPressed: () => _controller.animateToPage(i,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.linear),
-                                  child: Text("${i + 1}")))
-                              .toList())
-                    ]));
-              },
-            )),
+            child: Center(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                  Center(
+                    child: Container(
+                        padding: EdgeInsets.all(20.0),
+                        width: MediaQuery.of(context).size.width > 550.0 ? 750.0 : MediaQuery.of(context).size.width-200.0,
+                        child: PageView.builder(
+                          scrollDirection: Axis.vertical,
+                          controller: _controller,
+                          onPageChanged: (page) => setState(() {
+                            print("Page: $page");
+                            showArrow = false;
+                            currentPage = page;
+                          }),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            Widget w;
+                            switch (index) {
+                              case 0:
+                                w = Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      LandingContent(),
+                                      if(showArrow)
+                                        IconButton(
+                                            iconSize: 50.0,
+                                            icon: Icon(Icons.arrow_downward),
+                                            onPressed: () {
+                                              _controller.nextPage(
+                                                  duration:
+                                                      Duration(milliseconds: 500),
+                                                  curve: Curves.linear);
+                                            })
+                                    ]);
+                                break;
+                              case 1:
+                                w = FirstExplanation();
+                                break;
+                              case 2:
+                                w = SecondExplanation();
+                                break;
+                              case 3:
+                                w = ShareYourNotes();
+                            }
+                            return w;
+                          },
+                        )),
+                  ),
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [0, 1, 2, 3]
+                          .map((i) => RawMaterialButton(
+                              shape: CircleBorder(),
+                              textStyle: TextStyle(
+                                color: currentPage == i
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                              fillColor: currentPage == i
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.white,
+                              onPressed: () => _controller.animateToPage(i,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.linear),
+                              ))
+                          .toList())
+                ]))),
       );
 }
