@@ -88,7 +88,13 @@ class MyApp extends StatelessWidget {
                   letterSpacing: 0,
                   wordSpacing: -1,
                   height: 1.3,
-                  fontSize: 17.0),
+                  fontSize: 16.0),
+              bodyText1: TextStyle(
+                  fontWeight: FontWeight.w100,
+                  letterSpacing: 0,
+                  wordSpacing: -1,
+                  height: 1.3,
+                  fontSize: 18.0),
               headline4:
                   TextStyle(fontWeight: FontWeight.w900, color: Colors.black),
               headline3: TextStyle(

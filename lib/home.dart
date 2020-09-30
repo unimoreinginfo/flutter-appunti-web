@@ -14,7 +14,8 @@ class Illustration extends StatelessWidget {
   @override
   Widget build(context) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Image.network("/img/$name.png", height: 200.0));
+      child: Image.network("/img/$name.png",
+          height: MediaQuery.of(context).size.width > 850 ? 350.0 : 150.0));
 }
 
 class LandingContent extends StatelessWidget {
@@ -24,7 +25,9 @@ class LandingContent extends StatelessWidget {
       Illustration("lesson"),
       Text("La fonte di appunti più amata al mondo è tornata!",
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline3),
+          style: MediaQuery.of(context).size.width > 850.0
+              ? Theme.of(context).textTheme.headline3
+              : Theme.of(context).textTheme.headline4),
       SizedBox(
         height: 30,
       ),
@@ -50,10 +53,12 @@ class FirstExplanation extends StatelessWidget {
   @override
   Widget build(context) {
     return Column(children: [
+      Illustration("read"),
       Text("Appunti per tutti",
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline4),
-      Illustration("read"),
+          style: MediaQuery.of(context).size.width > 850.0
+              ? Theme.of(context).textTheme.headline4
+              : Theme.of(context).textTheme.headline5),
       Text(
           "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
       SizedBox(
@@ -74,10 +79,10 @@ class SecondExplanation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      Illustration("control"),
       Text("Risorse affidabili e controllate",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline4),
-      Illustration("control"),
       Text(
         "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
       ),
@@ -108,10 +113,10 @@ class ShareYourNotes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Illustration("letsgo"),
         Text("Dai il tuo contributo",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4),
-        Illustration("letsgo"),
         Text(
             "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
         SizedBox(
@@ -180,20 +185,30 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: DefaultTextStyle(
-            style: Theme.of(context).textTheme.bodyText2,
+            style: MediaQuery.of(context).size.width > 850.0
+                ? Theme.of(context).textTheme.bodyText1
+                : Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
             child: Center(
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MediaQuery.of(context).size.width > 850.0
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    mainAxisSize: MediaQuery.of(context).size.width > 850.0
+                        ? MainAxisSize.max
+                        : MainAxisSize.min,
                     children: [
                   Container(
+                    width: MediaQuery.of(context).size.width > 850.0
+                        ? (MediaQuery.of(context).size.width - 750) / 6
+                        : 0.0,
+                  ),
+                  Container(
                     padding: EdgeInsets.all(20.0),
-                    width: MediaQuery.of(context).size.width > 950.0
+                    width: MediaQuery.of(context).size.width > 850.0
                         ? 750.0
-                        : MediaQuery.of(context).size.width - 200.0,
+                        : MediaQuery.of(context).size.width * 90 / 100,
                     child: PageView.builder(
-                      physics: PageScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       controller: _controller,
                       onPageChanged: (page) => setState(() {
@@ -234,25 +249,26 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [0, 1, 2, 3]
-                          .map((i) => RawMaterialButton(
-                                shape: CircleBorder(),
-                                textStyle: TextStyle(
-                                  color: currentPage == i
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                                fillColor: currentPage == i
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.white,
-                                onPressed: () => _controller.animateToPage(i,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.linear),
-                              ))
-                          .toList())
+                  if (MediaQuery.of(context).size.width > 850.0)
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [0, 1, 2, 3]
+                            .map((i) => RawMaterialButton(
+                                  shape: CircleBorder(),
+                                  textStyle: TextStyle(
+                                    color: currentPage == i
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  fillColor: currentPage == i
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.white,
+                                  onPressed: () => _controller.animateToPage(i,
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.linear),
+                                ))
+                            .toList())
                 ]))),
       );
 }
