@@ -222,7 +222,6 @@ class _HomePageState extends State<HomePage> {
                         ? 750.0
                         : MediaQuery.of(context).size.width * 90 / 100,
                     child: PageView(
-                      allowImplicitScrolling: ,
                       scrollDirection: Axis.vertical,
                       controller: _controller,
                       physics: HomePageScrollPhysics(),
