@@ -87,6 +87,9 @@ class SecondExplanation extends StatelessWidget {
       Text("Risorse affidabili e controllate",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline4),
+      SizedBox(
+          height: 30,
+        ),
       Text(
         "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
       ),
