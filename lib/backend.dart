@@ -190,6 +190,6 @@ Future<UserStorageStatus> getSize(String jwt) async {
 
   Map data = json.decode(res.data);
   print("get /size ha returnato ${res.data}");
-  return UserStorageStatus(
-      data["folder_size_kilobytes"], data["max_folder_size_kilobytes"]);
+  return UserStorageStatus(double.parse(data["folder_size_kilobytes"]).toInt(),
+      data["max_folder_size_kilobytes"]);
 }
