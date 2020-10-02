@@ -9,8 +9,7 @@ class LoginPage extends StatelessWidget {
   LoginPage();
 
   @override
-  Widget build(context) =>
-    Scaffold(
+  Widget build(context) => Scaffold(
       appBar: AppBar(title: Text("Accedi")),
       body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
@@ -58,6 +57,14 @@ class _LoginControlsState extends State<LoginControls> {
       await LoginManager(tokenStorage).logIn(email, password);
 
   void _signIn(String email, String password) async {
+    if (email == null || password == null) {
+      showDialog(
+          context: context,
+          child: AlertDialog(
+            title: Text("Inserisci un indirizzo email e una password!"),
+          ));
+      return;
+    }
     setState(() {
       _loggingIn = true;
     });
@@ -239,6 +246,23 @@ class _SignupControlsState extends State<SignupControls> {
                     _badPassword = true;
                   });
                   return;
+                }
+                if (_idController.text == null) {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text(
+                            "Ci serve un UNIMORE ID per verificare che tu sia uno studente."),
+                      ));
+                  return;
+                }
+                if (_nameController.text == null ||
+                    _surnameController.text == null) {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text("Inserisci un nome ed un cognome"),
+                      ));
                 }
                 setState(() {
                   _badEmail = false;

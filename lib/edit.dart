@@ -140,66 +140,115 @@ class _PlebPageState extends State<PlebPage> {
                     })
               ],
             ),
-          FlatButton(
-              onPressed: () async {
-                var res = await FilePicker.platform.pickFiles(withData: true);
-                if (res != null && res.isSinglePick) {
-                  if ((_runningTotalSize += res.files.single.size) > 20000) {
+          FutureBuilder(
+              future: backend.getSize(widget.jwt),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  if (snapshot.error is errors.ServerError) {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                          title: Text("File troppo grande"),
-                          content: Text(fileTooBigTips),
-                          actions: [
-                            FlatButton(
-                                onPressed: () {
-                                  launch(
-                                      "https://www.ilovepdf.com/compress_pdf");
-                                },
-                                child: Text("Compressione PDF iLovePDF")),
-                            FlatButton(
-                              onPressed: () {
-                                launch("https://www.7-zip.org/");
-                              },
-                              child: Text("Home page 7-Zip"),
-                            )
-                          ],
+                          title: Text(
+                              "Si è verificato un problema di connessione al server"),
                         ));
-                    return;
+                    Navigator.pushNamed(context, "/");
                   }
-                  var mimeType = lookupMimeType(res.files.single.name);
-                  print("il file è $mimeType");
-                  if (!allowedMimeTypes.contains(mimeType)) {
+                  if (snapshot.error is errors.BackendError) {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                          title: Text("Tipo di file non permesso"),
-                          content: Text(
-                              "Se stai cercando di caricare codice dovresti provare ad aggiungerlo nelle repo GitHub di unimoreinginfo."),
-                          actions: [
-                            FlatButton(
-                                onPressed: () {
-                                  launch("https://github.com/unimoreinginfo");
-                                },
-                                child: Text("Vai al GitHub di unimoreinginfo"))
-                          ],
+                          title: Text("Le credenziali sono scadute o corrotte"),
                         ));
-                    return;
+                    LoginManager.logOut(tokenStorage);
+                    Navigator.pushNamed(context, "/login");
                   }
-                  String name =
-                      res.files.single.name.split('/').last.split('\\').last;
-                  var bytes = res.files.single.bytes;
-
-                  setState(() {
-                    _files.add(MultipartFile.fromBytes(bytes,
-                        filename: name,
-                        contentType: MediaType.parse(mimeType)));
-                  });
                 }
-              },
-              color: Theme.of(context).primaryColor,
-              textColor: Colors.white,
-              child: Text("Aggiungi file")),
+                if (!snapshot.hasData) return CircularProgressIndicator();
+
+                backend.UserStorageStatus data = snapshot.data;
+                return FlatButton(
+                    onPressed: () async {
+                      var res =
+                          await FilePicker.platform.pickFiles(withData: true);
+                      if (res != null && res.isSinglePick) {
+                        if ((_runningTotalSize += res.files.single.size) >
+                            20000) {
+                          _runningTotalSize -= res.files.single.size;
+                          showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                title: Text("Appunto troppo grande"),
+                                content: Text(fileTooBigTips),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () {
+                                        launch(
+                                            "https://www.ilovepdf.com/compress_pdf");
+                                      },
+                                      child: Text("Compressione PDF iLovePDF")),
+                                  FlatButton(
+                                    onPressed: () {
+                                      launch("https://www.7-zip.org/");
+                                    },
+                                    child: Text("Home page 7-Zip"),
+                                  )
+                                ],
+                              ));
+                          return;
+                        }
+                        if ((_runningTotalSize += res.files.single.size) +
+                                data.folder_size_kilobytes >
+                            data.max_size_kilobytes) {
+                          _runningTotalSize -= res.files.single.size;
+                          showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                title: Text(
+                                    "In totale ogni utente può caricare al massimo 2 GiB di appunti"),
+                                content: Text(
+                                    "E tu, con questo file, saresti oltre il limite"),
+                              ));
+                          return;
+                        }
+                        var mimeType = lookupMimeType(res.files.single.name);
+                        print("il file è $mimeType");
+                        if (!allowedMimeTypes.contains(mimeType)) {
+                          showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                title: Text("Tipo di file non permesso"),
+                                content: Text(
+                                    "Se stai cercando di caricare codice dovresti provare ad aggiungerlo nelle repo GitHub di unimoreinginfo."),
+                                actions: [
+                                  FlatButton(
+                                      onPressed: () {
+                                        launch(
+                                            "https://github.com/unimoreinginfo");
+                                      },
+                                      child: Text(
+                                          "Vai al GitHub di unimoreinginfo"))
+                                ],
+                              ));
+                          return;
+                        }
+                        String name = res.files.single.name
+                            .split('/')
+                            .last
+                            .split('\\')
+                            .last;
+                        var bytes = res.files.single.bytes;
+
+                        setState(() {
+                          _files.add(MultipartFile.fromBytes(bytes,
+                              filename: name,
+                              contentType: MediaType.parse(mimeType)));
+                        });
+                      }
+                    },
+                    color: Theme.of(context).primaryColor,
+                    textColor: Colors.white,
+                    child: Text("Aggiungi file"));
+              }),
           if (_sendingNote)
             CircularProgressIndicator()
           else

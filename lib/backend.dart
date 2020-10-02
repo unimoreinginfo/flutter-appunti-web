@@ -173,3 +173,23 @@ Future<List<Map<String, Object>>> getUsers(String jwt) async {
 
   return json.decode(res.data)["result"];
 }
+
+class UserStorageStatus {
+  UserStorageStatus(this.folder_size_kilobytes, this.max_size_kilobytes);
+
+  int folder_size_kilobytes;
+  int max_size_kilobytes;
+}
+
+Future<UserStorageStatus> getSize(String jwt) async {
+  var res = await http.get("$baseUrl/users/size",
+      options: Options(headers: {"Authorization": "Bearer $jwt"}));
+
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
+  if (res.statusCode != 200) throw errors.BackendError(res.statusCode);
+
+  Map data = json.decode(res.data);
+  print("get /size ha returnato ${res.data}");
+  return UserStorageStatus(
+      data["folder_size_kilobytes"], data["max_folder_size_kilobytes"]);
+}
