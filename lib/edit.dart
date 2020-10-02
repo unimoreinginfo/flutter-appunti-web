@@ -171,9 +171,8 @@ class _PlebPageState extends State<PlebPage> {
                       var res =
                           await FilePicker.platform.pickFiles(withData: true);
                       if (res != null && res.isSinglePick) {
-                        if ((_runningTotalSize += res.files.single.size) >
+                        if ((_runningTotalSize + res.files.single.size) >
                             20000) {
-                          _runningTotalSize -= res.files.single.size;
                           showDialog(
                               context: context,
                               child: AlertDialog(
@@ -196,10 +195,9 @@ class _PlebPageState extends State<PlebPage> {
                               ));
                           return;
                         }
-                        if ((_runningTotalSize += res.files.single.size) +
+                        if ((_runningTotalSize + res.files.single.size) +
                                 data.folder_size_kilobytes >
                             data.max_size_kilobytes) {
-                          _runningTotalSize -= res.files.single.size;
                           showDialog(
                               context: context,
                               child: AlertDialog(
@@ -239,6 +237,7 @@ class _PlebPageState extends State<PlebPage> {
                         var bytes = res.files.single.bytes;
 
                         setState(() {
+                          _runningTotalSize+=res.files.single.size;
                           _files.add(MultipartFile.fromBytes(bytes,
                               filename: name,
                               contentType: MediaType.parse(mimeType)));
