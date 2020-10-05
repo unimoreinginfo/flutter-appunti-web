@@ -33,8 +33,10 @@ class SubjectsPage extends StatelessWidget {
                         (context) => showDialog(
                             context: context,
                             child: AlertDialog(
-                                title: Text(
-                                    "Si è verificato un errore durante l'accesso alle materie"))));
+                              title: Text(
+                                  "Si è verificato un errore durante l'accesso alle materie"),
+                              content: Text("${snapshot.error}"),
+                            )));
                     return Text("si è verificato un errore");
                   }
                   if (!snapshot.hasData) return CircularProgressIndicator();
@@ -55,18 +57,17 @@ class SubjectsPageContents extends StatefulWidget {
 }
 
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
-  // TODO: rework note fetching by subj, this will not be feasible with many subjects and notes
-
-  // TODO: what if this fails?
   Future<List> getNotesFuture(int id) => backend.getNotes(subjectId: id);
-  int selectedSubject = -1;
-  List<Future<List>> notesFuture;
+  TextEditingController _searchController = TextEditingController();
+  int _chosenSubject = -1;
   List<Map<String, Object>> data = null;
   Timer timer = null;
-  ScrollController _subjectsScrollController = ScrollController();
+  String curQ = null;
 
   void searchDebounced(String q) async {
     List<Map<String, Object>> res;
+    if (q == curQ) return;
+    curQ = q;
     if (q.length < 2)
       setState(() {
         if (timer != null) {
@@ -94,9 +95,6 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   @override
   void initState() {
     super.initState();
-    notesFuture = widget.subjects
-        .map((subject) => getNotesFuture(subject["id"]))
-        .toList();
   }
 
   @override
@@ -104,192 +102,160 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     return Column(
       children: [
         SizedBox(height: 15.0),
-        if (selectedSubject < 0)
-          Column(
-            children: [
-              Text(
-                "Cerca",
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              TextField(onChanged: searchDebounced),
-            ],
-          ),
-        if (data == null)
-          Column(children: [
-            if (selectedSubject < 0)
-              Text("oppure")
-            else
-              FlatButton(
-                child: Text("RESET"),
-                onPressed: () {
-                  setState(() {
-                    selectedSubject = -1;
-                  });
-                },
-              ),
-            Text(
-              "Scegli una materia",
-              style: Theme.of(context).textTheme.headline4,
+        Text(
+          "Cerca appunti",
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        SizedBox(height: 15.0),
+        Row(
+          children: [
+            Container(
+              width: 150.0,
+              child: DropdownButton(
+                  value: _chosenSubject,
+                  items: [DropdownMenuItem(value: -1, child: Text("Tutte"))] +
+                      (widget.subjects
+                          .map((subject) => DropdownMenuItem(
+                              value: subject["id"],
+                              child: Text(subject["name"])))
+                          .toList()),
+                  onChanged: (value) {
+                    setState(() {
+                      _chosenSubject = value;
+                    });
+                  }),
             ),
-            Row(
-              children: [
-                IconButton(
-                    icon: Icon(Icons.arrow_left_outlined),
-                    onPressed: () {
-                      _subjectsScrollController.animateTo(
-                          _subjectsScrollController.offset - 80.0,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    }),
-                Container(
-                  height: 100.0,
-                  width: MediaQuery.of(context).size.width < 900.0
-                      ? MediaQuery.of(context).size.width * 75 / 100
-                      : 700,
-                  padding: EdgeInsets.all(16.0),
-                  child: ListView.builder(
-                      controller: _subjectsScrollController,
-                      itemCount: widget.subjects.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, i) => FlatButton(
-                            child: Card(
-                                margin: selectedSubject == i
-                                    ? EdgeInsets.all(5.0)
-                                    : null,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Center(
-                                      child: Text(
-                                    widget.subjects[i]["name"],
-                                  )),
-                                )),
-                            onPressed: () => setState(() {
-                              selectedSubject = i;
-                            }),
-                          )),
-                ),
-                IconButton(
-                    icon: Icon(Icons.arrow_right_outlined),
-                    onPressed: () {
-                      _subjectsScrollController.animateTo(
-                          _subjectsScrollController.offset + 80.0,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.linear);
-                    })
-              ],
+            SizedBox(
+              width: 5.0,
             ),
-          ]),
-        if (data != null) SearchedNotes(data),
-        if (data == null && selectedSubject >= 0)
-          SubjectNotes(
-              widget.subjects[selectedSubject], notesFuture[selectedSubject])
+            TextField(
+                decoration: InputDecoration(labelText: "Cerca"),
+                controller: _searchController,
+                onChanged: searchDebounced),
+            IconButton(
+                onPressed: () => searchDebounced(_searchController.text),
+                icon: Icon(Icons.search))
+          ],
+        ),
+        SizedBox(height: 15.0),
+        Text("Ultimi risultati"),
+        SizedBox(height: 15.0),
+        if (_searchController.text != "")
+          DisplayNotes(data != null ? data : [], widget.subjects)
+        else
+          FutureBuilder(
+            future: backend.getNotes(
+                subjectId: _chosenSubject != -1 ? _chosenSubject : null),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Text("Si è verificato un errore"),
+                      content: Text("${snapshot.error}"),
+                    ));
+                return Text("errore");
+              }
+              // TODO:implementare pagine
+
+              if (!snapshot.hasData) return CircularProgressIndicator();
+              return DisplayNotes(snapshot.data, widget.subjects);
+            },
+          )
       ],
     );
   }
 }
 
-class SubjectNotes extends StatelessWidget {
-  SubjectNotes(this.subject, this.notesFuture);
+class DisplayNotes extends StatelessWidget {
+  DisplayNotes(this.data, this.subjects);
 
-  final Map<String, Object> subject;
-  final Future<List> notesFuture;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(children: [
-        Text(subject["name"], style: Theme.of(context).textTheme.headline4),
-        Text(
-            "Prof. ${subject['professor_name']} ${subject['professor_surname']}"),
-        FutureBuilder(
-            future: notesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                // TODO: better error handling
-                print("notes: ${snapshot.data}");
-                print("${snapshot.error}");
-                doItAsap(
-                    context,
-                    (context) => showDialog(
-                        context: context,
-                        child: AlertDialog(
-                            title: Text(
-                                "Si è verificato un errore durante l'accesso agli appunti di ${subject["name"]}"))));
-                return Text("Si è verificato un errore");
-              }
-              if (snapshot.connectionState == ConnectionState.waiting)
-                return CircularProgressIndicator();
-              final List<Map> notes = snapshot.data;
-              print("notes: $notes");
-              if (notes.length == 0)
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Non ci sono appunti per questa materia",
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                );
-              return Container(
-                height: MediaQuery.of(context).size.height * 60 / 100,
-                padding: EdgeInsets.all(16.0),
-                child: ListView.builder(
-                    itemCount: notes.length,
-                    itemBuilder: (context, i) {
-                      DateTime date = DateTime.parse(notes[i]["uploaded_at"]);
-                      return FutureBuilder(
-                          future: backend.getUser(notes[i]["author_id"]),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData)
-                              return CircularProgressIndicator();
-                            var user = snapshot.data;
-                            print(
-                                "user name: ${user["name"]} ${user["surname"]}");
-                            print("note title: ${notes[i]["title"]}");
-                            return ListTile(
-                                leading: Icon(Icons.note),
-                                trailing: Text(
-                                    "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                                title: Text("${notes[i]["title"]}"),
-                                subtitle: InkWell(
-                                  child: Text(
-                                      "${user["name"]} ${user["surname"]}"),
-                                  onTap: () => Navigator.pushNamed(
-                                      context, "/users/${user['id']}"),
-                                ),
-                                onTap: () => Navigator.pushNamed(context,
-                                    '/notes/${notes[i]["subject_id"]}/${notes[i]["note_id"]}'));
-                          });
-                    }),
-              );
-            })
-      ]),
-    );
-  }
-}
-
-class SearchedNotes extends StatelessWidget {
-  SearchedNotes(this.data);
-
+  final List<Map<String, Object>> subjects;
   final List<Map<String, Object>> data;
+
+  final ScrollController _controller = ScrollController();
+
+  Map getSubject(int id) {
+    return subjects.where((sub) => sub["id"] == id).first;
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool containsMoreInfo = data.length > 0 && data[0]["author_id"] != null;
     return Container(
       height: MediaQuery.of(context).size.height * 60 / 100,
       padding: EdgeInsets.all(16.0),
       child: ListView.builder(
+        controller: _controller,
         itemCount: data.length,
         itemBuilder: (context, i) {
-          return ListTile(
-            leading: Icon(Icons.note),
-            title: Text(data[i]["title"]),
-            onTap: () {
-              Navigator.pushNamed(
-                  context, '/notes/${data[i]["subject_id"]}/${data[i]["id"]}');
-            },
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              borderOnForeground: false,
+              color: Colors.grey[200],
+              child: Column(
+                children: [
+                  Text(
+                    getSubject(data[i]["subject_id"])["name"],
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  Text("Titolo: ${data[i]["title"]}"),
+                  if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
+                  if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context,
+                            '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
+                      },
+                      child: Text("Vai ai file contenuti in questo appunto"))
+                ],
+              ),
+            ),
           );
         },
       ),
+    );
+  }
+}
+
+class DateText extends StatelessWidget {
+  DateText(this.dateString);
+
+  final String dateString;
+
+  @override
+  Widget build(BuildContext context) {
+    var date = DateTime.parse(dateString).toLocal();
+    var day = date.day;
+    var month = date.month;
+    var year = date.year;
+    var hour = date.hour;
+    var minute = date.minute;
+    return Text("Caricato il $day/$month/$year alle $hour:$minute");
+  }
+}
+
+class AuthorInfo extends StatelessWidget {
+  AuthorInfo(this.id);
+
+  final String id;
+
+  @override
+  Widget build(context) {
+    return FutureBuilder(
+      future: backend.getUser(id),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return CircularProgressIndicator();
+        var name = snapshot.data["name"];
+        var surname = snapshot.data["surname"];
+        return InkWell(
+          child: Text("Autore: $name $surname"),
+          onTap: () {
+            Navigator.pushNamed(context, "/users/$id");
+          },
+        );
+      },
     );
   }
 }

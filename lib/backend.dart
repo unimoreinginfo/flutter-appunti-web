@@ -103,14 +103,15 @@ Future<List<Map<String, Object>>> getNotes(
     {String author, int subjectId}) async {
   Response res;
   if (author == null && subjectId != null)
-    res = await http.get("$baseUrl/notes?subject_id=$subjectId");
+    res =
+        await http.get("$baseUrl/notes?subject_id=$subjectId&order_by=visits");
   else if (author != null && subjectId == null)
-    res = await http.get("$baseUrl/notes?author_id=$author");
+    res = await http.get("$baseUrl/notes?author_id=$author&order_by=visits");
   else if (author != null && subjectId != null)
-    res = await http
-        .get("$baseUrl/notes?author_id=$author&subject_id=$subjectId");
+    res = await http.get(
+        "$baseUrl/notes?author_id=$author&subject_id=$subjectId&order_by=visits");
   else
-    res = await http.get("$baseUrl/notes");
+    res = await http.get("$baseUrl/notes?order_by=visits");
 
   if (res.statusCode == errors.SERVER_DOWN)
     throw errors.ServerError();
