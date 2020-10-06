@@ -171,9 +171,25 @@ class _SignupControlsState extends State<SignupControls> {
   TextEditingController _idController;
   TextEditingController _nameController;
   TextEditingController _surnameController;
+  TextEditingController _passwordConfirmationController;
   bool _signingUp;
   bool _badEmail;
   bool _badPassword;
+  bool _diffPass;
+
+  Future<void> passwordsDontMatch() async {
+    setState(() {
+      _diffPass = true;
+    });
+
+    while (_passwordConfirmationController.text != _passwordController.text) {
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
+    setState(() {
+      _diffPass = false;
+    });
+  }
 
   @override
   initState() {
@@ -182,9 +198,11 @@ class _SignupControlsState extends State<SignupControls> {
     _badEmail = false;
     _badPassword = false;
     _signingUp = false;
+    _diffPass = false;
 
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _passwordConfirmationController = TextEditingController();
     _idController = TextEditingController();
     _nameController = TextEditingController();
     _surnameController = TextEditingController();
@@ -211,6 +229,20 @@ class _SignupControlsState extends State<SignupControls> {
             errorText: _badEmail ? "Email non valida" : null,
           )),
       TextField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: "password",
+            errorText: _badPassword ? "Password non valida" : null,
+          )),
+      TextField(
+          controller: _passwordConfirmationController,
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: "password",
+            errorText: _diffPass ? "Le password non corrispondono" : null,
+          )),
+      TextField(
           controller: _nameController,
           decoration: InputDecoration(
             labelText: "Nome",
@@ -222,19 +254,17 @@ class _SignupControlsState extends State<SignupControls> {
           keyboardType: TextInputType.number,
           controller: _idController,
           decoration: InputDecoration(labelText: "ID esse3 unimore")),
-      TextField(
-          controller: _passwordController,
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: "password",
-            errorText: _badPassword ? "Password non valida" : null,
-          )),
       _signingUp
           ? CircularProgressIndicator()
           : RaisedButton(
               color: Theme.of(context).primaryColor,
               child: Text("Registrati", style: TextStyle(color: Colors.white)),
               onPressed: () async {
+                if (_passwordConfirmationController.text !=
+                    _passwordController.text) {
+                  passwordsDontMatch();
+                  return;
+                }
                 if (!RegExp(emailRegex).hasMatch(_emailController.text)) {
                   setState(() {
                     _badEmail = true;

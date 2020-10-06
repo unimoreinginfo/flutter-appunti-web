@@ -194,22 +194,26 @@ class DisplayNotes extends StatelessWidget {
             child: Card(
               borderOnForeground: false,
               color: Colors.grey[200],
-              child: Column(
-                children: [
-                  Text(
-                    getSubject(data[i]["subject_id"])["name"],
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                  Text("Titolo: ${data[i]["title"]}"),
-                  if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
-                  if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
-                  FlatButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context,
-                            '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
-                      },
-                      child: Text("Vai ai file contenuti in questo appunto"))
-                ],
+              child: DefaultTextStyle(
+                textAlign: TextAlign.left,
+                style: Theme.of(context).textTheme.bodyText1,
+                child: Column(
+                  children: [
+                    Text(
+                      getSubject(data[i]["subject_id"])["name"],
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    Text("Titolo: ${data[i]["title"]}"),
+                    if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
+                    if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context,
+                              '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
+                        },
+                        child: Text("Vai ai file contenuti in questo appunto"))
+                  ],
+                ),
               ),
             ),
           );
