@@ -179,6 +179,18 @@ class DisplayNotes extends StatelessWidget {
     return subjects.where((sub) => sub["id"] == id).first;
   }
 
+  double calculateScrollControlRatio() {
+    double contentSize = _controller.position.maxScrollExtent;
+
+    double contentToViewRatio =
+        contentSize / _controller.position.viewportDimension;
+
+    if (contentToViewRatio <= 1.0)
+      return 1.0;
+    else
+      return 1 / contentToViewRatio;
+  }
+
   @override
   Widget build(BuildContext context) {
     bool containsMoreInfo = data.length > 0 && data[0]["author_id"] != null;

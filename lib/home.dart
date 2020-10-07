@@ -16,13 +16,13 @@ class Illustration extends StatelessWidget {
   Widget build(context) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: Image.network("/img/$name.png",
-          height: MediaQuery.of(context).size.width > 850 ? 350.0 : 150.0));
+          height: MediaQuery.of(context).size.width > 850 ? 275.0 : 150.0));
 }
 
 class LandingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("lesson"),
       Text("La fonte di appunti più amata al mondo è tornata!",
           textAlign: TextAlign.center,
@@ -53,7 +53,7 @@ class LandingContent extends StatelessWidget {
 class FirstExplanation extends StatelessWidget {
   @override
   Widget build(context) {
-    return Column(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("read"),
       Text("Appunti per tutti",
           textAlign: TextAlign.center,
@@ -82,14 +82,14 @@ class FirstExplanation extends StatelessWidget {
 class SecondExplanation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("control"),
       Text("Risorse affidabili e controllate",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline4),
       SizedBox(
-          height: 30,
-        ),
+        height: 30,
+      ),
       Text(
         "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
       ),
@@ -122,6 +122,7 @@ class ShareYourNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Illustration("letsgo"),
         Text("Dai il tuo contributo",
