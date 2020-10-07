@@ -13,10 +13,13 @@ class Illustration extends StatelessWidget {
   final String name;
 
   @override
-  Widget build(context) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Image.network("/img/$name.png",
-          height: MediaQuery.of(context).size.width > 850 ? 275.0 : 150.0));
+  Widget build(context) => Center(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Image.network("/img/$name.png",
+                height:
+                    MediaQuery.of(context).size.width > 850 ? 250.0 : 150.0)),
+      );
 }
 
 class LandingContent extends StatelessWidget {
@@ -37,14 +40,16 @@ class LandingContent extends StatelessWidget {
       SizedBox(
         height: 30,
       ),
-      MaterialButton(
-        height: 50.0,
-        color: Theme.of(context).primaryColor,
-        textColor: Colors.white,
-        child: Text("Vai agli appunti"),
-        onPressed: () {
-          Navigator.pushNamed(context, "/subjects");
-        },
+      Center(
+        child: MaterialButton(
+          height: 50.0,
+          color: Theme.of(context).primaryColor,
+          textColor: Colors.white,
+          child: Text("Vai agli appunti"),
+          onPressed: () {
+            Navigator.pushNamed(context, "/subjects");
+          },
+        ),
       ),
     ]);
   }
@@ -142,11 +147,13 @@ class ShareYourNotes extends StatelessWidget {
         SizedBox(
           height: 30,
         ),
-        FlatButton(
-            color: Theme.of(context).primaryColor,
-            textColor: Colors.white,
-            child: Text("Accedi e mandaci i tuoi appunti"),
-            onPressed: () => Navigator.pushNamed(context, "/edit"))
+        Center(
+          child: FlatButton(
+              color: Theme.of(context).primaryColor,
+              textColor: Colors.white,
+              child: Text("Accedi e mandaci i tuoi appunti"),
+              onPressed: () => Navigator.pushNamed(context, "/edit")),
+        )
       ],
     );
   }

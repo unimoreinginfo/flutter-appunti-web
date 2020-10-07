@@ -195,7 +195,7 @@ class DisplayNotes extends StatelessWidget {
   Widget build(BuildContext context) {
     bool containsMoreInfo = data.length > 0 && data[0]["author_id"] != null;
     return Container(
-      height: MediaQuery.of(context).size.height * 60 / 100,
+      height: MediaQuery.of(context).size.height - 210.0,
       padding: EdgeInsets.all(16.0),
       child: ListView.builder(
         controller: _controller,
@@ -203,28 +203,35 @@ class DisplayNotes extends StatelessWidget {
         itemBuilder: (context, i) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Card(
-              borderOnForeground: false,
-              color: Colors.grey[200],
-              child: DefaultTextStyle(
-                textAlign: TextAlign.left,
-                style: Theme.of(context).textTheme.bodyText1,
-                child: Column(
-                  children: [
-                    Text(
-                      getSubject(data[i]["subject_id"])["name"],
-                      style: Theme.of(context).textTheme.headline4,
+            child: Container(
+              child: Card(
+                borderOnForeground: false,
+                color: Colors.grey[200],
+                child: DefaultTextStyle(
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context).textTheme.bodyText1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          getSubject(data[i]["subject_id"])["name"],
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                        Text("Titolo: ${data[i]["title"]}"),
+                        if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
+                        if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
+                        FlatButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context,
+                                  '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
+                            },
+                            child:
+                                Text("Vai ai file contenuti in questo appunto"))
+                      ],
                     ),
-                    Text("Titolo: ${data[i]["title"]}"),
-                    if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
-                    if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context,
-                              '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
-                        },
-                        child: Text("Vai ai file contenuti in questo appunto"))
-                  ],
+                  ),
                 ),
               ),
             ),
