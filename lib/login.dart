@@ -103,13 +103,6 @@ class _LoginControlsState extends State<LoginControls> {
   @override
   Widget build(context) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-      RaisedButton(
-          color: Theme.of(context).primaryColor,
-          child: Text("Registrati", style: TextStyle(color: Colors.white)),
-          onPressed: () {
-            Navigator.pushNamed(context, "/signup");
-          }),
-      Text("oppure"),
       TextField(
           autofocus: true,
           keyboardType: TextInputType.emailAddress,
@@ -127,6 +120,13 @@ class _LoginControlsState extends State<LoginControls> {
               child: Text("Accedi", style: TextStyle(color: Colors.white)),
               onPressed: () =>
                   _signIn(_emailController.text, _passwordController.text)),
+      Text("oppure"),
+      RaisedButton(
+          color: Theme.of(context).primaryColor,
+          child: Text("Registrati", style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            Navigator.pushNamed(context, "/signup");
+          }),
     ]);
   }
 }

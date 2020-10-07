@@ -17,8 +17,10 @@ class Illustration extends StatelessWidget {
         child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: Image.network("/img/$name.png",
-                height:
-                    MediaQuery.of(context).size.width > 850 ? 250.0 : 150.0)),
+                height: MediaQuery.of(context).size.width > 850 &&
+                        MediaQuery.of(context).size.height > 682
+                    ? 225.0
+                    : 150.0)),
       );
 }
 
@@ -66,7 +68,7 @@ class FirstExplanation extends StatelessWidget {
               ? Theme.of(context).textTheme.headline4
               : Theme.of(context).textTheme.headline5),
       SizedBox(
-        height: 30,
+        height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
       ),
       Text(
           "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
@@ -209,7 +211,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: DefaultTextStyle(
-            style: MediaQuery.of(context).size.width > 850.0
+            style: MediaQuery.of(context).size.width > 850.0 &&
+                    MediaQuery.of(context).size.height > 682
                 ? Theme.of(context).textTheme.bodyText1
                 : Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
