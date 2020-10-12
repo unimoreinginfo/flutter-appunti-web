@@ -92,6 +92,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     }
   }
 
+  String _trimToLen(String a, int len) =>
+      a.length > len ? a.substring(0, len) : a;
+
   @override
   void initState() {
     super.initState();
@@ -109,33 +112,30 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         SizedBox(height: 15.0),
         Row(
           children: [
-            Container(
-              width: 150.0,
-              child: DropdownButton(
-                  icon: Icon(Icons.arrow_drop_down),
-                  iconSize: 20,
-                  value: _chosenSubject,
-                  items: [DropdownMenuItem(value: -1, child: Text("Tutte"))] +
-                      (widget.subjects
-                          .map((subject) => DropdownMenuItem(
-                              value: subject["id"],
-                              child: Text(subject["name"])))
-                          .toList()),
-                  onChanged: (value) {
-                    setState(() {
-                      _chosenSubject = value;
-                    });
-                  }),
+            DropdownButton(
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 20,
+                value: _chosenSubject,
+                items: [DropdownMenuItem(value: -1, child: Text("Tutte"))] +
+                    (widget.subjects
+                        .map((subject) => DropdownMenuItem(
+                            value: subject["id"],
+                            child: Text(_trimToLen(subject["name"], 15))))
+                        .toList()),
+                onChanged: (value) {
+                  setState(() {
+                    _chosenSubject = value;
+                  });
+                }),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                  decoration: InputDecoration(
+                    labelText: "Cerca",
+                  ),
+                  controller: _searchController,
+                  onChanged: searchDebounced),
             ),
-            SizedBox(
-              width: 5.0,
-            ),
-            TextField(
-                decoration: InputDecoration(
-                  labelText: "Cerca",
-                ),
-                controller: _searchController,
-                onChanged: searchDebounced),
             IconButton(
                 onPressed: () => searchDebounced(_searchController.text),
                 icon: Icon(Icons.search))
