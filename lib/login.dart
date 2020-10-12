@@ -103,6 +103,7 @@ class _LoginControlsState extends State<LoginControls> {
   @override
   Widget build(context) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+      Text("Bentornato, accedi."),
       TextField(
           autofocus: true,
           keyboardType: TextInputType.emailAddress,
@@ -220,7 +221,7 @@ class _SignupControlsState extends State<SignupControls> {
   @override
   Widget build(context) {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Text("Registrazione"),
+      Text("Benvenuto, registrati."),
       TextField(
           keyboardType: TextInputType.emailAddress,
           controller: _emailController,

@@ -112,6 +112,8 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
             Container(
               width: 150.0,
               child: DropdownButton(
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 20,
                   value: _chosenSubject,
                   items: [DropdownMenuItem(value: -1, child: Text("Tutte"))] +
                       (widget.subjects
@@ -129,7 +131,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
               width: 5.0,
             ),
             TextField(
-                decoration: InputDecoration(labelText: "Cerca"),
+                decoration: InputDecoration(
+                  labelText: "Cerca",
+                ),
                 controller: _searchController,
                 onChanged: searchDebounced),
             IconButton(
@@ -180,7 +184,7 @@ class DisplayNotes extends StatelessWidget {
   }
 
   double calculateScrollControlRatio() {
-    double contentSize = _controller.position.maxScrollExtent;
+    double contentSize = data.length * 215.0;
 
     double contentToViewRatio =
         contentSize / _controller.position.viewportDimension;
@@ -204,32 +208,52 @@ class DisplayNotes extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              child: Card(
-                borderOnForeground: false,
-                color: Colors.grey[200],
-                child: DefaultTextStyle(
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.bodyText1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          getSubject(data[i]["subject_id"])["name"],
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        Text("Titolo: ${data[i]["title"]}"),
-                        if (containsMoreInfo) DateText(data[i]["uploaded_at"]),
-                        if (containsMoreInfo) AuthorInfo(data[i]["author_id"]),
-                        FlatButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context,
-                                  '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
-                            },
-                            child:
-                                Text("Vai ai file contenuti in questo appunto"))
-                      ],
+              height: 230.0,
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
+              child: DefaultTextStyle(
+                style: Theme.of(context).textTheme.bodyText2,
+                child: Card(
+                  elevation: 0.0,
+                  color: Color(0xfff5f6fa),
+                  child: DefaultTextStyle(
+                    textAlign: TextAlign.left,
+                    style: Theme.of(context).textTheme.bodyText1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            getSubject(data[i]["subject_id"])["name"],
+                            style: Theme.of(context).textTheme.headline5,
+                          ),
+                          if (MediaQuery.of(context).size.width > 700.00)
+                            SizedBox(
+                              height: 7.5,
+                            ),
+                          Text("Titolo: ${data[i]["title"]}"),
+                          if (containsMoreInfo)
+                            DateText(data[i]["uploaded_at"]),
+                          if (containsMoreInfo)
+                            AuthorInfo(data[i]["author_id"]),
+                          if (MediaQuery.of(context).size.width > 700.00)
+                            SizedBox(
+                              height: 7.5,
+                            ),
+                          FlatButton(
+                              color: Theme.of(context).primaryColor,
+                              textColor: Colors.white,
+                              onPressed: () {
+                                Navigator.pushNamed(context,
+                                    '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
+                              },
+                              child: Text(
+                                  "Vai ai file contenuti in questo appunto"))
+                        ],
+                      ),
                     ),
                   ),
                 ),

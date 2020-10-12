@@ -20,7 +20,7 @@ class Illustration extends StatelessWidget {
                 height: MediaQuery.of(context).size.width > 850 &&
                         MediaQuery.of(context).size.height > 682
                     ? 225.0
-                    : 150.0)),
+                    : 125.0)),
       );
 }
 
@@ -68,17 +68,17 @@ class FirstExplanation extends StatelessWidget {
               ? Theme.of(context).textTheme.headline4
               : Theme.of(context).textTheme.headline5),
       SizedBox(
-        height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
+        height: MediaQuery.of(context).size.width > 850.0 ? 30 : 10,
       ),
       Text(
           "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
       SizedBox(
-        height: 7.5,
+        height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
       Text(
           "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
       SizedBox(
-        height: 7.5,
+        height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
       Text(
           "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
@@ -95,25 +95,25 @@ class SecondExplanation extends StatelessWidget {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline4),
       SizedBox(
-        height: 30,
+        height: MediaQuery.of(context).size.width > 850.0 ? 30 : 10,
       ),
       Text(
         "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
       ),
       SizedBox(
-        height: 7.5,
+        height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
       Text(
         "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
       ),
       SizedBox(
-        height: 7.5,
+        height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
       Text(
         "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
       ),
       SizedBox(
-        height: 30,
+        height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
       ),
       Text(
         "E ti laurei pure, bastardo",
@@ -136,18 +136,18 @@ class ShareYourNotes extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4),
         SizedBox(
-          height: 30,
+          height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
         ),
         Text(
             "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
         SizedBox(
-          height: 7.5,
+          height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
         ),
         Text(
           "Non potrai caricare file enormi, però.",
         ),
         SizedBox(
-          height: 30,
+          height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
         ),
         Center(
           child: FlatButton(
@@ -225,13 +225,12 @@ class _HomePageState extends State<HomePage> {
                         ? MainAxisSize.max
                         : MainAxisSize.min,
                     children: [
+                  if (MediaQuery.of(context).size.width > 850.0)
+                    Container(
+                        width: (MediaQuery.of(context).size.width - 750) / 3.5),
                   Container(
-                    width: MediaQuery.of(context).size.width > 850.0
-                        ? (MediaQuery.of(context).size.width - 750) / 6
-                        : 0.0,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(20.0),
+                    padding:
+                        EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
                     width: MediaQuery.of(context).size.width > 850.0
                         ? 750.0
                         : MediaQuery.of(context).size.width * 90 / 100,
@@ -323,7 +322,10 @@ class _HomePageState extends State<HomePage> {
                                       duration: Duration(milliseconds: 500),
                                       curve: Curves.linear),
                                 ))
-                            .toList())
+                            .toList()),
+                  if (MediaQuery.of(context).size.width > 850.0)
+                    Container(
+                        width: (MediaQuery.of(context).size.width - 750) / 28),
                 ]))),
       );
 }
