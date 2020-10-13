@@ -15,7 +15,7 @@ class SubjectsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text("Appunti di $name"),
+            title: SelectableText("Appunti di $name"),
             actions: getUserIdOrNull(platform.tokenStorage) == null
                 ? null
                 : [LogoutButton()]),
@@ -33,11 +33,11 @@ class SubjectsPage extends StatelessWidget {
                         (context) => showDialog(
                             context: context,
                             child: AlertDialog(
-                              title: Text(
+                              title: SelectableText(
                                   "Si è verificato un errore durante l'accesso alle materie"),
-                              content: Text("${snapshot.error}"),
+                              content: SelectableText("${snapshot.error}"),
                             )));
-                    return Text("si è verificato un errore");
+                    return SelectableText("si è verificato un errore");
                   }
                   if (!snapshot.hasData) return CircularProgressIndicator();
                   return SubjectsPageContents(snapshot.data);
@@ -92,8 +92,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     }
   }
 
-  String _trimToLen(String a, int len) =>
-      a.length > len ? a.substring(0, len) : a;
+  String _trimToLen(String a, int len, int lastX) => a.length > len
+      ? "${a.substring(0, len - lastX - 3)}...${a.substring(a.length - lastX, a.length)}"
+      : a;
 
   @override
   void initState() {
@@ -105,44 +106,51 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     return Column(
       children: [
         SizedBox(height: 15.0),
-        Text(
+        SelectableText(
           "Cerca appunti",
           style: Theme.of(context).textTheme.headline4,
         ),
         SizedBox(height: 15.0),
         Row(
           children: [
-            DropdownButton(
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 20,
-                value: _chosenSubject,
-                items: [DropdownMenuItem(value: -1, child: Text("Tutte"))] +
-                    (widget.subjects
-                        .map((subject) => DropdownMenuItem(
-                            value: subject["id"],
-                            child: Text(_trimToLen(subject["name"], 15))))
-                        .toList()),
-                onChanged: (value) {
-                  setState(() {
-                    _chosenSubject = value;
-                  });
-                }),
+            Container(
+              height: 62.0,
+              color: Color(0xFFEEEEEE),
+              child: DropdownButton(
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 34,
+                  value: _chosenSubject,
+                  items: [
+                        DropdownMenuItem(
+                            value: -1, child: SelectableText("Tutte"))
+                      ] +
+                      (widget.subjects
+                          .map((subject) => DropdownMenuItem(
+                              value: subject["id"],
+                              child: SelectableText(
+                                  _trimToLen(subject["name"], 25, 4))))
+                          .toList()),
+                  onChanged: (value) {
+                    setState(() {
+                      _chosenSubject = value;
+                    });
+                  }),
+            ),
             Expanded(
               flex: 3,
               child: TextField(
                   decoration: InputDecoration(
+                    fillColor: Color(0xFFEEEEEE),
+                    filled: true,
                     labelText: "Cerca",
                   ),
                   controller: _searchController,
                   onChanged: searchDebounced),
             ),
-            IconButton(
-                onPressed: () => searchDebounced(_searchController.text),
-                icon: Icon(Icons.search))
           ],
         ),
         SizedBox(height: 15.0),
-        Text("Ultimi risultati"),
+        SelectableText("Ultimi risultati"),
         SizedBox(height: 15.0),
         if (_searchController.text != "")
           DisplayNotes(data != null ? data : [], widget.subjects)
@@ -156,9 +164,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     context: context,
                     child: AlertDialog(
                       title: Text("Si è verificato un errore"),
-                      content: Text("${snapshot.error}"),
+                      content: SelectableText("${snapshot.error}"),
                     ));
-                return Text("errore");
+                return SelectableText("errore");
               }
               // TODO:implementare pagine
 
@@ -226,7 +234,7 @@ class DisplayNotes extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(
+                          SelectableText(
                             getSubject(data[i]["subject_id"])["name"],
                             style: Theme.of(context).textTheme.headline5,
                           ),
@@ -234,7 +242,7 @@ class DisplayNotes extends StatelessWidget {
                             SizedBox(
                               height: 7.5,
                             ),
-                          Text("Titolo: ${data[i]["title"]}"),
+                          SelectableText("Titolo: ${data[i]["title"]}"),
                           if (containsMoreInfo)
                             DateText(data[i]["uploaded_at"]),
                           if (containsMoreInfo)
@@ -279,7 +287,7 @@ class DateText extends StatelessWidget {
     var year = date.year;
     var hour = date.hour;
     var minute = date.minute;
-    return Text("Caricato il $day/$month/$year alle $hour:$minute");
+    return SelectableText("Caricato il $day/$month/$year alle $hour:$minute");
   }
 }
 

@@ -22,7 +22,7 @@ class NotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Scarica file appunti"),
+        title: SelectableText("Scarica file appunti"),
         actions:
             getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()],
       ),
@@ -40,16 +40,17 @@ class NotePage extends StatelessWidget {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                        title: Text(
+                        title: SelectableText(
                             "Non è stato possibile ottenere i dati dell'appunto"),
-                        content: Text(
+                        content: SelectableText(
                             "Error ${(snapshot.error as BackendError).code}"),
                       ));
                 } else {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                          title: Text("C'è un problema con i server")));
+                          title:
+                              SelectableText("C'è un problema con i server")));
                 }
               }
               var noteData = snapshot.data;
@@ -72,7 +73,7 @@ class NotePageBody extends StatelessWidget {
     DateTime date = DateTime.parse(noteData["info"]["uploaded_at"]);
     return Column(
       children: [
-        Text(noteData["info"]["title"],
+        SelectableText(noteData["info"]["title"],
             style: Theme.of(context).textTheme.headline4),
         SizedBox(height: 10.0),
         FutureBuilder(
@@ -85,7 +86,7 @@ class NotePageBody extends StatelessWidget {
                   onPressed: () => Navigator.pushNamed(
                       context, "/users/${snapshot.data['id']}"));
             }),
-        Text(
+        SelectableText(
             "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
         Container(
           padding: EdgeInsets.all(8.0),

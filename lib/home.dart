@@ -1,5 +1,7 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
+import 'package:appunti_web_frontend/utils.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'edit.dart' show LogoutButton;
@@ -12,16 +14,46 @@ class Illustration extends StatelessWidget {
 
   final String name;
 
+  Future<bool> hangTillDone(context) async {
+    bool hang = true;
+    doItAsap(context, (context) {
+      hang = false;
+    });
+    while (true) {
+      await Future.delayed(Duration(milliseconds: 200));
+      if (!hang) {
+        bool hang2 = true;
+        await Future.delayed(Duration(milliseconds: 85));
+        doItAsap(context, (context) {
+          hang2 = false;
+        });
+        while (hang2) await Future.delayed(Duration(milliseconds: 100));
+        return true;
+      }
+    }
+  }
+
   @override
   Widget build(context) => Center(
-        child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Image.network("/img/$name.png",
-                height: MediaQuery.of(context).size.width > 850 &&
-                        MediaQuery.of(context).size.height > 682
-                    ? 225.0
-                    : 125.0)),
-      );
+      child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: FutureBuilder(
+              future: hangTillDone(context),
+              builder: (context, snapshot) {
+                /*  if (!snapshot.hasData)
+                  return Image.memory(kTransparentImage,
+                      height: MediaQuery.of(context).size.width > 850 &&
+                              MediaQuery.of(context).size.height > 682
+                          ? 225.0
+                          : 125.0);*/
+                return FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: "/img/$name.png",
+                    height: MediaQuery.of(context).size.width > 850 &&
+                            MediaQuery.of(context).size.height > 682
+                        ? 225.0
+                        : 125.0);
+              })));
 }
 
 class LandingContent extends StatelessWidget {
@@ -29,7 +61,7 @@ class LandingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("lesson"),
-      Text("La fonte di appunti più amata al mondo è tornata!",
+      SelectableText("La fonte di appunti più amata al mondo è tornata!",
           textAlign: TextAlign.center,
           style: MediaQuery.of(context).size.width > 850.0
               ? Theme.of(context).textTheme.headline3
@@ -37,7 +69,7 @@ class LandingContent extends StatelessWidget {
       SizedBox(
         height: 30,
       ),
-      Text(
+      SelectableText(
           "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
       SizedBox(
         height: 30,
@@ -62,7 +94,7 @@ class FirstExplanation extends StatelessWidget {
   Widget build(context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("read"),
-      Text("Appunti per tutti",
+      SelectableText("Appunti per tutti",
           textAlign: TextAlign.center,
           style: MediaQuery.of(context).size.width > 850.0
               ? Theme.of(context).textTheme.headline4
@@ -70,17 +102,17 @@ class FirstExplanation extends StatelessWidget {
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 30 : 10,
       ),
-      Text(
+      SelectableText(
           "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
-      Text(
+      SelectableText(
           "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
-      Text(
+      SelectableText(
           "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
     ]);
   }
@@ -91,31 +123,31 @@ class SecondExplanation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Illustration("control"),
-      Text("Risorse affidabili e controllate",
+      SelectableText("Risorse affidabili e controllate",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline4),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 30 : 10,
       ),
-      Text(
+      SelectableText(
         "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
       ),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
-      Text(
+      SelectableText(
         "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
       ),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
       ),
-      Text(
+      SelectableText(
         "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
       ),
       SizedBox(
         height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
       ),
-      Text(
+      SelectableText(
         "E ti laurei pure, bastardo",
         textAlign: TextAlign.start,
         style:
@@ -132,18 +164,18 @@ class ShareYourNotes extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Illustration("letsgo"),
-        Text("Dai il tuo contributo",
+        SelectableText("Dai il tuo contributo",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4),
         SizedBox(
           height: MediaQuery.of(context).size.width > 850.0 ? 30 : 15,
         ),
-        Text(
+        SelectableText(
             "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
         SizedBox(
           height: MediaQuery.of(context).size.width > 850.0 ? 7.5 : 5.0,
         ),
-        Text(
+        SelectableText(
           "Non potrai caricare file enormi, però.",
         ),
         SizedBox(
@@ -182,7 +214,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("appunti-web"),
+          title: SelectableText("appunti-web"),
           actions:
               getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()],
         ),
@@ -194,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).primaryColor),
                   child: Stack(alignment: Alignment.bottomLeft, children: [
-                    Text(
+                    SelectableText(
                       "appunti-web",
                       style: TextStyle(color: Colors.white),
                     )
@@ -202,7 +234,7 @@ class _HomePageState extends State<HomePage> {
               InkWell(
                 child: ListTile(
                     leading: Icon(Icons.computer),
-                    title: Text("Ingegneria Informatica")),
+                    title: SelectableText("Ingegneria Informatica")),
                 onTap: () {
                   Navigator.pushNamed(context, "/subjects");
                 },

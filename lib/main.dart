@@ -44,7 +44,9 @@ void defineRoutes() {
             bool mod = isMod(token);
             return EditPage(mod, token);
           } catch (e) {
-            showDialog(context: context, child: AlertDialog(title: Text("$e")));
+            showDialog(
+                context: context,
+                child: AlertDialog(title: SelectableText("$e")));
             goToRouteAsap(context, '/login');
           }
         }
@@ -81,8 +83,7 @@ class MyApp extends StatelessWidget {
       title: 'Appunti Web',
       locale: Locale('it', 'IT'),
       theme: ThemeData(
-          inputDecorationTheme: InputDecorationTheme(
-              filled: true, fillColor: Color(0xFFEEEEEE)), //SSOOOOOOOOOOOO cit.
+          inputDecorationTheme: InputDecorationTheme(),
           primaryColor: Color(0xff6246ea),
           textTheme: TextTheme(
               bodyText2: TextStyle(

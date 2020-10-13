@@ -10,7 +10,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(context) => Scaffold(
-      appBar: AppBar(title: Text("Accedi")),
+      appBar: AppBar(title: SelectableText("Accedi")),
       body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
             duration: Duration(milliseconds: 500),
@@ -61,7 +61,8 @@ class _LoginControlsState extends State<LoginControls> {
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text("Inserisci un indirizzo email e una password!"),
+            title:
+                SelectableText("Inserisci un indirizzo email e una password!"),
           ));
       return;
     }
@@ -95,15 +96,15 @@ class _LoginControlsState extends State<LoginControls> {
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text(errorString),
+            title: SelectableText(errorString),
           ));
     }
   }
 
   @override
   Widget build(context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-      Text("Bentornato, accedi."),
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      SelectableText("Bentornato, accedi."),
       TextField(
           autofocus: true,
           keyboardType: TextInputType.emailAddress,
@@ -121,7 +122,7 @@ class _LoginControlsState extends State<LoginControls> {
               child: Text("Accedi", style: TextStyle(color: Colors.white)),
               onPressed: () =>
                   _signIn(_emailController.text, _passwordController.text)),
-      Text("oppure"),
+      SelectableText("oppure"),
       RaisedButton(
           color: Theme.of(context).primaryColor,
           child: Text("Registrati", style: TextStyle(color: Colors.white)),
@@ -137,7 +138,7 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(context) => Scaffold(
-      appBar: AppBar(title: Text("Registrati")),
+      appBar: AppBar(title: SelectableText("Registrati")),
       body: LayoutBuilder(builder: (context, constraints) {
         return AnimatedContainer(
             duration: Duration(milliseconds: 500),
@@ -220,8 +221,8 @@ class _SignupControlsState extends State<SignupControls> {
 
   @override
   Widget build(context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Text("Benvenuto, registrati."),
+    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      SelectableText("Benvenuto, registrati."),
       TextField(
           keyboardType: TextInputType.emailAddress,
           controller: _emailController,
@@ -282,7 +283,7 @@ class _SignupControlsState extends State<SignupControls> {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                        title: Text(
+                        title: SelectableText(
                             "Ci serve un UNIMORE ID per verificare che tu sia uno studente."),
                       ));
                   return;
@@ -292,7 +293,8 @@ class _SignupControlsState extends State<SignupControls> {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                        title: Text("Inserisci un nome ed un cognome"),
+                        title:
+                            SelectableText("Inserisci un nome ed un cognome"),
                       ));
                 }
                 setState(() {
@@ -335,7 +337,7 @@ class _SignupControlsState extends State<SignupControls> {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                        title: Text(errorString),
+                        title: SelectableText(errorString),
                       ));
                 }
               }),
@@ -350,7 +352,7 @@ class VerificationPage extends StatelessWidget {
               child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(
+          SelectableText(
               "La registrazione è stata effettuata con successo, premi il tasto qui sotto per andare alla pagina di accesso"),
           FlatButton(
             color: Theme.of(context).primaryColor,

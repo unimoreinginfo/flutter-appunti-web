@@ -40,7 +40,7 @@ class EditPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: SelectableText(
             mod ? "Aggiungi o modera i contenuti" : "Mandaci i tuoi appunti!"),
         actions: [LogoutButton()],
       ),
@@ -94,7 +94,7 @@ class _PlebPageState extends State<PlebPage> {
                 goToRouteAsap(context,
                     '/editProfile/${getPayload(widget.jwt)["user_id"]}');
               },
-              child: Text("voglio modificare il mio profilo")),
+              child: SelectableText("voglio modificare il mio profilo")),
           FutureBuilder(
               future: backend.getSubjects(),
               builder: (context, snapshot) {
@@ -103,13 +103,13 @@ class _PlebPageState extends State<PlebPage> {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                            title: Text(
+                            title: SelectableText(
                                 "Si è verificato un errore durante l'accesso alle materie")));
                   });
-                  return Text("si è verificato un errore");
+                  return SelectableText("si è verificato un errore");
                 }
                 if (!snapshot.hasData) {
-                  return Text("aspettando le materie");
+                  return SelectableText("aspettando le materie");
                 }
                 final subjects = snapshot.data;
                 return DropdownButton(
@@ -117,7 +117,8 @@ class _PlebPageState extends State<PlebPage> {
                     items: [
                       for (var subject in subjects)
                         DropdownMenuItem(
-                            value: subject["id"], child: Text(subject["name"])),
+                            value: subject["id"],
+                            child: SelectableText(subject["name"])),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -132,7 +133,7 @@ class _PlebPageState extends State<PlebPage> {
           for (var i = 0; i < _files.length; i++)
             Row(
               children: [
-                Text("Selezionato file ${_files[i].filename}"),
+                SelectableText("Selezionato file ${_files[i].filename}"),
                 IconButton(
                     icon: Icon(Icons.cancel),
                     onPressed: () {
@@ -148,7 +149,7 @@ class _PlebPageState extends State<PlebPage> {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                          title: Text(
+                          title: SelectableText(
                               "Si è verificato un problema di connessione al server"),
                         ));
                     Navigator.pushNamed(context, "/");
@@ -157,7 +158,8 @@ class _PlebPageState extends State<PlebPage> {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                          title: Text("Le credenziali sono scadute o corrotte"),
+                          title: SelectableText(
+                              "Le credenziali sono scadute o corrotte"),
                         ));
                     LoginManager.logOut(tokenStorage);
                     Navigator.pushNamed(context, "/login");
@@ -176,20 +178,21 @@ class _PlebPageState extends State<PlebPage> {
                           showDialog(
                               context: context,
                               child: AlertDialog(
-                                title: Text("Appunto troppo grande"),
-                                content: Text(fileTooBigTips),
+                                title: SelectableText("Appunto troppo grande"),
+                                content: SelectableText(fileTooBigTips),
                                 actions: [
                                   FlatButton(
                                       onPressed: () {
                                         launch(
                                             "https://www.ilovepdf.com/compress_pdf");
                                       },
-                                      child: Text("Compressione PDF iLovePDF")),
+                                      child: SelectableText(
+                                          "Compressione PDF iLovePDF")),
                                   FlatButton(
                                     onPressed: () {
                                       launch("https://www.7-zip.org/");
                                     },
-                                    child: Text("Home page 7-Zip"),
+                                    child: SelectableText("Home page 7-Zip"),
                                   )
                                 ],
                               ));
@@ -201,9 +204,9 @@ class _PlebPageState extends State<PlebPage> {
                           showDialog(
                               context: context,
                               child: AlertDialog(
-                                title: Text(
+                                title: SelectableText(
                                     "In totale ogni utente può caricare al massimo 2 GiB di appunti"),
-                                content: Text(
+                                content: SelectableText(
                                     "E tu, con questo file, saresti oltre il limite"),
                               ));
                           return;
@@ -214,8 +217,9 @@ class _PlebPageState extends State<PlebPage> {
                           showDialog(
                               context: context,
                               child: AlertDialog(
-                                title: Text("Tipo di file non permesso"),
-                                content: Text(
+                                title:
+                                    SelectableText("Tipo di file non permesso"),
+                                content: SelectableText(
                                     "Se stai cercando di caricare codice dovresti provare ad aggiungerlo nelle repo GitHub di unimoreinginfo."),
                                 actions: [
                                   FlatButton(
@@ -223,7 +227,7 @@ class _PlebPageState extends State<PlebPage> {
                                         launch(
                                             "https://github.com/unimoreinginfo");
                                       },
-                                      child: Text(
+                                      child: SelectableText(
                                           "Vai al GitHub di unimoreinginfo"))
                                 ],
                               ));
@@ -237,7 +241,7 @@ class _PlebPageState extends State<PlebPage> {
                         var bytes = res.files.single.bytes;
 
                         setState(() {
-                          _runningTotalSize+=res.files.single.size;
+                          _runningTotalSize += res.files.single.size;
                           _files.add(MultipartFile.fromBytes(bytes,
                               filename: name,
                               contentType: MediaType.parse(mimeType)));
@@ -246,7 +250,7 @@ class _PlebPageState extends State<PlebPage> {
                     },
                     color: Theme.of(context).primaryColor,
                     textColor: Colors.white,
-                    child: Text("Aggiungi file"));
+                    child: SelectableText("Aggiungi file"));
               }),
           if (_sendingNote)
             CircularProgressIndicator()
@@ -266,8 +270,8 @@ class _PlebPageState extends State<PlebPage> {
                     showDialog(
                         context: context,
                         child: AlertDialog(
-                          title: Text("Si è verificato un errore"),
-                          content: Text("error: $e"),
+                          title: SelectableText("Si è verificato un errore"),
+                          content: SelectableText("error: $e"),
                         ));
                     return;
                   }
@@ -275,12 +279,12 @@ class _PlebPageState extends State<PlebPage> {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                        title: Text("Grazie mille."),
+                        title: SelectableText("Grazie mille."),
                       ));
                 },
                 color: Colors.green,
                 textColor: Colors.white,
-                child: Text("Invia appunto"))
+                child: SelectableText("Invia appunto"))
         ]),
       ),
     );
@@ -299,29 +303,30 @@ class ModPage extends StatelessWidget {
     return Column(
       children: [
         FlatButton(
-          child: Text("Voglio aggiungere gli appunti come le persone normali"),
+          child: SelectableText(
+              "Voglio aggiungere gli appunti come le persone normali"),
           onPressed: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => Scaffold(
                         appBar: AppBar(
-                          title:
-                              Text("Ci dia i suoi appunti, signor moderatore."),
+                          title: SelectableText(
+                              "Ci dia i suoi appunti, signor moderatore."),
                           actions: [LogoutButton()],
                         ),
                         body: PlebPage(jwt))));
           },
         ),
         FlatButton(
-          child: Text("Lista utenti"),
+          child: SelectableText("Lista utenti"),
           onPressed: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => Scaffold(
                           appBar: AppBar(
-                            title: Text("Elenco degli utenti"),
+                            title: SelectableText("Elenco degli utenti"),
                             actions: [LogoutButton()],
                           ),
                           body: UsersList(jwt),
@@ -336,15 +341,15 @@ class ModPage extends StatelessWidget {
                 return ListView.builder(itemBuilder: (context, i) {
                   final Map note = notes[i];
                   return ListTile(
-                    leading: Text(note["uploaded_at"]),
-                    title: Text(note["title"]),
+                    leading: SelectableText(note["uploaded_at"]),
+                    title: SelectableText(note["title"]),
                     subtitle: FutureBuilder(
                         future: getUser(note["author_id"]),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData)
                             return CircularProgressIndicator();
                           final author = snapshot.data;
-                          return Text(
+                          return SelectableText(
                               "${author["name"]} ${author["surname"]}<${author["email"]}, ${author["unimore_id"]}>");
                         }),
                     onTap: () => Navigator.push(
@@ -406,15 +411,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            title: SelectableText(
+                "La sessione potrebbe essere scaduta o corrotta"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
     } catch (e) {
       Navigator.pushReplacementNamed(context, "/edit");
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text("Si è verificato un errore sconosciuto"),
+            title: SelectableText("Si è verificato un errore sconosciuto"),
           ));
     }
   }
@@ -433,16 +439,17 @@ class _NoteEditPageState extends State<NoteEditPage> {
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            title: SelectableText(
+                "La sessione potrebbe essere scaduta o corrotta"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
     } catch (_) {
       Navigator.pushReplacementNamed(context, "/login");
       showDialog(
           context: context,
           child: AlertDialog(
-            title: Text("Si è verificato un errore sconosciuto"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            title: SelectableText("Si è verificato un errore sconosciuto"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
     } finally {
       setState(() {
@@ -454,7 +461,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Modifica appunto")),
+        appBar: AppBar(title: SelectableText("Modifica appunto")),
         body: Center(
             child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -466,7 +473,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                         onPressed: () {
                           setState(_setFieldsToDefault);
                         },
-                        child: Text("Resetta campi")),
+                        child: SelectableText("Resetta campi")),
                     FutureBuilder<List<Map>>(
                         future: _subjectsFuture,
                         builder: (context, snapshot) {
@@ -474,12 +481,12 @@ class _NoteEditPageState extends State<NoteEditPage> {
                             showDialog(
                                 context: context,
                                 child: AlertDialog(
-                                    title: Text(
+                                    title: SelectableText(
                                         "Si è verificato un errore durante l'accesso alle materie")));
-                            return Text("si è verificato un errore");
+                            return SelectableText("si è verificato un errore");
                           }
                           if (!snapshot.hasData) {
-                            return Text("aspettando le materie");
+                            return SelectableText("aspettando le materie");
                           }
                           final subjects = snapshot.data;
                           return DropdownButton(
@@ -488,7 +495,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                               items: subjects
                                   .map((subject) => DropdownMenuItem(
                                       value: subject["id"],
-                                      child: Text(subject["name"])))
+                                      child: SelectableText(subject["name"])))
                                   .toList(),
                               onChanged: (value) {
                                 setState(() {
@@ -513,11 +520,11 @@ class _NoteEditPageState extends State<NoteEditPage> {
                             showDialog(
                                 context: context,
                                 child: AlertDialog(
-                                    title: Text("Errore"),
-                                    content: Text("$e")));
+                                    title: SelectableText("Errore"),
+                                    content: SelectableText("$e")));
                           }
                         },
-                        child: Text("Modifica valori appunto")),
+                        child: SelectableText("Modifica valori appunto")),
                     Divider(),
                     FlatButton(
                         color: Colors.redAccent,
@@ -528,7 +535,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
                         },
                         child: _deletionInProgress
                             ? CircularProgressIndicator()
-                            : Text("Non mi piace questo file, ELIMINA ORA"))
+                            : SelectableText(
+                                "Non mi piace questo file, ELIMINA ORA"))
                   ],
                 ))));
   }
@@ -548,7 +556,8 @@ class UsersList extends StatelessWidget {
               itemCount: users.length,
               itemBuilder: (context, i) => ListTile(
                   leading: Icon(Icons.person),
-                  title: Text('${users[i]["name"]} ${users[i]["surname"]}'),
+                  title: SelectableText(
+                      '${users[i]["name"]} ${users[i]["surname"]}'),
                   onTap: () {
                     Navigator.pushNamed(context, "/users/${users[i]['id']}");
                   }));

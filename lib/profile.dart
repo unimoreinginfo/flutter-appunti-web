@@ -23,7 +23,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text("Pagina dell'autore"),
+          title: SelectableText("Pagina dell'autore"),
           actions:
               getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()]),
       body: userData == null
@@ -36,9 +36,9 @@ class ProfilePage extends StatelessWidget {
                   showDialog(
                       context: context,
                       child: AlertDialog(
-                          title: Text(
+                          title: SelectableText(
                               "Si è verificato un errore durante l'accesso ai dati dell'utente")));
-                  return Text("Si è verificato un errore");
+                  return SelectableText("Si è verificato un errore");
                 }
                 if (!snapshot.hasData) return CircularProgressIndicator();
                 return ProfilePageBody(user, notesFuture);
@@ -78,26 +78,27 @@ class ProfilePageBody extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Text(
+              SelectableText(
                 "Utente ${user["name"]} ${user["surname"]}",
                 style: Theme.of(context).textTheme.headline4,
               ),
-              Text("Email: "),
+              SelectableText("Email: "),
               FlatButton(
-                child: Text(user["email"]),
+                child: SelectableText(user["email"]),
                 onPressed: () {
                   launch("mailto:${user["email"]}");
                 },
               ),
               FlatButton(
-                child: Text("${user["unimore_id"]}@studenti.unimore.it"),
+                child:
+                    SelectableText("${user["unimore_id"]}@studenti.unimore.it"),
                 onPressed: () {
                   launch("mailto:${user["unimore_id"]}@studenti.unimore.it");
                 },
               ),
               if (canEdit)
                 FlatButton(
-                  child: Text(
+                  child: SelectableText(
                     "Modifica profilo",
                   ),
                   onPressed: () {
@@ -117,9 +118,9 @@ class ProfilePageBody extends StatelessWidget {
                           (context) => showDialog(
                               context: context,
                               child: AlertDialog(
-                                  title: Text(
+                                  title: SelectableText(
                                       "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
-                      return Text("Si è verificato un errore");
+                      return SelectableText("Si è verificato un errore");
                     }
                     if (!snapshot.hasData) return CircularProgressIndicator();
                     final List<Map<String, String>> notes = snapshot.data;
@@ -144,9 +145,9 @@ class ProfilePageBody extends StatelessWidget {
                                                 notes[i]["note_id"],
                                               ))));
                                 },
-                                trailing: Text(
+                                trailing: SelectableText(
                                     "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                                title: Text(notes[i]["title"]));
+                                title: SelectableText(notes[i]["title"]));
                           }),
                     );
                   })
@@ -171,7 +172,8 @@ class EditProfilePage extends StatelessWidget {
         if (snapshot.hasError) {
           showDialog(
               context: context,
-              child: AlertDialog(title: Text("Si è verificato un errore")));
+              child: AlertDialog(
+                  title: SelectableText("Si è verificato un errore")));
           print(snapshot.error);
         }
         if (!snapshot.hasData) return CircularProgressIndicator();
@@ -226,7 +228,7 @@ class _EditProfileState extends State<EditProfile> {
           context: context,
           child: AlertDialog(
             title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
     } catch (_) {
       LoginManager.logOut(tokenStorage);
@@ -235,7 +237,7 @@ class _EditProfileState extends State<EditProfile> {
           context: context,
           child: AlertDialog(
             title: Text("Si è verificato un errore sconosciuto"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
     }
   }
@@ -254,7 +256,7 @@ class _EditProfileState extends State<EditProfile> {
           context: context,
           child: AlertDialog(
             title: Text("La sessione potrebbe essere scaduta o corrotta"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
       Navigator.pushReplacementNamed(context, "/login");
     } catch (e) {
@@ -263,7 +265,7 @@ class _EditProfileState extends State<EditProfile> {
           context: context,
           child: AlertDialog(
             title: Text("Si è verificato un errore sconosciuto"),
-            content: Text("Verrai riportato alla pagina di accesso"),
+            content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
       Navigator.pushReplacementNamed(context, "/login");
     } finally {
@@ -282,7 +284,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Modifica dati utente")),
+      appBar: AppBar(title: SelectableText("Modifica dati utente")),
       body: Center(
         child: Container(
           width: 900.0,
@@ -294,7 +296,7 @@ class _EditProfileState extends State<EditProfile> {
                   onPressed: () {
                     setState(_setFieldsToDefault);
                   },
-                  child: Text("Resetta campi")),
+                  child: SelectableText("Resetta campi")),
               TextField(
                 controller: _userName,
                 decoration: InputDecoration(labelText: "Nome"),
@@ -325,7 +327,7 @@ class _EditProfileState extends State<EditProfile> {
                                 "surname": _userSurname.text
                               });
                   },
-                  child: Text("Modifica profilo")),
+                  child: SelectableText("Modifica profilo")),
               Divider(),
               FlatButton(
                   color: Colors.redAccent,
@@ -335,7 +337,7 @@ class _EditProfileState extends State<EditProfile> {
                   },
                   child: _deletionInProgress
                       ? CircularProgressIndicator()
-                      : Text("ELIMINA UTENTE"))
+                      : SelectableText("ELIMINA UTENTE"))
             ],
           ),
         ),
