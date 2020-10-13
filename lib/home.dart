@@ -1,6 +1,5 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
-import 'package:appunti_web_frontend/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -14,46 +13,17 @@ class Illustration extends StatelessWidget {
 
   final String name;
 
-  Future<bool> hangTillDone(context) async {
-    bool hang = true;
-    doItAsap(context, (context) {
-      hang = false;
-    });
-    while (true) {
-      await Future.delayed(Duration(milliseconds: 200));
-      if (!hang) {
-        bool hang2 = true;
-        await Future.delayed(Duration(milliseconds: 85));
-        doItAsap(context, (context) {
-          hang2 = false;
-        });
-        while (hang2) await Future.delayed(Duration(milliseconds: 100));
-        return true;
-      }
-    }
-  }
-
   @override
   Widget build(context) => Center(
       child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: FutureBuilder(
-              future: hangTillDone(context),
-              builder: (context, snapshot) {
-                /*  if (!snapshot.hasData)
-                  return Image.memory(kTransparentImage,
-                      height: MediaQuery.of(context).size.width > 850 &&
-                              MediaQuery.of(context).size.height > 682
-                          ? 225.0
-                          : 125.0);*/
-                return FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: "/img/$name.png",
-                    height: MediaQuery.of(context).size.width > 850 &&
-                            MediaQuery.of(context).size.height > 682
-                        ? 225.0
-                        : 125.0);
-              })));
+          child: FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              image: "/img/$name.png",
+              height: MediaQuery.of(context).size.width > 850 &&
+                      MediaQuery.of(context).size.height > 682
+                  ? 225.0
+                  : 125.0)));
 }
 
 class LandingContent extends StatelessWidget {

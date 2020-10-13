@@ -39,7 +39,11 @@ class SubjectsPage extends StatelessWidget {
                             )));
                     return SelectableText("si è verificato un errore");
                   }
-                  if (!snapshot.hasData) return CircularProgressIndicator();
+                  if (!snapshot.hasData)
+                    return SizedBox(
+                        width: 100.0,
+                        height: 100.0,
+                        child: Center(child: CircularProgressIndicator()));
                   return SubjectsPageContents(snapshot.data);
                 }),
           ),
@@ -112,9 +116,10 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         ),
         SizedBox(height: 15.0),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 62.0,
+              height: 59.0,
               color: Color(0xFFEEEEEE),
               child: DropdownButton(
                   icon: Icon(Icons.arrow_drop_down),
@@ -140,6 +145,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
               flex: 3,
               child: TextField(
                   decoration: InputDecoration(
+                    border: InputBorder.none,
                     fillColor: Color(0xFFEEEEEE),
                     filled: true,
                     labelText: "Cerca",
