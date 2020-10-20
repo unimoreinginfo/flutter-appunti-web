@@ -172,7 +172,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentPage;
   PageController _controller;
-  ScrollController _scrollController;
+  ScrollController _scrollController = ScrollController();
   bool showArrow;
   static const desktopHeights = [0, 400, 800, 1200];
 

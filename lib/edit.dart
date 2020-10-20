@@ -111,14 +111,14 @@ class _PlebPageState extends State<PlebPage> {
                 if (!snapshot.hasData) {
                   return SelectableText("aspettando le materie");
                 }
-                final subjects = snapshot.data;
+                final subjects = snapshot.data as List<backend.Subject>;
                 return DropdownButton(
                     value: _subjectId,
                     items: [
                       for (var subject in subjects)
                         DropdownMenuItem(
-                            value: subject["id"],
-                            child: SelectableText(subject["name"])),
+                            value: subject.id,
+                            child: SelectableText(subject.name)),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -296,7 +296,11 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  Future<Map> getUser(uid) => backend.getUser(uid);
+  Future<backend.User> getUser(uid) {
+    var user = backend.getUser(uid);
+    user.then((a) => print(a.toJson()));
+    return user;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -334,31 +338,35 @@ class ModPage extends StatelessWidget {
           },
         ),
         Expanded(
-          child: FutureBuilder<List>(
-              future: backend.getNotes(),
-              builder: (context, snapshot) {
-                final List<Map> notes = snapshot.data;
-                return ListView.builder(itemBuilder: (context, i) {
-                  final Map note = notes[i];
-                  return ListTile(
-                    leading: SelectableText(note["uploaded_at"]),
-                    title: SelectableText(note["title"]),
-                    subtitle: FutureBuilder(
-                        future: getUser(note["author_id"]),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData)
-                            return CircularProgressIndicator();
-                          final author = snapshot.data;
-                          return SelectableText(
-                              "${author["name"]} ${author["surname"]}<${author["email"]}, ${author["unimore_id"]}>");
-                        }),
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NoteEditPage(jwt, note))),
-                  );
+          child: ListView.builder(itemBuilder: (context, p) {
+            return FutureBuilder<List>(
+                future: backend.getNotes(p + 1),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return CircularProgressIndicator();
+                  final List<backend.Note> notes = snapshot.data;
+                  return Column(
+                      children: notes
+                          .map((note) => ListTile(
+                                leading: SelectableText(note.uploaded_at),
+                                title: SelectableText(note.title),
+                                subtitle: FutureBuilder(
+                                    future: getUser(note.author_id),
+                                    builder: (context, snapshot) {
+                                      if (!snapshot.hasData)
+                                        return CircularProgressIndicator();
+                                      final backend.User author = snapshot.data;
+                                      return SelectableText(
+                                          "${author.name} ${author.surname}<${author.email}, ${author.unimore_id}>");
+                                    }),
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NoteEditPage(jwt, note))),
+                              ))
+                          .toList());
                 });
-              }),
+          }),
         )
       ],
     );
@@ -369,7 +377,7 @@ class NoteEditPage extends StatefulWidget {
   NoteEditPage(this.jwt, this.note);
 
   final String jwt;
-  final Map note;
+  final backend.Note note;
 
   @override
   _NoteEditPageState createState() => _NoteEditPageState(note);
@@ -381,9 +389,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
   bool _deletionInProgress;
   TextEditingController _noteTitle;
   int _subjectId;
-  Map note;
+  backend.Note note;
 
-  Future<List> _subjectsFuture;
+  Future<List<backend.Subject>> _subjectsFuture;
 
   @override
   initState() {
@@ -393,8 +401,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   void _setFieldsToDefault() {
-    _noteTitle = TextEditingController(text: widget.note["title"]);
-    _subjectId = note["subject_id"];
+    _noteTitle = TextEditingController(text: widget.note.title);
+    _subjectId = note.subject_id;
     _deletionInProgress = false;
   }
 
@@ -474,7 +482,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                           setState(_setFieldsToDefault);
                         },
                         child: SelectableText("Resetta campi")),
-                    FutureBuilder<List<Map>>(
+                    FutureBuilder<List<backend.Subject>>(
                         future: _subjectsFuture,
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
@@ -488,14 +496,14 @@ class _NoteEditPageState extends State<NoteEditPage> {
                           if (!snapshot.hasData) {
                             return SelectableText("aspettando le materie");
                           }
-                          final subjects = snapshot.data;
+                          final List<backend.Subject> subjects = snapshot.data;
                           return DropdownButton(
                               // select subject
                               value: _subjectId,
                               items: subjects
                                   .map((subject) => DropdownMenuItem(
-                                      value: subject["id"],
-                                      child: SelectableText(subject["name"])))
+                                      value: subject.id,
+                                      child: SelectableText(subject.name)))
                                   .toList(),
                               onChanged: (value) {
                                 setState(() {
@@ -510,11 +518,12 @@ class _NoteEditPageState extends State<NoteEditPage> {
                     FlatButton(
                         onPressed: () {
                           try {
-                            editNote(note["note_id"], '${note['subject_id']}',
-                                widget.jwt, data: {
-                              "new_subject_id": _subjectId,
-                              "title": _noteTitle.text
-                            });
+                            editNote(
+                                note.note_id, '${note.subject_id}', widget.jwt,
+                                data: {
+                                  "new_subject_id": _subjectId,
+                                  "title": _noteTitle.text
+                                });
                           } catch (e) {
                             print("Error: $e");
                             showDialog(
@@ -530,8 +539,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
                         color: Colors.redAccent,
                         textColor: Colors.white,
                         onPressed: () {
-                          deleteNote(note["note_id"], '${note["subject_id"]}',
-                              widget.jwt);
+                          deleteNote(
+                              note.note_id, '${note.subject_id}', widget.jwt);
                         },
                         child: _deletionInProgress
                             ? CircularProgressIndicator()

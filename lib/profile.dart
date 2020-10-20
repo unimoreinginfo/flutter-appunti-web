@@ -19,7 +19,6 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var userFuture;
     if (userData == null) userFuture = backend.getUser(uid);
-    final notesFuture = backend.getNotes(author: uid);
 
     return Scaffold(
       appBar: AppBar(
@@ -41,18 +40,17 @@ class ProfilePage extends StatelessWidget {
                   return SelectableText("Si è verificato un errore");
                 }
                 if (!snapshot.hasData) return CircularProgressIndicator();
-                return ProfilePageBody(user, notesFuture);
+                return ProfilePageBody(user);
               })
-          : ProfilePageBody(userData, notesFuture),
+          : ProfilePageBody(userData),
     );
   }
 }
 
 class ProfilePageBody extends StatelessWidget {
-  ProfilePageBody(this.user, this.notesFuture);
+  ProfilePageBody(this.user);
 
   final Map user;
-  final Future<List<Map>> notesFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -108,49 +106,53 @@ class ProfilePageBody extends StatelessWidget {
                     );
                   },
                 ),
-              FutureBuilder(
-                  future: notesFuture,
-                  builder: (context, snapshot) {
-                    // TODO: better error handling
-                    if (snapshot.hasError) {
-                      doItAsap(
-                          context,
-                          (context) => showDialog(
-                              context: context,
-                              child: AlertDialog(
-                                  title: SelectableText(
-                                      "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
-                      return SelectableText("Si è verificato un errore");
-                    }
-                    if (!snapshot.hasData) return CircularProgressIndicator();
-                    final List<Map<String, String>> notes = snapshot.data;
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 70 / 100,
-                      child: ListView.builder(
-                          itemCount: notes.length,
-                          itemBuilder: (context, i) {
-                            print("creando nota $i (${notes[i]["title"]})");
-                            var date = DateTime.parse(notes[i]["uploaded_at"]);
-                            return ListTile(
-                                leading: Icon(Icons.note),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => NotePage(
-                                              "${notes[i]["subject_id"]}",
-                                              notes[i]["note_id"],
-                                              noteDataFuture: backend.getNote(
+              ListView.builder(itemBuilder: (context, p) {
+                return FutureBuilder(
+                    future: backend.getNotes(p + 1),
+                    builder: (context, snapshot) {
+                      // TODO: better error handling
+                      if (snapshot.hasError) {
+                        doItAsap(
+                            context,
+                            (context) => showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                    title: SelectableText(
+                                        "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
+                        return SelectableText("Si è verificato un errore");
+                      }
+                      if (!snapshot.hasData) return CircularProgressIndicator();
+                      final List<Map<String, String>> notes = snapshot.data;
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 70 / 100,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: notes.length,
+                            itemBuilder: (context, i) {
+                              print("creando nota $i (${notes[i]["title"]})");
+                              var date =
+                                  DateTime.parse(notes[i]["uploaded_at"]);
+                              return ListTile(
+                                  leading: Icon(Icons.note),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NotePage(
                                                 "${notes[i]["subject_id"]}",
                                                 notes[i]["note_id"],
-                                              ))));
-                                },
-                                trailing: SelectableText(
-                                    "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                                title: SelectableText(notes[i]["title"]));
-                          }),
-                    );
-                  })
+                                                noteDataFuture: backend.getNote(
+                                                  "${notes[i]["subject_id"]}",
+                                                  notes[i]["note_id"],
+                                                ))));
+                                  },
+                                  trailing: SelectableText(
+                                      "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
+                                  title: SelectableText(notes[i]["title"]));
+                            }),
+                      );
+                    });
+              })
             ],
           ),
         ),

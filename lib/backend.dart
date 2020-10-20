@@ -1,10 +1,66 @@
 import 'dart:convert' show json, ascii, base64;
 import 'package:dio/dio.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'consts.dart' show baseUrl, http;
 import 'errors.dart' as errors;
 import 'io.dart' as io;
 import 'platform.dart' as platform;
+
+part 'backend.g.dart';
+
+@JsonSerializable()
+class Subject {
+  int id;
+  String name;
+  String professor_name;
+  String professor_surname;
+  Subject({this.id, this.name, this.professor_name, this.professor_surname});
+  factory Subject.fromJson(Map<String, dynamic> json) =>
+      _$SubjectFromJson(json);
+  Map<String, dynamic> toJson() => _$SubjectToJson(this);
+}
+
+@JsonSerializable()
+class User {
+  String id;
+  int admin;
+  String name;
+  String surname;
+  String email;
+  String unimore_id;
+  User(
+      {this.id,
+      this.name,
+      this.surname,
+      this.email,
+      this.unimore_id,
+      this.admin});
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
+}
+
+@JsonSerializable()
+class Note {
+  String note_id;
+  String title;
+  int subject_id;
+  String author_id;
+  String uploaded_at;
+  String name;
+  String surname;
+  int visits;
+  Note(
+      {this.note_id,
+      this.subject_id,
+      this.visits,
+      this.title,
+      this.name,
+      this.surname,
+      this.uploaded_at});
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
+  Map<String, dynamic> toJson() => _$NoteToJson(this);
+}
 
 /// Get payload from the base64 JWT token string
 Map getPayload(String token) => json
@@ -35,11 +91,18 @@ Future<void> editProfile(String id, String jwt, Map data) async {
   }
 }
 
-Future<List<Map<String, Object>>> getSubjects() async {
+Future<List<Subject>> getSubjects() async {
   try {
-    var res = json.decode((await http.get("$baseUrl/subjects")).data)["result"];
-    return res;
+    List<Subject> ret = json
+        .decode((await http.get("$baseUrl/subjects")).data)["result"]
+        .map<Subject>((el) => Subject.fromJson(el))
+        .toList();
+    for (var item in ret) {
+      print("ret: ${item.toJson()}");
+    }
+    return ret;
   } catch (_) {
+    print(_);
     throw errors.ServerError();
   }
 }
@@ -99,26 +162,26 @@ Future<void> addNote(
 }
 
 // Get notes, optionally with filters
-Future<List<Map<String, Object>>> getNotes(
-    {String author, int subjectId}) async {
+Future<List<Note>> getNotes(int page, {String author, int subjectId}) async {
   Response res;
   if (author == null && subjectId != null)
-    res =
-        await http.get("$baseUrl/notes?subject_id=$subjectId&order_by=visits");
+    res = await http
+        .get("$baseUrl/notes?subject_id=$subjectId&order_by=visits&page=$page");
   else if (author != null && subjectId == null)
-    res = await http.get("$baseUrl/notes?author_id=$author&order_by=visits");
+    res = await http
+        .get("$baseUrl/notes?author_id=$author&order_by=visits&page=$page");
   else if (author != null && subjectId != null)
     res = await http.get(
-        "$baseUrl/notes?author_id=$author&subject_id=$subjectId&order_by=visits");
+        "$baseUrl/notes?author_id=$author&subject_id=$subjectId&order_by=visits&page=$page");
   else
-    res = await http.get("$baseUrl/notes?order_by=visits");
+    res = await http.get("$baseUrl/notes?order_by=visits&page=$page");
 
   if (res.statusCode == errors.SERVER_DOWN)
     throw errors.ServerError();
   else {
     Map<String, Object> data = json.decode(res.data);
     if (data["success"] == false) throw errors.BackendError(res.statusCode);
-    return data["result"];
+    return (data["result"] as List).map((el) => Note.fromJson(el)).toList();
   }
 }
 
@@ -134,23 +197,25 @@ Future<void> deleteUser(int id, String jwt) async {
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<Map<String, Object>> getUser(String uid) async {
+Future<User> getUser(String uid) async {
   var res = await http.get("$baseUrl/users/$uid");
 
   if (res.statusCode == errors.SERVER_DOWN)
     throw errors.ServerError();
   else if (json.decode(res.data)["success"] == false)
     throw errors.BackendError(res.statusCode);
-  return json.decode(res.data)["result"];
+  return User.fromJson(json.decode(res.data)["result"]);
 }
 
-Future<List<Map<String, Object>>> search(String q) async {
-  var res = await http.get('$baseUrl/notes/search?q=$q');
+Future<List<Note>> search(String q, int page) async {
+  var res = await http.get('$baseUrl/notes/search?q=$q&page=$page');
   if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
   if (json.decode(res.data)["success"] == false)
     throw errors.BackendError(res.statusCode);
 
-  return json.decode(res.data)["result"];
+  return (json.decode(res.data)["result"] as List)
+      .map((e) => Note.fromJson(e))
+      .toList();
 }
 
 Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
@@ -164,7 +229,7 @@ Future<void> editNote(String id, String subjectId, String jwt, Map data) async {
   io.getAndUpdateToken(res, platform.tokenStorage);
 }
 
-Future<List<Map<String, Object>>> getUsers(String jwt) async {
+Future<List<User>> getUsers(String jwt) async {
   var res = await http.get('$baseUrl/users',
       options: Options(headers: {"Authorization": "Bearer $jwt"}));
 
@@ -172,7 +237,9 @@ Future<List<Map<String, Object>>> getUsers(String jwt) async {
   if (json.decode(res.data)["success"] == false)
     throw errors.BackendError(res.statusCode);
 
-  return json.decode(res.data)["result"];
+  return (json.decode(res.data)["result"] as List)
+      .map((e) => User.fromJson(e))
+      .toList();
 }
 
 class UserStorageStatus {
