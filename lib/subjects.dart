@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:string_trimmer/string_trimmer.dart';
 
 import 'platform.dart' as platform;
 import 'utils.dart';
@@ -96,10 +99,6 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
     }
   }
 
-  String _trimToLen(String a, int len, int lastX) => a.length > len
-      ? "${a.substring(0, len - lastX - 3)}...${a.substring(a.length - lastX, a.length)}"
-      : a;
-
   @override
   void initState() {
     super.initState();
@@ -132,8 +131,12 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                       (widget.subjects
                           .map((subject) => DropdownMenuItem(
                               value: subject["id"],
-                              child: SelectableText(
-                                  _trimToLen(subject["name"], 25, 4))))
+                              child: SelectableText(trim(
+                                  subject["name"],
+                                  MediaQuery.of(context).size.width > 700.00
+                                      ? 25
+                                      : 20,
+                                  lastChars: 4))))
                           .toList()),
                   onChanged: (value) {
                     setState(() {
@@ -197,82 +200,89 @@ class DisplayNotes extends StatelessWidget {
     return subjects.where((sub) => sub["id"] == id).first;
   }
 
-  double calculateScrollControlRatio() {
-    double contentSize = data.length * 215.0;
-
-    double contentToViewRatio =
-        contentSize / _controller.position.viewportDimension;
-
-    if (contentToViewRatio <= 1.0)
-      return 1.0;
-    else
-      return 1 / contentToViewRatio;
-  }
-
   @override
   Widget build(BuildContext context) {
     bool containsMoreInfo = data.length > 0 && data[0]["author_id"] != null;
     return Container(
       height: MediaQuery.of(context).size.height - 210.0,
       padding: EdgeInsets.all(16.0),
-      child: ListView.builder(
+      child: DraggableScrollbar(
         controller: _controller,
-        itemCount: data.length,
-        itemBuilder: (context, i) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 230.0,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
-              child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodyText2,
-                child: Card(
-                  elevation: 0.0,
-                  color: Color(0xfff5f6fa),
-                  child: DefaultTextStyle(
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context).textTheme.bodyText1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SelectableText(
-                            getSubject(data[i]["subject_id"])["name"],
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                          if (MediaQuery.of(context).size.width > 700.00)
-                            SizedBox(
-                              height: 7.5,
+        child: ListView.builder(
+          controller: _controller,
+          itemCount: data.length,
+          itemBuilder: (context, i) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 230.0,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.bodyText2,
+                  child: Card(
+                    elevation: 0.0,
+                    color: Color(0xfff5f6fa),
+                    child: DefaultTextStyle(
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SelectableText(
+                              getSubject(data[i]["subject_id"])["name"],
+                              style: Theme.of(context).textTheme.headline5,
                             ),
-                          SelectableText("Titolo: ${data[i]["title"]}"),
-                          if (containsMoreInfo)
-                            DateText(data[i]["uploaded_at"]),
-                          if (containsMoreInfo)
-                            AuthorInfo(data[i]["author_id"]),
-                          if (MediaQuery.of(context).size.width > 700.00)
-                            SizedBox(
-                              height: 7.5,
-                            ),
-                          FlatButton(
-                              color: Theme.of(context).primaryColor,
-                              textColor: Colors.white,
-                              onPressed: () {
-                                Navigator.pushNamed(context,
-                                    '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
-                              },
-                              child: Text(
-                                  "Vai ai file contenuti in questo appunto"))
-                        ],
+                            if (MediaQuery.of(context).size.width > 700.00)
+                              SizedBox(
+                                height: 7.5,
+                              ),
+                            SelectableText("Titolo: ${data[i]["title"]}"),
+                            if (containsMoreInfo)
+                              DateText(data[i]["uploaded_at"]),
+                            if (containsMoreInfo)
+                              AuthorInfo(data[i]["author_id"]),
+                            if (MediaQuery.of(context).size.width > 700.00)
+                              SizedBox(
+                                height: 7.5,
+                              ),
+                            FlatButton(
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  Navigator.pushNamed(context,
+                                      '/notes/${data[i]["subject_id"]}/${data[i]["note_id"]}');
+                                },
+                                child: Text(
+                                    "Vai ai file contenuti in questo appunto"))
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            );
+          },
+        ),
+        backgroundColor: Colors.black,
+        scrollThumbBuilder: (
+          Color backgroundColor,
+          Animation<double> thumbAnimation,
+          Animation<double> labelAnimation,
+          double height, {
+          Constraints labelConstraints,
+          Text labelText,
+        }) {
+          return Image.network(
+            "/img/scrollbar.jpg",
+            height: height,
+            repeat: ImageRepeat.repeatY,
+            width: 15.0,
           );
         },
       ),

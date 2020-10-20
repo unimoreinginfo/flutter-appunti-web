@@ -1,5 +1,6 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -171,14 +172,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentPage;
   PageController _controller;
+  ScrollController _scrollController;
   bool showArrow;
+  static const desktopHeights = [0, 400, 800, 1200];
 
   @override
   initState() {
     super.initState();
     currentPage = 0;
     _controller = PageController(initialPage: 0);
-    showArrow = true;
+    showArrow = false;
   }
 
   @override
@@ -189,27 +192,48 @@ class _HomePageState extends State<HomePage> {
               getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()],
         ),
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                  decoration:
-                      BoxDecoration(color: Theme.of(context).primaryColor),
-                  child: Stack(alignment: Alignment.bottomLeft, children: [
-                    SelectableText(
-                      "appunti-web",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ])),
-              InkWell(
-                child: ListTile(
-                    leading: Icon(Icons.computer),
-                    title: SelectableText("Ingegneria Informatica")),
-                onTap: () {
-                  Navigator.pushNamed(context, "/subjects");
-                },
-              )
-            ],
+          child: DraggableScrollbar(
+            heightScrollThumb: 80.0,
+            controller: _scrollController,
+            backgroundColor: Colors.black,
+            scrollThumbBuilder: (
+              Color backgroundColor,
+              Animation<double> thumbAnimation,
+              Animation<double> labelAnimation,
+              double height, {
+              labelConstraints,
+              Text labelText,
+            }) {
+              return Image.network(
+                "/img/scrollbar.jpg",
+                height: height,
+                repeat: ImageRepeat.repeatY,
+                width: 30.0,
+              );
+            },
+            child: ListView(
+              controller: _scrollController,
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).primaryColor),
+                    child: Stack(alignment: Alignment.bottomLeft, children: [
+                      SelectableText(
+                        "appunti-web",
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ])),
+                InkWell(
+                  child: ListTile(
+                      leading: Icon(Icons.computer),
+                      title: SelectableText("Ingegneria Informatica")),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/subjects");
+                  },
+                )
+              ],
+            ),
           ),
         ),
         body: DefaultTextStyle(
@@ -219,7 +243,8 @@ class _HomePageState extends State<HomePage> {
                 : Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
             child: Center(
-                child: Row(
+              child:
+                  /* Row(
                     mainAxisAlignment: MediaQuery.of(context).size.width > 850.0
                         ? MainAxisAlignment.spaceBetween
                         : MainAxisAlignment.center,
@@ -227,90 +252,73 @@ class _HomePageState extends State<HomePage> {
                         ? MainAxisSize.max
                         : MainAxisSize.min,
                     children: [
-                  if (MediaQuery.of(context).size.width > 850.0)
+                    if (MediaQuery.of(context).size.width > 850.0)
                     Container(
                         width: (MediaQuery.of(context).size.width - 750) / 3.5),
+                 */
                   Container(
-                    padding:
-                        EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-                    width: MediaQuery.of(context).size.width > 850.0
-                        ? 750.0
-                        : MediaQuery.of(context).size.width * 90 / 100,
-                    child: PageView(
-                      scrollDirection: Axis.vertical,
-                      controller: _controller,
-                      physics: HomePageScrollPhysics(),
-                      onPageChanged: (page) => setState(() {
-                        print("Page: $page");
+                padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                width: MediaQuery.of(context).size.width > 850.0
+                    ? 750.0
+                    : MediaQuery.of(context).size.width * 90 / 100,
+                child: ListView(
+                  //     scrollDirection: Axis.vertical,
+                  //   controller: _controller,
+                  //        physics: HomePageScrollPhysics(),
+                  /*     onPageChanged: (page) => setState(() {
+                        print("Page: $page height: ${_controller.offset}");
                         showArrow = false;
                         currentPage = page;
                       }),
-                      children: [
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              LandingContent(),
-                              if (showArrow)
-                                IconButton(
-                                    iconSize: 50.0,
-                                    icon: Icon(Icons.arrow_downward),
-                                    onPressed: () {
-                                      _controller.nextPage(
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.linear);
-                                    })
-                            ]),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FirstExplanation(),
-                              if (showArrow)
-                                IconButton(
-                                    iconSize: 50.0,
-                                    icon: Icon(Icons.arrow_downward),
-                                    onPressed: () {
-                                      _controller.nextPage(
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.linear);
-                                    })
-                            ]),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              SecondExplanation(),
-                              if (showArrow)
-                                IconButton(
-                                    iconSize: 50.0,
-                                    icon: Icon(Icons.arrow_downward),
-                                    onPressed: () {
-                                      _controller.nextPage(
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.linear);
-                                    })
-                            ]),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ShareYourNotes(),
-                              if (showArrow)
-                                IconButton(
-                                    iconSize: 50.0,
-                                    icon: Icon(Icons.arrow_downward),
-                                    onPressed: () {
-                                      _controller.nextPage(
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.linear);
-                                    })
-                            ])
-                      ],
-                    ),
-                  ),
-                  if (MediaQuery.of(context).size.width > 850.0)
+                   */
+                  children: [
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          LandingContent(),
+                          if (showArrow)
+                            IconButton(
+                                iconSize: 50.0,
+                                icon: Icon(Icons.arrow_downward),
+                                onPressed: () {
+                                  _controller.nextPage(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.linear);
+                                })
+                        ]),
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FirstExplanation(),
+                        ]),
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SecondExplanation(),
+                          if (showArrow)
+                            IconButton(
+                                iconSize: 50.0,
+                                icon: Icon(Icons.arrow_downward),
+                                onPressed: () {
+                                  _controller.nextPage(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.linear);
+                                })
+                        ]),
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ShareYourNotes(),
+                        ])
+                  ],
+                ),
+              ),
+              /*  if (MediaQuery.of(context).size.width > 850.0)
                     Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
-                        children: [0, 1, 2, 3]
-                            .map((i) => RawMaterialButton(
+                        children: desktopHeights
+                            .map((h) => RawMaterialButton(
                                   shape: CircleBorder(),
                                   textStyle: TextStyle(
                                     color: currentPage == i
@@ -328,7 +336,8 @@ class _HomePageState extends State<HomePage> {
                   if (MediaQuery.of(context).size.width > 850.0)
                     Container(
                         width: (MediaQuery.of(context).size.width - 750) / 28),
-                ]))),
+                ])*/
+            )),
       );
 }
 
