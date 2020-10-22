@@ -66,6 +66,7 @@ class SubjectsPageContents extends StatefulWidget {
 
 class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   TextEditingController _searchController = TextEditingController();
+  ScrollController _controller = ScrollController();
   int _chosenSubject = -1;
   String query = null;
   Timer timer = null;
@@ -161,64 +162,104 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                       height: 30.0,
                       width: 30.0,
                       child: Center(child: CircularProgressIndicator()));
-                return Container(
-                  height: MediaQuery.of(context).size.height * 70 / 100,
-                  child: ListView.builder(
-                      itemCount: bigSnapshot.data.item1,
-                      itemBuilder: (context, i) => FutureBuilder(
-                            future: i == 0
-                                ? Future.value(bigSnapshot.data.item2)
-                                : backend.search(query, i + 1),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData)
-                                return CircularProgressIndicator();
-                              else
-                                return DisplayNotes(
-                                    snapshot.data, widget.subjects);
-                            },
-                          )),
+                return Expanded(
+                  child: DraggableScrollbar(
+                    controller: _controller,
+                    backgroundColor: Colors.black,
+                    scrollThumbBuilder: (
+                      Color backgroundColor,
+                      Animation<double> thumbAnimation,
+                      Animation<double> labelAnimation,
+                      double height, {
+                      labelConstraints,
+                      Text labelText,
+                    }) {
+                      return Image.network(
+                        "/img/scrollbar.jpg",
+                        height: height,
+                        repeat: ImageRepeat.repeatY,
+                        width: 30.0,
+                      );
+                    },
+                    child: ListView.builder(
+                        controller: _controller,
+                        itemCount: bigSnapshot.data.item1,
+                        itemBuilder: (context, i) => FutureBuilder(
+                              future: i == 0
+                                  ? Future.value(bigSnapshot.data.item2)
+                                  : backend.search(query, i + 1),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData)
+                                  return CircularProgressIndicator();
+                                else
+                                  return DisplayNotes(
+                                      snapshot.data, widget.subjects);
+                              },
+                            )),
+                  ),
                 );
               })
         else
           FutureBuilder<Tuple2<int, List<backend.Note>>>(
-              future: backend.getNotesFirstPage(),
+              future: backend.getNotesFirstPage(
+                  subjectId: _chosenSubject == -1 ? null : _chosenSubject),
               builder: (context, bigSnapshot) {
                 if (bigSnapshot.connectionState == ConnectionState.waiting)
                   return Container(
                       height: 30.0,
                       width: 30.0,
                       child: Center(child: CircularProgressIndicator()));
-                return Container(
-                  height: MediaQuery.of(context).size.height * 70 / 100,
-                  child: ListView.builder(
-                      itemCount: bigSnapshot.data.item1,
-                      itemBuilder: (context, i) {
-                        return FutureBuilder(
-                          future: i == 0
-                              ? Future.value(bigSnapshot.data.item2)
-                              : backend.getNotes(i + 1,
-                                  subjectId: _chosenSubject != -1
-                                      ? _chosenSubject
-                                      : null),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              showDialog(
-                                  context: context,
-                                  child: AlertDialog(
-                                    title: Text("Si è verificato un errore"),
-                                    content:
-                                        SelectableText("${snapshot.error}"),
-                                  ));
-                              return SelectableText("errore");
-                            }
-                            // TODO:implementare pagine
+                return Expanded(
+                  child: DraggableScrollbar(
+                    controller: _controller,
+                    backgroundColor: Colors.black,
+                    scrollThumbBuilder: (
+                      Color backgroundColor,
+                      Animation<double> thumbAnimation,
+                      Animation<double> labelAnimation,
+                      double height, {
+                      labelConstraints,
+                      Text labelText,
+                    }) {
+                      return Image.network(
+                        "/img/scrollbar.jpg",
+                        height: height,
+                        repeat: ImageRepeat.repeatY,
+                        width: 30.0,
+                      );
+                    },
+                    child: ListView.builder(
+                        controller: _controller,
+                        itemCount: bigSnapshot.data.item1,
+                        itemBuilder: (context, i) {
+                          return FutureBuilder(
+                            future: i == 0
+                                ? Future.value(bigSnapshot.data.item2)
+                                : backend.getNotes(i + 1,
+                                    subjectId: _chosenSubject != -1
+                                        ? _chosenSubject
+                                        : null),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                showDialog(
+                                    context: context,
+                                    child: AlertDialog(
+                                      title: Text("Si è verificato un errore"),
+                                      content:
+                                          SelectableText("${snapshot.error}"),
+                                    ));
+                                return SelectableText("errore");
+                              }
+                              // TODO:implementare pagine
 
-                            if (!snapshot.hasData)
-                              return CircularProgressIndicator();
-                            return DisplayNotes(snapshot.data, widget.subjects);
-                          },
-                        );
-                      }),
+                              if (!snapshot.hasData)
+                                return CircularProgressIndicator();
+                              return DisplayNotes(
+                                  snapshot.data, widget.subjects);
+                            },
+                          );
+                        }),
+                  ),
                 );
               })
       ],
@@ -245,6 +286,9 @@ class DisplayNotes extends StatelessWidget {
             (i) => Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
+                    width: MediaQuery.of(context).size.width > 500.0
+                        ? 450.0
+                        : MediaQuery.of(context).size.width,
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
                     child: DefaultTextStyle(

@@ -81,16 +81,13 @@ class NotePageBody extends StatelessWidget {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return CircularProgressIndicator();
               return FlatButton(
-                  child: Text(
-                      "${snapshot.data["name"]} ${snapshot.data["surname"]}"),
+                  child: Text("${snapshot.data.name} ${snapshot.data.surname}"),
                   onPressed: () => Navigator.pushNamed(
                       context, "/users/${snapshot.data['id']}"));
             }),
         SelectableText(
             "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-        Container(
-          padding: EdgeInsets.all(8.0),
-          height: MediaQuery.of(context).size.height * 80 / 100,
+        Expanded(
           child: ListView.builder(
               itemCount: files.length,
               itemBuilder: (context, i) => ListTile(

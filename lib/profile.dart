@@ -105,70 +105,63 @@ class ProfilePageBody extends StatelessWidget {
                 ),
               FutureBuilder<Tuple2<int, List<backend.Note>>>(
                   future: backend.getNotesFirstPage(author: user.id),
-                  builder: (context, bigSnapshot) {
-                    if (bigSnapshot.connectionState == ConnectionState.waiting)
-                      return CircularProgressIndicator();
-                    return ListView.builder(
-                        itemCount: bigSnapshot.data.item1,
-                        itemBuilder: (context, p) {
-                          return FutureBuilder(
-                              future: p == 0
-                                  ? bigSnapshot.data.item2
-                                  : backend.getNotes(p + 1, author: user.id),
-                              builder: (context, snapshot) {
-                                // TODO: better error handling
-                                if (snapshot.hasError) {
-                                  doItAsap(
-                                      context,
-                                      (context) => showDialog(
-                                          context: context,
-                                          child: AlertDialog(
-                                              title: SelectableText(
-                                                  "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
-                                  return SelectableText(
-                                      "Si è verificato un errore");
-                                }
-                                if (!snapshot.hasData)
-                                  return CircularProgressIndicator();
-                                final List<backend.Note> notes = snapshot.data;
-                                return Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      70 /
-                                      100,
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: notes.length,
-                                      itemBuilder: (context, i) {
-                                        print(
-                                            "creando nota $i (${notes[i].title})");
-                                        var date = DateTime.parse(
-                                            notes[i].uploaded_at);
-                                        return ListTile(
-                                            leading: Icon(Icons.note),
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          NotePage(
-                                                              "${notes[i].subject_id}",
-                                                              notes[i].note_id,
-                                                              noteDataFuture:
-                                                                  backend
-                                                                      .getNote(
-                                                                "${notes[i].subject_id}",
-                                                                notes[i]
-                                                                    .note_id,
-                                                              ))));
-                                            },
-                                            trailing: SelectableText(
-                                                "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                                            title:
-                                                SelectableText(notes[i].title));
-                                      }),
-                                );
-                              });
-                        });
+                  builder: (context, firstSnapshot) {
+                    if (firstSnapshot.connectionState ==
+                        ConnectionState.waiting)
+                      return Container(
+                          height: 50.0,
+                          width: 50.0,
+                          child: Center(child: CircularProgressIndicator()));
+                    return Container(
+                      height: MediaQuery.of(context).size.height - 225.0,
+                      child: ListView.builder(
+                          itemCount: firstSnapshot.data.item1,
+                          itemBuilder: (context, p) {
+                            return FutureBuilder<List<backend.Note>>(
+                                future: p == 0
+                                    ? Future.value(firstSnapshot.data.item2)
+                                    : backend.getNotes(p + 1, author: user.id),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting)
+                                    return Container(
+                                        height: 50.0,
+                                        width: 50.0,
+                                        child: Center(
+                                            child:
+                                                CircularProgressIndicator()));
+                                  final List<backend.Note> notes =
+                                      snapshot.data;
+                                  if (notes == []) {
+                                    return Divider();
+                                  }
+                                  return Column(
+                                      children: notes.map((note) {
+                                    var date = DateTime.parse(note.uploaded_at)
+                                        .toLocal();
+                                    return ListTile(
+                                        leading: Icon(Icons.note),
+                                        title: Text(note.title),
+                                        trailing: Text(
+                                            "${date.day}/${date.month}${date.year}"),
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NotePage(
+                                                          "${note.subject_id}",
+                                                          note.note_id,
+                                                          noteDataFuture:
+                                                              backend.getNote(
+                                                            "${note.subject_id}",
+                                                            note.note_id,
+                                                          ))));
+                                        });
+                                  }).toList());
+                                });
+                          }),
+                    );
                   })
             ],
           ),
