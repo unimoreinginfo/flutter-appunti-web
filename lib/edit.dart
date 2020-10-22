@@ -1,6 +1,7 @@
 import 'package:appunti_web_frontend/consts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dio/dio.dart' show MultipartFile;
 import 'package:http_parser/http_parser.dart' show MediaType;
@@ -296,12 +297,6 @@ class ModPage extends StatelessWidget {
 
   final String jwt;
 
-  Future<backend.User> getUser(uid) {
-    var user = backend.getUser(uid);
-    user.then((a) => print(a.toJson()));
-    return user;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -338,35 +333,60 @@ class ModPage extends StatelessWidget {
           },
         ),
         Expanded(
-          child: ListView.builder(itemBuilder: (context, p) {
-            return FutureBuilder<List>(
-                future: backend.getNotes(p + 1),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return CircularProgressIndicator();
-                  final List<backend.Note> notes = snapshot.data;
-                  return Column(
-                      children: notes
-                          .map((note) => ListTile(
-                                leading: SelectableText(note.uploaded_at),
-                                title: SelectableText(note.title),
-                                subtitle: FutureBuilder(
-                                    future: getUser(note.author_id),
-                                    builder: (context, snapshot) {
-                                      if (!snapshot.hasData)
-                                        return CircularProgressIndicator();
-                                      final backend.User author = snapshot.data;
-                                      return SelectableText(
-                                          "${author.name} ${author.surname}<${author.email}, ${author.unimore_id}>");
-                                    }),
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            NoteEditPage(jwt, note))),
-                              ))
-                          .toList());
-                });
-          }),
+          child: FutureBuilder<Tuple2<int, List<backend.Note>>>(
+              future: backend.getNotesFirstPage(),
+              builder: (context, firstSnapshot) {
+                if (firstSnapshot.connectionState == ConnectionState.waiting)
+                  return Container(
+                      height: 30.0,
+                      width: 30.0,
+                      child: Center(child: CircularProgressIndicator()));
+                return ListView.builder(
+                    itemCount: firstSnapshot.data.item1,
+                    itemBuilder: (context, p) {
+                      return FutureBuilder<List<backend.Note>>(
+                          future: p == 0
+                              ? Future.value(firstSnapshot.data.item2)
+                              : backend.getNotes(p + 1),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting)
+                              return Container(
+                                  height: 30.0,
+                                  width: 30.0,
+                                  child: Center(
+                                      child: CircularProgressIndicator()));
+                            final List<backend.Note> notes = snapshot.data;
+                            if (notes == []) {
+                              return Divider();
+                            }
+                            return Column(
+                                children: notes
+                                    .map((note) => ListTile(
+                                          leading:
+                                              SelectableText(note.uploaded_at),
+                                          title: SelectableText(note.title),
+                                          subtitle: FutureBuilder(
+                                              future: backend
+                                                  .getUser(note.author_id),
+                                              builder: (context, snapshot) {
+                                                if (!snapshot.hasData)
+                                                  return CircularProgressIndicator();
+                                                final backend.User author =
+                                                    snapshot.data;
+                                                return SelectableText(
+                                                    "${author.name} ${author.surname}<${author.email}, ${author.unimore_id}>");
+                                              }),
+                                          onTap: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NoteEditPage(jwt, note))),
+                                        ))
+                                    .toList());
+                          });
+                    });
+              }),
         )
       ],
     );

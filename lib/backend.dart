@@ -1,6 +1,7 @@
 import 'dart:convert' show json, ascii, base64;
 import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:tuple/tuple.dart';
 
 import 'consts.dart' show baseUrl, http;
 import 'errors.dart' as errors;
@@ -185,6 +186,30 @@ Future<List<Note>> getNotes(int page, {String author, int subjectId}) async {
   }
 }
 
+Future<Tuple2<int, List<Note>>> getNotesFirstPage(
+    {String author, int subjectId}) async {
+  Response res;
+  if (author == null && subjectId != null)
+    res =
+        await http.get("$baseUrl/notes?subject_id=$subjectId&order_by=visits");
+  else if (author != null && subjectId == null)
+    res = await http.get("$baseUrl/notes?author_id=$author&order_by=visits");
+  else if (author != null && subjectId != null)
+    res = await http.get(
+        "$baseUrl/notes?author_id=$author&subject_id=$subjectId&order_by=visits");
+  else
+    res = await http.get("$baseUrl/notes?order_by=visits");
+
+  if (res.statusCode == errors.SERVER_DOWN)
+    throw errors.ServerError();
+  else {
+    Map<String, Object> data = json.decode(res.data);
+    if (data["success"] == false) throw errors.BackendError(res.statusCode);
+    return Tuple2(data["pages"],
+        (data["result"] as List).map((el) => Note.fromJson(el)).toList());
+  }
+}
+
 Future<void> deleteUser(int id, String jwt) async {
   var res = await http.delete("$baseUrl/users/$id",
       options: Options(headers: {"Authorization": "Bearer $jwt"}));
@@ -216,6 +241,19 @@ Future<List<Note>> search(String q, int page) async {
   return (json.decode(res.data)["result"] as List)
       .map((e) => Note.fromJson(e))
       .toList();
+}
+
+Future<Tuple2<int, List<Note>>> searchFirstPage(String q) async {
+  var res = await http.get('$baseUrl/notes/search?q=$q');
+  if (res.statusCode == errors.SERVER_DOWN) throw errors.ServerError();
+  if (json.decode(res.data)["success"] == false)
+    throw errors.BackendError(res.statusCode);
+
+  return Tuple2(
+      json.decode(res.data)["pages"],
+      (json.decode(res.data)["result"] as List)
+          .map((e) => Note.fromJson(e))
+          .toList());
 }
 
 Future<void> editNote(String id, String subjectId, String jwt, Map data) async {

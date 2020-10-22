@@ -4,6 +4,7 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:string_trimmer/string_trimmer.dart';
+import 'package:tuple/tuple.dart';
 
 import 'platform.dart' as platform;
 import 'utils.dart';
@@ -152,38 +153,74 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         SelectableText("Ultimi risultati"),
         SizedBox(height: 15.0),
         if (_searchController.text != "")
-          ListView.builder(
-              itemBuilder: (context, i) => FutureBuilder(
-                    future: backend.search(query, i + 1),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData)
-                        return CircularProgressIndicator();
-                      else
-                        return DisplayNotes(snapshot.data, widget.subjects);
-                    },
-                  ))
+          FutureBuilder<Tuple2<int, List<backend.Note>>>(
+              future: backend.searchFirstPage(query),
+              builder: (context, bigSnapshot) {
+                if (bigSnapshot.connectionState == ConnectionState.waiting)
+                  return Container(
+                      height: 30.0,
+                      width: 30.0,
+                      child: Center(child: CircularProgressIndicator()));
+                return Container(
+                  height: MediaQuery.of(context).size.height * 70 / 100,
+                  child: ListView.builder(
+                      itemCount: bigSnapshot.data.item1,
+                      itemBuilder: (context, i) => FutureBuilder(
+                            future: i == 0
+                                ? Future.value(bigSnapshot.data.item2)
+                                : backend.search(query, i + 1),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData)
+                                return CircularProgressIndicator();
+                              else
+                                return DisplayNotes(
+                                    snapshot.data, widget.subjects);
+                            },
+                          )),
+                );
+              })
         else
-          ListView.builder(itemBuilder: (context, i) {
-            return FutureBuilder(
-              future: backend.getNotes(i + 1,
-                  subjectId: _chosenSubject != -1 ? _chosenSubject : null),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text("Si è verificato un errore"),
-                        content: SelectableText("${snapshot.error}"),
-                      ));
-                  return SelectableText("errore");
-                }
-                // TODO:implementare pagine
+          FutureBuilder<Tuple2<int, List<backend.Note>>>(
+              future: backend.getNotesFirstPage(),
+              builder: (context, bigSnapshot) {
+                if (bigSnapshot.connectionState == ConnectionState.waiting)
+                  return Container(
+                      height: 30.0,
+                      width: 30.0,
+                      child: Center(child: CircularProgressIndicator()));
+                return Container(
+                  height: MediaQuery.of(context).size.height * 70 / 100,
+                  child: ListView.builder(
+                      itemCount: bigSnapshot.data.item1,
+                      itemBuilder: (context, i) {
+                        return FutureBuilder(
+                          future: i == 0
+                              ? Future.value(bigSnapshot.data.item2)
+                              : backend.getNotes(i + 1,
+                                  subjectId: _chosenSubject != -1
+                                      ? _chosenSubject
+                                      : null),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              showDialog(
+                                  context: context,
+                                  child: AlertDialog(
+                                    title: Text("Si è verificato un errore"),
+                                    content:
+                                        SelectableText("${snapshot.error}"),
+                                  ));
+                              return SelectableText("errore");
+                            }
+                            // TODO:implementare pagine
 
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return DisplayNotes(snapshot.data, widget.subjects);
-              },
-            );
-          })
+                            if (!snapshot.hasData)
+                              return CircularProgressIndicator();
+                            return DisplayNotes(snapshot.data, widget.subjects);
+                          },
+                        );
+                      }),
+                );
+              })
       ],
     );
   }
@@ -202,72 +239,63 @@ class DisplayNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool containsMoreInfo = data.length > 0 && data[0].author_id != null;
-    return Container(
-        height: MediaQuery.of(context).size.height - 210.0,
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-                data.length,
-                (i) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 230.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4.0)),
+    return Column(
+        children: List.generate(
+            data.length,
+            (i) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
+                    child: DefaultTextStyle(
+                      style: Theme.of(context).textTheme.bodyText2,
+                      child: Card(
+                        elevation: 0.0,
+                        color: Color(0xfff5f6fa),
                         child: DefaultTextStyle(
-                          style: Theme.of(context).textTheme.bodyText2,
-                          child: Card(
-                            elevation: 0.0,
-                            color: Color(0xfff5f6fa),
-                            child: DefaultTextStyle(
-                              textAlign: TextAlign.left,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    SelectableText(
-                                      getSubject(data[i].subject_id).name,
-                                      style:
-                                          Theme.of(context).textTheme.headline5,
-                                    ),
-                                    if (MediaQuery.of(context).size.width >
-                                        700.00)
-                                      SizedBox(
-                                        height: 7.5,
-                                      ),
-                                    SelectableText("Titolo: ${data[i].title}"),
-                                    if (containsMoreInfo)
-                                      DateText(data[i].uploaded_at),
-                                    if (containsMoreInfo)
-                                      AuthorInfo(data[i].author_id),
-                                    if (MediaQuery.of(context).size.width >
-                                        700.00)
-                                      SizedBox(
-                                        height: 7.5,
-                                      ),
-                                    FlatButton(
-                                        color: Theme.of(context).primaryColor,
-                                        textColor: Colors.white,
-                                        onPressed: () {
-                                          Navigator.pushNamed(context,
-                                              '/notes/${data[i].subject_id}/${data[i].note_id}');
-                                        },
-                                        child: Text(
-                                            "Vai ai file contenuti in questo appunto"))
-                                  ],
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          child: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SelectableText(
+                                  getSubject(data[i].subject_id).name,
+                                  style: Theme.of(context).textTheme.headline5,
                                 ),
-                              ),
+                                if (MediaQuery.of(context).size.width > 700.00)
+                                  SizedBox(
+                                    height: 7.5,
+                                  ),
+                                SelectableText("Titolo: ${data[i].title}"),
+                                if (containsMoreInfo)
+                                  DateText(data[i].uploaded_at),
+                                if (containsMoreInfo)
+                                  AuthorInfo(data[i].author_id),
+                                if (MediaQuery.of(context).size.width > 700.00)
+                                  SizedBox(
+                                    height: 7.5,
+                                  ),
+                                FlatButton(
+                                    color: Theme.of(context).primaryColor,
+                                    textColor: Colors.white,
+                                    onPressed: () {
+                                      Navigator.pushNamed(context,
+                                          '/notes/${data[i].subject_id}/${data[i].note_id}');
+                                    },
+                                    child: Text(
+                                        "Vai ai file contenuti in questo appunto"))
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    ))));
+                    ),
+                  ),
+                )));
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/note.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart' show launch;
 
 import 'platform.dart' show tokenStorage;
@@ -10,47 +11,44 @@ import 'backend.dart' as backend;
 import 'edit.dart' show LogoutButton;
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage(this.uid, {this.userData = null});
+  ProfilePage(this.uid);
 
   final String uid;
-  final Map userData;
 
   @override
   Widget build(BuildContext context) {
     var userFuture;
-    if (userData == null) userFuture = backend.getUser(uid);
+    userFuture = backend.getUser(uid);
 
     return Scaffold(
-      appBar: AppBar(
-          title: SelectableText("Pagina dell'autore"),
-          actions:
-              getUserIdOrNull(tokenStorage) == null ? null : [LogoutButton()]),
-      body: userData == null
-          ? FutureBuilder(
-              future: userFuture,
-              builder: (context, snapshot) {
-                final Map user = snapshot.data;
-                // TODO: better error handling
-                if (snapshot.hasError) {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                          title: SelectableText(
-                              "Si è verificato un errore durante l'accesso ai dati dell'utente")));
-                  return SelectableText("Si è verificato un errore");
-                }
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return ProfilePageBody(user);
-              })
-          : ProfilePageBody(userData),
-    );
+        appBar: AppBar(
+            title: SelectableText("Pagina dell'autore"),
+            actions: getUserIdOrNull(tokenStorage) == null
+                ? null
+                : [LogoutButton()]),
+        body: FutureBuilder(
+            future: userFuture,
+            builder: (context, snapshot) {
+              final backend.User user = snapshot.data;
+              // TODO: better error handling
+              if (snapshot.hasError) {
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                        title: SelectableText(
+                            "Si è verificato un errore durante l'accesso ai dati dell'utente")));
+                return SelectableText("Si è verificato un errore");
+              }
+              if (!snapshot.hasData) return CircularProgressIndicator();
+              return ProfilePageBody(user);
+            }));
   }
 }
 
 class ProfilePageBody extends StatelessWidget {
   ProfilePageBody(this.user);
 
-  final Map user;
+  final backend.User user;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +57,7 @@ class ProfilePageBody extends StatelessWidget {
     try {
       token = getToken(tokenStorage);
       bool mod = isMod(token);
-      canEdit = mod || getPayload(token)["id"] == user["id"];
+      canEdit = mod || getPayload(token)["id"] == user.id;
     } catch (e) {
       print("errore $e");
       canEdit = false;
@@ -77,21 +75,20 @@ class ProfilePageBody extends StatelessWidget {
           child: Column(
             children: [
               SelectableText(
-                "Utente ${user["name"]} ${user["surname"]}",
+                "Utente ${user.name} ${user.surname}",
                 style: Theme.of(context).textTheme.headline4,
               ),
               SelectableText("Email: "),
               FlatButton(
-                child: SelectableText(user["email"]),
+                child: SelectableText(user.email),
                 onPressed: () {
-                  launch("mailto:${user["email"]}");
+                  launch("mailto:${user.email}");
                 },
               ),
               FlatButton(
-                child:
-                    SelectableText("${user["unimore_id"]}@studenti.unimore.it"),
+                child: SelectableText("${user.unimore_id}@studenti.unimore.it"),
                 onPressed: () {
-                  launch("mailto:${user["unimore_id"]}@studenti.unimore.it");
+                  launch("mailto:${user.unimore_id}@studenti.unimore.it");
                 },
               ),
               if (canEdit)
@@ -102,57 +99,77 @@ class ProfilePageBody extends StatelessWidget {
                   onPressed: () {
                     goToRouteAsap(
                       context,
-                      "/editProfile/${user['id']}",
+                      "/editProfile/${user.id}",
                     );
                   },
                 ),
-              ListView.builder(itemBuilder: (context, p) {
-                return FutureBuilder(
-                    future: backend.getNotes(p + 1),
-                    builder: (context, snapshot) {
-                      // TODO: better error handling
-                      if (snapshot.hasError) {
-                        doItAsap(
-                            context,
-                            (context) => showDialog(
-                                context: context,
-                                child: AlertDialog(
-                                    title: SelectableText(
-                                        "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
-                        return SelectableText("Si è verificato un errore");
-                      }
-                      if (!snapshot.hasData) return CircularProgressIndicator();
-                      final List<Map<String, String>> notes = snapshot.data;
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 70 / 100,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: notes.length,
-                            itemBuilder: (context, i) {
-                              print("creando nota $i (${notes[i]["title"]})");
-                              var date =
-                                  DateTime.parse(notes[i]["uploaded_at"]);
-                              return ListTile(
-                                  leading: Icon(Icons.note),
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => NotePage(
-                                                "${notes[i]["subject_id"]}",
-                                                notes[i]["note_id"],
-                                                noteDataFuture: backend.getNote(
-                                                  "${notes[i]["subject_id"]}",
-                                                  notes[i]["note_id"],
-                                                ))));
-                                  },
-                                  trailing: SelectableText(
-                                      "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
-                                  title: SelectableText(notes[i]["title"]));
-                            }),
-                      );
-                    });
-              })
+              FutureBuilder<Tuple2<int, List<backend.Note>>>(
+                  future: backend.getNotesFirstPage(author: user.id),
+                  builder: (context, bigSnapshot) {
+                    if (bigSnapshot.connectionState == ConnectionState.waiting)
+                      return CircularProgressIndicator();
+                    return ListView.builder(
+                        itemCount: bigSnapshot.data.item1,
+                        itemBuilder: (context, p) {
+                          return FutureBuilder(
+                              future: p == 0
+                                  ? bigSnapshot.data.item2
+                                  : backend.getNotes(p + 1, author: user.id),
+                              builder: (context, snapshot) {
+                                // TODO: better error handling
+                                if (snapshot.hasError) {
+                                  doItAsap(
+                                      context,
+                                      (context) => showDialog(
+                                          context: context,
+                                          child: AlertDialog(
+                                              title: SelectableText(
+                                                  "Si è verificato un errore durante l'accesso agli appunti dell'utente"))));
+                                  return SelectableText(
+                                      "Si è verificato un errore");
+                                }
+                                if (!snapshot.hasData)
+                                  return CircularProgressIndicator();
+                                final List<backend.Note> notes = snapshot.data;
+                                return Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      70 /
+                                      100,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: notes.length,
+                                      itemBuilder: (context, i) {
+                                        print(
+                                            "creando nota $i (${notes[i].title})");
+                                        var date = DateTime.parse(
+                                            notes[i].uploaded_at);
+                                        return ListTile(
+                                            leading: Icon(Icons.note),
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          NotePage(
+                                                              "${notes[i].subject_id}",
+                                                              notes[i].note_id,
+                                                              noteDataFuture:
+                                                                  backend
+                                                                      .getNote(
+                                                                "${notes[i].subject_id}",
+                                                                notes[i]
+                                                                    .note_id,
+                                                              ))));
+                                            },
+                                            trailing: SelectableText(
+                                                "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}"),
+                                            title:
+                                                SelectableText(notes[i].title));
+                                      }),
+                                );
+                              });
+                        });
+                  })
             ],
           ),
         ),
