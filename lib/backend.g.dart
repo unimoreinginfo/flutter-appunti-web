@@ -44,7 +44,8 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
 
 Note _$NoteFromJson(Map<String, dynamic> json) {
   return Note(
-    note_id: json['note_id'] as String,
+    note_id: (json['note_id'] != null ? json['note_id'] : json['id'])
+        as String, // TODO: remove manual modification when backend is fixed
     subject_id: json['subject_id'] as int,
     visits: json['visits'] as int,
     title: json['title'] as String,

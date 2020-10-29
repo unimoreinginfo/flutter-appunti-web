@@ -165,6 +165,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                 return Expanded(
                   child: DraggableScrollbar(
                     controller: _controller,
+                    heightScrollThumb: 100.0,
                     backgroundColor: Colors.black,
                     scrollThumbBuilder: (
                       Color backgroundColor,
@@ -211,6 +212,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                       child: Center(child: CircularProgressIndicator()));
                 return Expanded(
                   child: DraggableScrollbar(
+                    heightScrollThumb: 100.0,
                     controller: _controller,
                     backgroundColor: Colors.black,
                     scrollThumbBuilder: (
@@ -250,7 +252,6 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                                     ));
                                 return SelectableText("errore");
                               }
-                              // TODO:implementare pagine
 
                               if (!snapshot.hasData)
                                 return CircularProgressIndicator();
