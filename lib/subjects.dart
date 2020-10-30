@@ -12,6 +12,27 @@ import 'backend.dart' as backend;
 import 'edit.dart' show LogoutButton;
 import 'io.dart';
 
+class UsersSingleton {
+  static final UsersSingleton _singleton = UsersSingleton._internal();
+
+  factory UsersSingleton() {
+    return _singleton;
+  }
+
+  Map users = {};
+
+  Future<backend.User> getUser(String id) {
+    if (users[id] != null)
+      return users[id];
+    else {
+      users[id] = backend.getUser(id);
+      return users[id];
+    }
+  }
+
+  UsersSingleton._internal();
+}
+
 class SubjectsPage extends StatelessWidget {
   final String name = "Ingegneria informatica";
 
@@ -70,6 +91,10 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   int _chosenSubject = -1;
   String query = null;
   Timer timer = null;
+  Future<Tuple2<int, List<backend.Note>>> defaultFirstPage;
+  List<Future<List<backend.Note>>> defaultOtherPages = [];
+  Future<Tuple2<int, List<backend.Note>>> firstPage = null;
+  List<Future<List<backend.Note>>> otherPages = null;
 
   void searchDebounced(String q) async {
     if (q == query) return;
@@ -79,13 +104,21 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
           timer.cancel();
           timer = null;
         }
+        firstPage = defaultFirstPage;
+        otherPages = defaultOtherPages;
         query = null;
       });
     else {
       if (timer != null) timer.cancel();
-      timer = Timer(Duration(seconds: 1), () async {
+      timer = Timer(Duration(milliseconds: 1500), () async {
+        firstPage = backend.searchFirstPage(q);
+        int pageNumber = (await firstPage).item1;
         setState(() {
           query = q;
+
+          for (int i = 1; i < pageNumber; i++) {
+            otherPages.add(backend.search(q, i + 1));
+          }
         });
       });
     }
@@ -94,10 +127,25 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
   @override
   void initState() {
     super.initState();
+    defaultFirstPage = backend.getNotesFirstPage()
+      ..then((value) {
+        for (int i = 1; i < value.item1; i++) {
+          defaultOtherPages.add(backend.getNotes(i + 1));
+        }
+
+        setState(() {
+          firstPage = Future.value(value);
+          otherPages = defaultOtherPages;
+        });
+      });
   }
 
   @override
   Widget build(context) {
+    if (otherPages == [] || firstPage == null)
+      return Center(
+        child: CircularProgressIndicator(),
+      );
     return Column(
       children: [
         SizedBox(height: 15.0),
@@ -130,9 +178,24 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                                       : 20,
                                   lastChars: 4))))
                           .toList()),
-                  onChanged: (value) {
+                  onChanged: (value) async {
+                    if (value == -1) {
+                      setState(() {
+                        _chosenSubject = -1;
+                        firstPage = defaultFirstPage;
+                        otherPages = defaultOtherPages;
+                      });
+                      return;
+                    }
+                    firstPage = backend.getNotesFirstPage(subjectId: value);
+                    int pageNumber = (await firstPage).item1;
                     setState(() {
                       _chosenSubject = value;
+
+                      for (int i = 1; i < pageNumber; i++) {
+                        otherPages
+                            .add(backend.getNotes(i + 1, subjectId: value));
+                      }
                     });
                   }),
             ),
@@ -153,116 +216,52 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         SizedBox(height: 15.0),
         SelectableText("Ultimi risultati"),
         SizedBox(height: 15.0),
-        if (_searchController.text != "")
-          FutureBuilder<Tuple2<int, List<backend.Note>>>(
-              future: backend.searchFirstPage(query),
-              builder: (context, bigSnapshot) {
-                if (bigSnapshot.connectionState == ConnectionState.waiting)
-                  return Container(
-                      height: 30.0,
+        FutureBuilder<Tuple2<int, List<backend.Note>>>(
+            future: firstPage,
+            builder: (context, bigSnapshot) {
+              if (bigSnapshot.connectionState == ConnectionState.waiting)
+                return Container(
+                    height: 30.0,
+                    width: 30.0,
+                    child: Center(child: CircularProgressIndicator()));
+              return Expanded(
+                child: DraggableScrollbar(
+                  controller: _controller,
+                  heightScrollThumb: 100.0,
+                  backgroundColor: Colors.black,
+                  scrollThumbBuilder: (
+                    Color backgroundColor,
+                    Animation<double> thumbAnimation,
+                    Animation<double> labelAnimation,
+                    double height, {
+                    labelConstraints,
+                    Text labelText,
+                  }) {
+                    return Image.network(
+                      "/img/scrollbar.jpg",
+                      height: height,
+                      repeat: ImageRepeat.repeatY,
                       width: 30.0,
-                      child: Center(child: CircularProgressIndicator()));
-                return Expanded(
-                  child: DraggableScrollbar(
-                    controller: _controller,
-                    heightScrollThumb: 100.0,
-                    backgroundColor: Colors.black,
-                    scrollThumbBuilder: (
-                      Color backgroundColor,
-                      Animation<double> thumbAnimation,
-                      Animation<double> labelAnimation,
-                      double height, {
-                      labelConstraints,
-                      Text labelText,
-                    }) {
-                      return Image.network(
-                        "/img/scrollbar.jpg",
-                        height: height,
-                        repeat: ImageRepeat.repeatY,
-                        width: 30.0,
-                      );
-                    },
-                    child: ListView.builder(
-                        controller: _controller,
-                        itemCount: bigSnapshot.data.item1,
-                        itemBuilder: (context, i) => FutureBuilder(
-                              future: i == 0
-                                  ? Future.value(bigSnapshot.data.item2)
-                                  : backend.search(query, i + 1),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData)
-                                  return CircularProgressIndicator();
-                                else
-                                  return DisplayNotes(
-                                      snapshot.data, widget.subjects);
-                              },
-                            )),
-                  ),
-                );
-              })
-        else
-          FutureBuilder<Tuple2<int, List<backend.Note>>>(
-              future: backend.getNotesFirstPage(
-                  subjectId: _chosenSubject == -1 ? null : _chosenSubject),
-              builder: (context, bigSnapshot) {
-                if (bigSnapshot.connectionState == ConnectionState.waiting)
-                  return Container(
-                      height: 30.0,
-                      width: 30.0,
-                      child: Center(child: CircularProgressIndicator()));
-                return Expanded(
-                  child: DraggableScrollbar(
-                    heightScrollThumb: 100.0,
-                    controller: _controller,
-                    backgroundColor: Colors.black,
-                    scrollThumbBuilder: (
-                      Color backgroundColor,
-                      Animation<double> thumbAnimation,
-                      Animation<double> labelAnimation,
-                      double height, {
-                      labelConstraints,
-                      Text labelText,
-                    }) {
-                      return Image.network(
-                        "/img/scrollbar.jpg",
-                        height: height,
-                        repeat: ImageRepeat.repeatY,
-                        width: 30.0,
-                      );
-                    },
-                    child: ListView.builder(
-                        controller: _controller,
-                        itemCount: bigSnapshot.data.item1,
-                        itemBuilder: (context, i) {
-                          return FutureBuilder(
+                    );
+                  },
+                  child: ListView.builder(
+                      controller: _controller,
+                      itemCount: bigSnapshot.data.item1,
+                      itemBuilder: (context, i) => FutureBuilder(
                             future: i == 0
                                 ? Future.value(bigSnapshot.data.item2)
-                                : backend.getNotes(i + 1,
-                                    subjectId: _chosenSubject != -1
-                                        ? _chosenSubject
-                                        : null),
+                                : otherPages[i - 1],
                             builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                showDialog(
-                                    context: context,
-                                    child: AlertDialog(
-                                      title: Text("Si è verificato un errore"),
-                                      content:
-                                          SelectableText("${snapshot.error}"),
-                                    ));
-                                return SelectableText("errore");
-                              }
-
                               if (!snapshot.hasData)
                                 return CircularProgressIndicator();
-                              return DisplayNotes(
-                                  snapshot.data, widget.subjects);
+                              else
+                                return DisplayNotes(
+                                    snapshot.data, widget.subjects);
                             },
-                          );
-                        }),
-                  ),
-                );
-              })
+                          )),
+                ),
+              );
+            })
       ],
     );
   }
@@ -369,7 +368,7 @@ class AuthorInfo extends StatelessWidget {
   @override
   Widget build(context) {
     return FutureBuilder(
-      future: backend.getUser(id),
+      future: UsersSingleton().getUser(id),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return CircularProgressIndicator();
         var name = snapshot.data.name;
