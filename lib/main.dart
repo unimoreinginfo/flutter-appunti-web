@@ -17,6 +17,11 @@ void defineRoutes() {
       handler: Handler(
         handlerFunc: (context, parameters) => HomePage(),
       ));
+  router.define("/verify/:token/:user_id",
+      handler: Handler(
+        handlerFunc: (context, parameters) => EmailVerificationPage(
+            parameters['token'].first, parameters['user_id'].first),
+      ));
   router.define("/users/:id", handler: Handler(
     handlerFunc: (context, parameters) {
       return ProfilePage(parameters["id"][0]);

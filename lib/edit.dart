@@ -268,6 +268,16 @@ class _PlebPageState extends State<PlebPage> {
                     setState(() {
                       _sendingNote = false;
                     });
+                    if (e is errors.UserEmailNotVerifiedError) {
+                      showDialog(
+                          context: context,
+                          child: AlertDialog(
+                            title: SelectableText("VERIFICA L'EMAIL UNIMORE"),
+                            content: SelectableText(
+                                "controlla la mail unimore e clicca sul link di verifica prima di provare a caricare appunti"),
+                          ));
+                      return;
+                    }
                     showDialog(
                         context: context,
                         child: AlertDialog(
@@ -591,5 +601,45 @@ class UsersList extends StatelessWidget {
                     Navigator.pushNamed(context, "/users/${users[i]['id']}");
                   }));
         });
+  }
+}
+
+class EmailVerificationPage extends StatelessWidget {
+  EmailVerificationPage(this.token, this.userId);
+
+  final String token;
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Verifica indirizzo email"),
+      ),
+      body: Center(
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.headline3,
+          child: FutureBuilder(
+              future: backend.verifyEmail(token, userId),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text(
+                            "Si è verificato un errore nel tentativo di verificare l'indirizzo email"),
+                      ));
+                  return Text(
+                      "si è verificato un errore durante l'elaborazione della richiesta");
+                }
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  return CircularProgressIndicator();
+                return Text(
+                    "Evviva! Il tuo indirizzo email è stato verificato! Ora potrai caricare appunti!",
+                    style: TextStyle(color: Theme.of(context).accentColor));
+              }),
+        ),
+      ),
+    );
   }
 }

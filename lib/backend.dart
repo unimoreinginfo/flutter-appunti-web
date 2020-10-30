@@ -140,25 +140,22 @@ Future<void> addNote(
   ]);
   formData.files.addAll(files.map((file) => MapEntry("notes", file)));
 
-  try {
-    var res = await http.post('$baseUrl/notes',
-        data: formData,
-        options: Options(headers: {"Authorization": "Bearer $jwt"}));
+  var res = await http.post('$baseUrl/notes',
+      data: formData,
+      options: Options(headers: {"Authorization": "Bearer $jwt"}));
 
-    if (res.statusCode == errors.SERVER_DOWN) {
-      throw errors.ServerError();
-    } else {
-      var body = json.decode(res.data);
-      if (body["success"] == false) {
-        throw errors.BackendError(res.statusCode);
-      } else {
-        io.getAndUpdateToken(res, platform.tokenStorage);
-        return;
-      }
-    }
-  } catch (e) {
-    print(e);
+  if (res.statusCode == errors.USER_NOT_VERIFIED)
+    throw errors.UserEmailNotVerifiedError();
+  if (res.statusCode == errors.SERVER_DOWN) {
     throw errors.ServerError();
+  } else {
+    var body = json.decode(res.data);
+    if (body["success"] == false) {
+      throw errors.BackendError(res.statusCode);
+    } else {
+      io.getAndUpdateToken(res, platform.tokenStorage);
+      return;
+    }
   }
 }
 
@@ -298,4 +295,12 @@ Future<UserStorageStatus> getSize(String jwt) async {
   print("get /size ha returnato ${res.data}");
   return UserStorageStatus(double.parse(data["folder_size_kilobytes"]).toInt(),
       data["max_folder_size_kilobytes"]);
+}
+
+Future<void> verifyEmail(String token, String userId) async {
+  var res = await http.post("$baseUrl/auth/verify/$token/$userId");
+  if (!json.decode(res.data as String)["success"])
+    throw errors.NotFoundError();
+  else
+    return;
 }

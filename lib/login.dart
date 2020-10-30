@@ -353,7 +353,7 @@ class VerificationPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SelectableText(
-              "La registrazione è stata effettuata con successo, premi il tasto qui sotto per andare alla pagina di accesso"),
+              "La registrazione è stata effettuata con successo, controlla la mail unimore per verificarla prima di provare a caricare appunti."),
           FlatButton(
             color: Theme.of(context).primaryColor,
             textColor: Colors.white,
