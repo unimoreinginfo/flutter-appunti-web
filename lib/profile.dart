@@ -40,15 +40,34 @@ class ProfilePage extends StatelessWidget {
                 return SelectableText("Si è verificato un errore");
               }
               if (!snapshot.hasData) return CircularProgressIndicator();
-              return ProfilePageBody(user);
+              return ProfilePageBody(
+                  user, backend.getNotesFirstPage(author: user.id));
             }));
   }
 }
 
-class ProfilePageBody extends StatelessWidget {
-  ProfilePageBody(this.user);
+class ProfilePageBody extends StatefulWidget {
+  ProfilePageBody(this.user, this.firstNotePage);
 
   final backend.User user;
+  final Future<Tuple2<int, List<backend.Note>>> firstNotePage;
+
+  @override
+  _ProfilePageBodyState createState() => _ProfilePageBodyState();
+}
+
+class _ProfilePageBodyState extends State<ProfilePageBody> {
+  List<Future<List<backend.Note>>> otherNotePages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    widget.firstNotePage.then((value) {
+      for (int i = 1; i < value.item1; i++) {
+        otherNotePages.add(backend.getNotes(i + 1, author: widget.user.id));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +76,7 @@ class ProfilePageBody extends StatelessWidget {
     try {
       token = getToken(tokenStorage);
       bool mod = isMod(token);
-      canEdit = mod || getPayload(token)["id"] == user.id;
+      canEdit = mod || getPayload(token)["id"] == widget.user.id;
     } catch (e) {
       print("errore $e");
       canEdit = false;
@@ -75,20 +94,22 @@ class ProfilePageBody extends StatelessWidget {
           child: Column(
             children: [
               SelectableText(
-                "Utente ${user.name} ${user.surname}",
+                "Utente ${widget.user.name} ${widget.user.surname}",
                 style: Theme.of(context).textTheme.headline4,
               ),
               SelectableText("Email: "),
               FlatButton(
-                child: SelectableText(user.email),
+                child: SelectableText(widget.user.email),
                 onPressed: () {
-                  launch("mailto:${user.email}");
+                  launch("mailto:${widget.user.email}");
                 },
               ),
               FlatButton(
-                child: SelectableText("${user.unimore_id}@studenti.unimore.it"),
+                child: SelectableText(
+                    "${widget.user.unimore_id}@studenti.unimore.it"),
                 onPressed: () {
-                  launch("mailto:${user.unimore_id}@studenti.unimore.it");
+                  launch(
+                      "mailto:${widget.user.unimore_id}@studenti.unimore.it");
                 },
               ),
               if (canEdit)
@@ -99,12 +120,12 @@ class ProfilePageBody extends StatelessWidget {
                   onPressed: () {
                     goToRouteAsap(
                       context,
-                      "/editProfile/${user.id}",
+                      "/editProfile/${widget.user.id}",
                     );
                   },
                 ),
               FutureBuilder<Tuple2<int, List<backend.Note>>>(
-                  future: backend.getNotesFirstPage(author: user.id),
+                  future: widget.firstNotePage,
                   builder: (context, firstSnapshot) {
                     if (firstSnapshot.connectionState ==
                         ConnectionState.waiting)
@@ -112,15 +133,14 @@ class ProfilePageBody extends StatelessWidget {
                           height: 50.0,
                           width: 50.0,
                           child: Center(child: CircularProgressIndicator()));
-                    return Container(
-                      height: MediaQuery.of(context).size.height - 225.0,
+                    return Expanded(
                       child: ListView.builder(
                           itemCount: firstSnapshot.data.item1,
                           itemBuilder: (context, p) {
                             return FutureBuilder<List<backend.Note>>(
                                 future: p == 0
                                     ? Future.value(firstSnapshot.data.item2)
-                                    : backend.getNotes(p + 1, author: user.id),
+                                    : otherNotePages[p - 1],
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting)
