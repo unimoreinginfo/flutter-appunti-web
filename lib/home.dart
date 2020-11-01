@@ -65,22 +65,8 @@ class HomePage extends StatelessWidget {
                 ? Theme.of(context).textTheme.bodyText1
                 : Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
-            child: DraggableScrollbar(
+            child: DraggableScrollbar.arrows(
               heightScrollThumb: 130.0,
-              backgroundColor: Colors.black,
-              scrollThumbBuilder: (
-                Color backgroundColor,
-                Animation<double> thumbAnimation,
-                Animation<double> labelAnimation,
-                double height, {
-                labelConstraints,
-                Text labelText,
-              }) {
-                return Image.network(
-                  "/img/scrollbar.jpg",
-                  height: height,
-                );
-              },
               controller: _controller,
               child: ListView(
                   controller: _controller,

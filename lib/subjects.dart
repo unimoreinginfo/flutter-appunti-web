@@ -98,22 +98,27 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
 
   void searchDebounced(String q) async {
     if (q == query) return;
-    if (q.length < 2)
-      setState(() {
-        if (timer != null) {
-          timer.cancel();
-          timer = null;
-        }
-        firstPage = defaultFirstPage;
-        otherPages = defaultOtherPages;
-        query = null;
+    if (q.length < 2) {
+      if (timer != null) {
+        timer.cancel();
+      }
+      timer = Timer(Duration(milliseconds: 1000), () async {
+        var dfp = await defaultFirstPage;
+        setState(() {
+          _chosenSubject = -1;
+          firstPage = Future.value(Tuple2(dfp.item1, List.from(dfp.item2)));
+          otherPages = List.from(defaultOtherPages);
+          query = null;
+        });
       });
-    else {
+    } else {
       if (timer != null) timer.cancel();
       timer = Timer(Duration(milliseconds: 1500), () async {
+        otherPages.clear();
         firstPage = backend.searchFirstPage(q);
         int pageNumber = (await firstPage).item1;
         setState(() {
+          _chosenSubject = -1;
           query = q;
 
           for (int i = 1; i < pageNumber; i++) {
@@ -134,8 +139,8 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
         }
 
         setState(() {
-          firstPage = Future.value(value);
-          otherPages = defaultOtherPages;
+          firstPage = Future.value(Tuple2(value.item1, List.from(value.item2)));
+          otherPages = List.from(defaultOtherPages);
         });
       });
   }
@@ -179,11 +184,16 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                                   lastChars: 4))))
                           .toList()),
                   onChanged: (value) async {
+                    firstPage = Future.value(Tuple2(0, []));
+                    _searchController.text = "";
+                    otherPages.clear();
                     if (value == -1) {
+                      var dfp = await defaultFirstPage;
                       setState(() {
                         _chosenSubject = -1;
-                        firstPage = defaultFirstPage;
-                        otherPages = defaultOtherPages;
+                        firstPage = Future.value(
+                            Tuple2(dfp.item1, List.from(dfp.item2)));
+                        otherPages = List.from(defaultOtherPages);
                       });
                       return;
                     }
@@ -225,25 +235,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     width: 30.0,
                     child: Center(child: CircularProgressIndicator()));
               return Expanded(
-                child: DraggableScrollbar(
+                child: DraggableScrollbar.arrows(
                   controller: _controller,
                   heightScrollThumb: 100.0,
-                  backgroundColor: Colors.black,
-                  scrollThumbBuilder: (
-                    Color backgroundColor,
-                    Animation<double> thumbAnimation,
-                    Animation<double> labelAnimation,
-                    double height, {
-                    labelConstraints,
-                    Text labelText,
-                  }) {
-                    return Image.network(
-                      "/img/scrollbar.jpg",
-                      height: height,
-                      repeat: ImageRepeat.repeatY,
-                      width: 30.0,
-                    );
-                  },
                   child: ListView.builder(
                       controller: _controller,
                       itemCount: bigSnapshot.data.item1,
