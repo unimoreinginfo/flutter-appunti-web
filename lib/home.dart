@@ -66,6 +66,7 @@ class HomePage extends StatelessWidget {
                 : Theme.of(context).textTheme.bodyText2,
             textAlign: TextAlign.justify,
             child: DraggableScrollbar.arrows(
+              backgroundColor: Colors.black,
               heightScrollThumb: 130.0,
               controller: _controller,
               child: ListView(

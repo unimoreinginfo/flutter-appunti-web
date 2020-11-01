@@ -91,15 +91,18 @@ class MyApp extends StatelessWidget {
           inputDecorationTheme: InputDecorationTheme(),
           primaryColor: Color(0xff6246ea),
           textTheme: TextTheme(
-              bodyText2:
-                  TextStyle(letterSpacing: 0, wordSpacing: -1, fontSize: 13.0),
+              bodyText2: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  letterSpacing: 0,
+                  wordSpacing: -1,
+                  fontSize: 13.0),
               bodyText1: TextStyle(
+                  fontWeight: FontWeight.normal,
                   letterSpacing: 0,
                   wordSpacing: -1,
                   height: 1.3,
                   fontSize: 18.0),
-              headline4:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              headline4: TextStyle(color: Colors.black),
               headline3: TextStyle(
                   height: 1.4,
                   fontWeight: FontWeight.bold,

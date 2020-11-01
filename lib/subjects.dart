@@ -236,6 +236,7 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     child: Center(child: CircularProgressIndicator()));
               return Expanded(
                 child: DraggableScrollbar.arrows(
+                  backgroundColor: Colors.black,
                   controller: _controller,
                   heightScrollThumb: 100.0,
                   child: ListView.builder(
