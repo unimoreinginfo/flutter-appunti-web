@@ -34,7 +34,7 @@ class ProfilePage extends StatelessWidget {
               if (snapshot.hasError) {
                 showDialog(
                     context: context,
-                    child: AlertDialog(
+                    builder: (context) => AlertDialog(
                         title: SelectableText(
                             "Si è verificato un errore durante l'accesso ai dati dell'utente")));
                 return SelectableText("Si è verificato un errore");
@@ -204,7 +204,7 @@ class EditProfilePage extends StatelessWidget {
         if (snapshot.hasError) {
           showDialog(
               context: context,
-              child: AlertDialog(
+              builder: (context) => AlertDialog(
                   title: SelectableText("Si è verificato un errore")));
           print(snapshot.error);
         }
@@ -258,7 +258,7 @@ class _EditProfileState extends State<EditProfile> {
       Navigator.pushReplacementNamed(context, "/login");
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: Text("La sessione potrebbe essere scaduta o corrotta"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
@@ -267,7 +267,7 @@ class _EditProfileState extends State<EditProfile> {
       Navigator.pushReplacementNamed(context, "/login");
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: Text("Si è verificato un errore sconosciuto"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
@@ -286,7 +286,7 @@ class _EditProfileState extends State<EditProfile> {
       LoginManager.logOut(tokenStorage);
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: Text("La sessione potrebbe essere scaduta o corrotta"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
@@ -295,7 +295,7 @@ class _EditProfileState extends State<EditProfile> {
       LoginManager.logOut(tokenStorage);
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: Text("Si è verificato un errore sconosciuto"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));

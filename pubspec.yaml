@@ -15,7 +15,6 @@ dependencies:
   file_picker: ^2.0.0
   fluro: ^1.6.0
   transparent_image:
-  draggable_scrollbar: ^0.0.4
   string_trimmer:
   json_annotation: ^3.1.0
   tuple: ^1.0.3

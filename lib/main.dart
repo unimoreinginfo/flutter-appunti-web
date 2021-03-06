@@ -51,7 +51,7 @@ void defineRoutes() {
           } catch (e) {
             showDialog(
                 context: context,
-                child: AlertDialog(title: SelectableText("$e")));
+                builder: (context) => AlertDialog(title: SelectableText("$e")));
             goToRouteAsap(context, '/login');
           }
         }

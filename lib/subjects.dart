@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:string_trimmer/string_trimmer.dart';
@@ -57,11 +56,11 @@ class SubjectsPage extends StatelessWidget {
                         context,
                         (context) => showDialog(
                             context: context,
-                            child: AlertDialog(
-                              title: SelectableText(
-                                  "Si è verificato un errore durante l'accesso alle materie"),
-                              content: SelectableText("${snapshot.error}"),
-                            )));
+                            builder: (context) => AlertDialog(
+                                  title: SelectableText(
+                                      "Si è verificato un errore durante l'accesso alle materie"),
+                                  content: SelectableText("${snapshot.error}"),
+                                )));
                     return SelectableText("si è verificato un errore");
                   }
                   if (!snapshot.hasData)
@@ -235,10 +234,9 @@ class _SubjectsPageContentsState extends State<SubjectsPageContents> {
                     width: 30.0,
                     child: Center(child: CircularProgressIndicator()));
               return Expanded(
-                child: DraggableScrollbar.arrows(
-                  backgroundColor: Colors.black,
+                child: Scrollbar(
+                  isAlwaysShown: true,
                   controller: _controller,
-                  heightScrollThumb: 100.0,
                   child: ListView.builder(
                       controller: _controller,
                       itemCount: bigSnapshot.data.item1,

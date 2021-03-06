@@ -39,7 +39,7 @@ class NotePage extends StatelessWidget {
                   goToRouteAsap(context, "/");
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title: SelectableText(
                             "Non è stato possibile ottenere i dati dell'appunto"),
                         content: SelectableText(
@@ -48,7 +48,7 @@ class NotePage extends StatelessWidget {
                 } else {
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                           title:
                               SelectableText("C'è un problema con i server")));
                 }

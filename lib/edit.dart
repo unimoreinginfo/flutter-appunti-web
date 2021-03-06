@@ -103,7 +103,7 @@ class _PlebPageState extends State<PlebPage> {
                   doItAsap(context, (context) {
                     showDialog(
                         context: context,
-                        child: AlertDialog(
+                        builder: (context) => AlertDialog(
                             title: SelectableText(
                                 "Si è verificato un errore durante l'accesso alle materie")));
                   });
@@ -149,7 +149,7 @@ class _PlebPageState extends State<PlebPage> {
                   if (snapshot.error is errors.ServerError) {
                     showDialog(
                         context: context,
-                        child: AlertDialog(
+                        builder: (context) => AlertDialog(
                           title: SelectableText(
                               "Si è verificato un problema di connessione al server"),
                         ));
@@ -158,7 +158,7 @@ class _PlebPageState extends State<PlebPage> {
                   if (snapshot.error is errors.BackendError) {
                     showDialog(
                         context: context,
-                        child: AlertDialog(
+                        builder: (context) => AlertDialog(
                           title: SelectableText(
                               "Le credenziali sono scadute o corrotte"),
                         ));
@@ -178,7 +178,7 @@ class _PlebPageState extends State<PlebPage> {
                             20000) {
                           showDialog(
                               context: context,
-                              child: AlertDialog(
+                              builder: (context) => AlertDialog(
                                 title: SelectableText("Appunto troppo grande"),
                                 content: SelectableText(fileTooBigTips),
                                 actions: [
@@ -204,7 +204,7 @@ class _PlebPageState extends State<PlebPage> {
                             data.max_size_kilobytes) {
                           showDialog(
                               context: context,
-                              child: AlertDialog(
+                              builder: (context) => AlertDialog(
                                 title: SelectableText(
                                     "In totale ogni utente può caricare al massimo 2 GiB di appunti"),
                                 content: SelectableText(
@@ -217,7 +217,7 @@ class _PlebPageState extends State<PlebPage> {
                         if (!allowedMimeTypes.contains(mimeType)) {
                           showDialog(
                               context: context,
-                              child: AlertDialog(
+                              builder: (context) => AlertDialog(
                                 title:
                                     SelectableText("Tipo di file non permesso"),
                                 content: SelectableText(
@@ -271,7 +271,7 @@ class _PlebPageState extends State<PlebPage> {
                     if (e is errors.UserEmailNotVerifiedError) {
                       showDialog(
                           context: context,
-                          child: AlertDialog(
+                          builder: (context) => AlertDialog(
                             title: SelectableText("VERIFICA L'EMAIL UNIMORE"),
                             content: SelectableText(
                                 "controlla la mail unimore e clicca sul link di verifica prima di provare a caricare appunti"),
@@ -280,7 +280,7 @@ class _PlebPageState extends State<PlebPage> {
                     }
                     showDialog(
                         context: context,
-                        child: AlertDialog(
+                        builder: (context) => AlertDialog(
                           title: SelectableText("Si è verificato un errore"),
                           content: SelectableText("error: $e"),
                         ));
@@ -289,7 +289,7 @@ class _PlebPageState extends State<PlebPage> {
                   Navigator.pushNamed(context, '/edit');
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title: SelectableText("Grazie mille."),
                       ));
                 },
@@ -448,7 +448,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       Navigator.pushReplacementNamed(context, "/login");
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: SelectableText(
                 "La sessione potrebbe essere scaduta o corrotta"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
@@ -457,7 +457,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       Navigator.pushReplacementNamed(context, "/edit");
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: SelectableText("Si è verificato un errore sconosciuto"),
           ));
     }
@@ -476,7 +476,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       LoginManager.logOut(tokenStorage);
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: SelectableText(
                 "La sessione potrebbe essere scaduta o corrotta"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
@@ -485,7 +485,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       Navigator.pushReplacementNamed(context, "/login");
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: SelectableText("Si è verificato un errore sconosciuto"),
             content: SelectableText("Verrai riportato alla pagina di accesso"),
           ));
@@ -518,7 +518,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                           if (snapshot.hasError) {
                             showDialog(
                                 context: context,
-                                child: AlertDialog(
+                                builder: (context) => AlertDialog(
                                     title: SelectableText(
                                         "Si è verificato un errore durante l'accesso alle materie")));
                             return SelectableText("si è verificato un errore");
@@ -558,7 +558,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                             print("Error: $e");
                             showDialog(
                                 context: context,
-                                child: AlertDialog(
+                                builder: (context) => AlertDialog(
                                     title: SelectableText("Errore"),
                                     content: SelectableText("$e")));
                           }
@@ -625,7 +625,7 @@ class EmailVerificationPage extends StatelessWidget {
                 if (snapshot.hasError) {
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title: Text(
                             "Si è verificato un errore nel tentativo di verificare l'indirizzo email"),
                       ));

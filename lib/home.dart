@@ -1,6 +1,5 @@
 import 'package:appunti_web_frontend/io.dart';
 import 'package:appunti_web_frontend/platform.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'edit.dart' show LogoutButton;
@@ -60,175 +59,163 @@ class HomePage extends StatelessWidget {
           ),
         ),
         body: DefaultTextStyle(
-            style: MediaQuery.of(context).size.width > 850.0 &&
-                    MediaQuery.of(context).size.height > 682
-                ? Theme.of(context).textTheme.bodyText1
-                : Theme.of(context).textTheme.bodyText2,
-            textAlign: TextAlign.justify,
-            child: DraggableScrollbar.arrows(
-              backgroundColor: Colors.black,
-              heightScrollThumb: 130.0,
-              controller: _controller,
-              child: ListView(
-                  controller: _controller,
-                  padding: EdgeInsets.all(15.0),
-                  children: [
-                    Center(
-                      child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5.0),
-                          width: 750.0,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Illustration("lesson"),
-                              SelectableText(
-                                  "La fonte di appunti più amata al mondo è tornata!",
-                                  textAlign: TextAlign.center,
-                                  style: MediaQuery.of(context).size.width >
-                                          850.0
-                                      ? Theme.of(context).textTheme.headline3
-                                      : Theme.of(context).textTheme.headline4),
-                              SizedBox(
-                                height: 30,
+          style: MediaQuery.of(context).size.width > 850.0 &&
+                  MediaQuery.of(context).size.height > 682
+              ? Theme.of(context).textTheme.bodyText1
+              : Theme.of(context).textTheme.bodyText2,
+          textAlign: TextAlign.justify,
+          child: Scrollbar(
+            isAlwaysShown: true,
+            controller: _controller,
+            child: ListView(
+                controller: _controller,
+                padding: EdgeInsets.all(15.0),
+                children: [
+                  Center(
+                    child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        width: 750.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Illustration("lesson"),
+                            SelectableText(
+                                "La fonte di appunti più amata al mondo è tornata!",
+                                textAlign: TextAlign.center,
+                                style: MediaQuery.of(context).size.width > 850.0
+                                    ? Theme.of(context).textTheme.headline3
+                                    : Theme.of(context).textTheme.headline4),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            SelectableText(
+                                "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Center(
+                              child: MaterialButton(
+                                height: 50.0,
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                child: Text("Vai agli appunti"),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "/subjects");
+                                },
                               ),
-                              SelectableText(
-                                  "Sei pronto a passare da aver fatto 0 esami nei primi 2 anni a laurearti perfettamente nei tempi?"),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Center(
-                                child: MaterialButton(
-                                  height: 50.0,
+                            ),
+                            Divider(height: 45.0),
+                            Illustration("read"),
+                            SelectableText("Appunti per tutti",
+                                textAlign: TextAlign.center,
+                                style: MediaQuery.of(context).size.width > 850.0
+                                    ? Theme.of(context).textTheme.headline4
+                                    : Theme.of(context).textTheme.headline5),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 30
+                                  : 10,
+                            ),
+                            SelectableText(
+                                "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 7.5
+                                  : 5.0,
+                            ),
+                            SelectableText(
+                                "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 7.5
+                                  : 5.0,
+                            ),
+                            SelectableText(
+                                "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Illustration("control"),
+                            SelectableText("Risorse affidabili e controllate",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.headline4),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 30
+                                  : 10,
+                            ),
+                            SelectableText(
+                              "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 7.5
+                                  : 5.0,
+                            ),
+                            SelectableText(
+                              "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 7.5
+                                  : 5.0,
+                            ),
+                            SelectableText(
+                              "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 30
+                                  : 15,
+                            ),
+                            SelectableText(
+                              "E ti laurei pure, bastardo",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Illustration("letsgo"),
+                            SelectableText("Dai il tuo contributo",
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.headline4),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 30
+                                  : 15,
+                            ),
+                            SelectableText(
+                                "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 7.5
+                                  : 5.0,
+                            ),
+                            SelectableText(
+                              "Non potrai caricare file enormi, però.",
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width > 850.0
+                                  ? 30
+                                  : 15,
+                            ),
+                            Center(
+                              child: FlatButton(
                                   color: Theme.of(context).primaryColor,
                                   textColor: Colors.white,
-                                  child: Text("Vai agli appunti"),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, "/subjects");
-                                  },
-                                ),
-                              ),
-                              Divider(height: 45.0),
-                              Illustration("read"),
-                              SelectableText("Appunti per tutti",
-                                  textAlign: TextAlign.center,
-                                  style: MediaQuery.of(context).size.width >
-                                          850.0
-                                      ? Theme.of(context).textTheme.headline4
-                                      : Theme.of(context).textTheme.headline5),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 30
-                                        : 10,
-                              ),
-                              SelectableText(
-                                  "Non c'è bisogno di chiedere a qualcuno ogni volta o di scavare tra i messaggi inviati in qualche gruppo, e di certo non c'è bisogno di pagare per gli appunti: questa è la piattaforma di appunti dove chi decide di caricare qualcosa lo fa solo per aiutare gli altri, rendendo il tutto fruibile gratuitamente anche a te."),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 7.5
-                                        : 5.0,
-                              ),
-                              SelectableText(
-                                  "Non devi fare nulla, se non premere il tasto all'inizio di questa pagina e scegliere la materia di cui ti interessa avere gli appunti."),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 7.5
-                                        : 5.0,
-                              ),
-                              SelectableText(
-                                  "Se gli appunti di uno in particolare dei nostri benefattori ti interessano più degli altri, potrai cliccare sul suo nome e vedere tutti i contenuti che ha offerto alla comunità, insieme ad informazioni di contatto per incitarlo a caricare altra roba affinché tu possa riuscire a laurearti."),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Illustration("control"),
-                              SelectableText("Risorse affidabili e controllate",
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.headline4),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 30
-                                        : 10,
-                              ),
-                              SelectableText(
-                                "Il nostro team di moderazione è sempre al lavoro per controllare i file che vengono caricati e gli utenti che si registrano.",
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 7.5
-                                        : 5.0,
-                              ),
-                              SelectableText(
-                                "Non rischierai mai di scaricare malware o contenuti protetti da copyright, in modo tale da operare sempre all'interno dei limiti esplicitamente autorizzati dai professori.",
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 7.5
-                                        : 5.0,
-                              ),
-                              SelectableText(
-                                "Su questo sito troverai solo appunti affidabili, di qualità e al 100% legali.",
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 30
-                                        : 15,
-                              ),
-                              SelectableText(
-                                "E ti laurei pure, bastardo",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Illustration("letsgo"),
-                              SelectableText("Dai il tuo contributo",
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.headline4),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 30
-                                        : 15,
-                              ),
-                              SelectableText(
-                                  "Se hai degli appunti fantastici da condividere con i compagni per migliorare l'esperienza di studio per l'intera comunità, crea un account e caricali!"),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 7.5
-                                        : 5.0,
-                              ),
-                              SelectableText(
-                                "Non potrai caricare file enormi, però.",
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width > 850.0
-                                        ? 30
-                                        : 15,
-                              ),
-                              Center(
-                                child: FlatButton(
-                                    color: Theme.of(context).primaryColor,
-                                    textColor: Colors.white,
-                                    child:
-                                        Text("Accedi e mandaci i tuoi appunti"),
-                                    onPressed: () =>
-                                        Navigator.pushNamed(context, "/edit")),
-                              )
-                            ],
-                          )),
-                    )
-                  ]),
-            )),
+                                  child:
+                                      Text("Accedi e mandaci i tuoi appunti"),
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, "/edit")),
+                            )
+                          ],
+                        )),
+                  )
+                ]),
+          ),
+        ),
       );
 }

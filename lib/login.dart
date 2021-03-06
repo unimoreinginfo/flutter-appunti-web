@@ -60,7 +60,7 @@ class _LoginControlsState extends State<LoginControls> {
     if (email == null || password == null) {
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title:
                 SelectableText("Inserisci un indirizzo email e una password!"),
           ));
@@ -95,7 +95,7 @@ class _LoginControlsState extends State<LoginControls> {
     if (errorString != null) {
       showDialog(
           context: context,
-          child: AlertDialog(
+          builder: (context) => AlertDialog(
             title: SelectableText(errorString),
           ));
     }
@@ -282,7 +282,7 @@ class _SignupControlsState extends State<SignupControls> {
                 if (_idController.text == null) {
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title: SelectableText(
                             "Ci serve un UNIMORE ID per verificare che tu sia uno studente."),
                       ));
@@ -292,7 +292,7 @@ class _SignupControlsState extends State<SignupControls> {
                     _surnameController.text == null) {
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title:
                             SelectableText("Inserisci un nome ed un cognome"),
                       ));
@@ -336,7 +336,7 @@ class _SignupControlsState extends State<SignupControls> {
                 if (errorString != null) {
                   showDialog(
                       context: context,
-                      child: AlertDialog(
+                      builder: (context) => AlertDialog(
                         title: SelectableText(errorString),
                       ));
                 }
